@@ -1,0 +1,25 @@
+﻿@model MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer.MaxSecurityLoginViewModel
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>Log in</legend>
+        @Html.EditorFor(m => m.UserName, additionalViewData: new { LabelColumnWidth = 2 })
+        @Html.EditorFor(m => m.Password, additionalViewData: new { LabelColumnWidth = 2 })
+        <div class="row">
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <div class="input-group">
+                        <input name="uoProcess" type="submit" value="Login" class="btn btn-primary" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        @Html.HiddenFor(m => m.ReturnUrl)
+    </fieldset>
+}
+
+<div class="row">Don't have an account yet?  @Html.ActionLink("Sign up", "Signup", "MaxSecurity", routeValues: new { returnUrl = Model.ReturnUrl }, htmlAttributes: new { id = "udSignupLink" })</div>
+<div class="row">Need to reset your password?  @Html.ActionLink("Reset Password", "ResetPassword", "MaxSecurity", routeValues: new { returnUrl = Model.ReturnUrl }, htmlAttributes: new { id = "udResetPasswordLink" })</div>

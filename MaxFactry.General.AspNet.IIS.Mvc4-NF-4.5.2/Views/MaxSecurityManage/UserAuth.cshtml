@@ -1,0 +1,58 @@
+﻿@model MaxFactry.General.PresentationLayer.MaxUserAuthViewModel
+
+<h1>User Authorization Management</h1>
+<div>@ViewBag.Message</div>
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary()
+<fieldset>
+    <legend>Create Authorization</legend>
+    @Html.EditorFor(m => m.Name, additionalViewData: new { LabelColumnWidth = 2 })
+    @Html.EditorFor(m => m.ClientId, additionalViewData: new { LabelColumnWidth = 2 })
+    @Html.EditorFor(m => m.ClientSecret, additionalViewData: new { LabelColumnWidth = 2 })
+    @Html.EditorFor(m => m.Active, additionalViewData: new { LabelColumnWidth = 2, IsCheckBox = "true" })
+    <div class="row">
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <div class="input-group">
+                    <button type="submit" name="uoProcess" value="@MaxManageController.ProcessCancel" class="btn btn-default">Cancel</button>
+                    <button type="submit" name="uoProcess" value="@MaxManageController.ProcessCreate" class="btn btn-primary">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</fieldset>        
+    }
+
+@{
+    var loList = Model.GetSortedListForUserKey(Membership.GetUser().ProviderUserKey.ToString());
+    if (loList.Count > 0)
+    {
+<div class="row">
+    <div class="col-sm-12">
+    <table class="table-bordered table-condensed">
+        <thead>
+            <tr>
+                <th>Action</th>
+                <th>Name</th>
+                <th>Client Id</th>
+                <th>Active?</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var loModel in loList)
+            {
+            <tr>
+                <td>@Html.ActionLink("Edit", "UserAuthEdit", "MaxSecurityManage", new RouteValueDictionary { { "id", loModel.Id } }, new Dictionary<string, object> { { "class", "btn btn-default" } })
+                <td>@loModel.Name</td>
+                <td>@loModel.ClientId</td>
+                <td>@loModel.Active</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+    </div>
+</div>            
+}
+}

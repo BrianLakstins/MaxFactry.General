@@ -1,0 +1,36 @@
+﻿@model MaxFactry.General.PresentationLayer.MaxUserAuthGrantViewModel
+@{
+
+}
+
+<h1>Authorization request form</h1>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+<fieldset>
+    <legend>Authorize</legend>
+    <p>Give general access</p>
+    <div class="row">
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <div class="input-group">
+                    <input name="uoProcess" type="submit" value="Authorize" class="btn btn-primary" />
+                </div>
+            </div>
+        </div>
+    </div>
+    @Html.DisplayFor(m => m.ResponseType, additionalViewData: new { LabelColumnWidth = 2 })
+    @Html.DisplayFor(m => m.ResponseMode, additionalViewData: new { LabelColumnWidth = 2 })
+    @Html.DisplayFor(m => m.ClientId, additionalViewData: new { LabelColumnWidth = 2 })
+    @Html.DisplayFor(m => m.Code, additionalViewData: new { LabelColumnWidth = 2 })
+    @Html.DisplayFor(m => m.Nonce, additionalViewData: new { LabelColumnWidth = 2 })
+    @Html.DisplayFor(m => m.RedirectUri, additionalViewData: new { LabelColumnWidth = 2 })
+    @Html.DisplayFor(m => m.Scope, additionalViewData: new { LabelColumnWidth = 2 })
+    @Html.DisplayFor(m => m.State, additionalViewData: new { LabelColumnWidth = 2 })
+    @Html.DisplayFor(m => m.UserKey, additionalViewData: new { LabelColumnWidth = 2 })
+</fieldset>
+    @Html.HiddenFor(m => m.Id)
+}

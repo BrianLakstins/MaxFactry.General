@@ -1,0 +1,96 @@
+﻿@model MaxFactry.General.AspNet.PresentationLayer.MaxFileUserListUploadViewModel
+@{
+    Html.MaxIncludeClientTool("JQuery");
+}
+
+@{
+    ViewBag.MetaKeywords = "cms, efactory, maxfactry";
+    ViewBag.MetaDescription = "Portal home page for eFactory Solutions Web App platform based on MaxFactry framework.";
+    ViewBag.HeadTitle = "eFS Web App Portal - ";
+}
+
+@using (Html.BeginForm("FileUserList", "MaxFileManage", FormMethod.Post, new Dictionary<string, object> { { "role", "form" }, { "enctype", "multipart/form-data" } }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+    <fieldset>
+        <legend>Upload User List File - should be tab separated and contain header for email.  Headers for username and password are optional.</legend>
+        <div class="row">
+            <div class="form-group">
+                <label for="laFile" class="control-label col-sm-1">Files</label>
+                <div class="input-group">
+                    <div class="col-sm-11">
+                        <input type="file" name="laFile" multiple="multiple" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                <div class="col-sm-offset-1 col-sm-11">
+                    <div class="input-group">
+                        <button type="submit" name="uoProcess" value="@MaxManageController.ProcessCancel" class="btn btn-default">Cancel</button>
+                        <button type="submit" name="uoProcess" value="@MaxManageController.ProcessCreate" class="btn btn-primary" disabled="disabled">Upload</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-offset-2 col-sm-10">
+                @if (null != ViewBag.LogInfo)
+                {
+                    <pre>@Html.Raw(ViewBag.LogInfo)</pre>
+                }
+            </div>
+        </div>
+    </fieldset>
+}
+
+@{
+    var loList = Model.GetSortedList();
+    if (loList.Count > 0)
+{
+    <div class="row">
+        <div class="col-sm-12">
+            <table class="table-bordered table-condensed">
+                <thead>
+                    <tr>
+                        <th>Action</th>
+                        <th>Upload Name</th>
+                        <th>Upload Date</th>
+                        <th>Name</th>
+                        <th>File Name</th>
+                        <th>Content Link</th>
+                        <th>Short Codes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var loView in loList)
+                    {
+                        <tr>
+                            <td>@Html.ActionLink("Edit", "FileUserListEdit", "MaxFileManage", new RouteValueDictionary { { "id", loView.Id } }, new Dictionary<string, object> { { "class", "btn btn-default" } })
+
+                            </td>
+                            <td>@loView.UploadName</td>
+                            <td>@loView.CreatedDate</td>
+                            <td>@loView.Name</td>
+                            <td>@loView.FileName</td>
+                            <td><a href="@loView.ContentUrl" target="_blank">View</a></td>
+                            <td>
+                            [a-maxfile href="@loView.FileName"][/a-maxfile]<br />
+                            [img-maxfile src="@loView.FileName"]<br />
+                            [maxfile name="@loView.FileName"]
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+}
+<script>
+    jQuery("input[name='laFile']").change(function () {
+        jQuery(".btn-primary").attr('disabled', false);
+    });
+</script>

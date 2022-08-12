@@ -1,0 +1,7 @@
+﻿<li>@Html.ActionLink("Change Password", "changepassword", "MaxSecurity", routeValues: null, htmlAttributes: new { id = "udChangePasswordLink" })</li>
+<li>@Html.ActionLink("Log In", "login", "MaxSecurity", routeValues: new { ReturnUrl = Request.Url }, htmlAttributes: new { id = "udLogInLink" })</li>
+<li>@Html.ActionLink("Log Out", "logout", "MaxSecurity", routeValues: null, htmlAttributes: new { id = "udLogOutLink" })</li>
+<li>@Html.ActionLink("Manage", "manage", "MaxSecurity", routeValues: null, htmlAttributes: new { id = "udManageLink" })</li>
+<li>@Html.ActionLink("Sign Up", "signup", "MaxSecurity", routeValues: new { ReturnUrl = Request.Url }, htmlAttributes: new { id = "udSignUpLink" })</li>
+<li>@Html.ActionLink("Auth", "UserAuth", "MaxSecurityManage", routeValues: null, htmlAttributes: new { id = "udUserAuthLink" })</li>
+<li>@Html.ActionLink("Reset Password", "ResetPassword", "MaxSecurity", routeValues: null, htmlAttributes: new { id = "udUserResetPasswordLink" })</li>

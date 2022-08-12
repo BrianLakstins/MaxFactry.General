@@ -1,0 +1,56 @@
+﻿@model MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer.MaxSecurityManageUserViewModel
+@if (Model.List.Count > 0)
+{
+    <div class="row">
+        <h2>Manage Users</h2>
+        <table class="table-bordered table-condensed">
+            <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>User</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var loModel in Model.List)
+                {
+                    <tr>
+                        <td>@Html.ActionLink("Edit", "ManageUser", "MaxSecurity", new RouteValueDictionary { { "lsUserId", loModel.Id } }, new Dictionary<string, object> { { "class", "btn btn-default" } })</td>
+                        <td>@loModel.UserName</td>
+                        <td>@loModel.Email</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (!String.IsNullOrEmpty(Model.Id))
+{
+    using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary()
+
+        <fieldset>
+            @Html.HiddenFor(m => m.Id)
+            <legend>Edit User</legend>
+            @Html.EditorFor(m => m.UserName, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.Email, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.Password, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.IsAdmin, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.IsUserManager, additionalViewData: new { LabelColumnWidth = 2 })
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <div class="input-group">
+                            <input type="submit" name="uoProcess" value="Delete" onclick="return (confirm('are you sure?'));" class="btn btn-danger" />
+                            <input type="submit" name="uoProcess" value="Cancel" class="btn btn-default" />
+                            <input type="submit" name="uoProcess" value="Save" class="btn btn-primary" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    }
+}

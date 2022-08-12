@@ -1,0 +1,84 @@
+﻿@{
+    Html.MaxIncludeClientTool("Bootstrap");
+    Html.MaxIncludeClientTool("Bootstrap-Theme");
+    string lsPartialController = "MaxPartial";
+    Type loControllerType = ViewContext.Controller.GetType();
+    Type loPartialControllerType = Type.GetType(loControllerType.Namespace + "." + loControllerType.Name.Replace("Controller", "PartialController") + "," + loControllerType.Assembly.ToString());
+    if (null != loPartialControllerType)
+    {
+        lsPartialController = loControllerType.Name.Replace("Controller", "Partial");
+    }
+}
+@RenderSection("PageStart", required: false)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@{Html.RenderAction("PartialHeadTitle", lsPartialController);}</title>
+    @Html.MaxGetClientToolHtml("HEAD")
+    @{Html.RenderAction("PartialHead", lsPartialController);}
+    @RenderSection("StyleSection", required: false)
+    <script type="text/javascript">
+        if (window.parent.frames.length < 0 || window.self == window.top) {
+            var lsHref = window.location.href.replace('IsEmbed=', 'IsEmbed2=');
+            if (lsHref.indexOf('?') > 0)
+            {
+                lsHref += '&IsEmbed=false';
+            }
+            else
+            {
+                lsHref += '?IsEmbed=false';
+            }
+
+            window.location.href = lsHref;
+        }
+    </script>
+</head>
+<body>
+    <div id="udBodyContent" class="container">
+        @RenderBody()
+    </div>
+    @Html.MaxGetClientToolHtml("END")
+    @RenderSection("ScriptSection", required: false)
+
+    <script type="text/javascript" src="//efsappplatform.blob.core.windows.net/cdn/porthole.min.js"></script>
+    <script type="text/javascript">
+        var psTARGET = '@MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer.MaxEnableEmbedAttribute.EmbedTARGET';
+        var poPortholeTARGET;
+    </script>
+    <script type="text/javascript">
+        window.onload = function () {
+            // Create a proxy window to send to and receive messages from the TARGET
+            poPortholeTARGET = new Porthole.WindowProxy('//' + psTARGET + '/proxy.html');
+
+            // Register an event handler to receive messages;
+            poPortholeTARGET.addEventListener(onPortholeMessage);
+            // Post a message to set the initial height of the iFrame containing this content
+            window.scrollTo(0, 0);
+            poPortholeTARGET.post({ 'loaded': true });
+            setTimeout(pfPortholeSetHeight(), 500);
+            setTimeout(pfPortholeSetHeight(), 1500);
+            setTimeout(pfPortholeSetHeight(), 2500);
+        };
+
+        function pfPortholeSetHeight() {
+            poPortholeTARGET.post({ 'setheight': document.body.clientHeight });
+        }
+
+        function onPortholeMessage(loMessage) {
+            /*
+            loMessage.origin: Protocol and domain origin of the message
+            loMessage.data: Message itself
+            loMessage.source: Window proxy object, useful to post a response 
+            */
+            //// Use "onresize" messages from the TARGET to then send a message back to the target to resize the iFrame.
+            if (loMessage.data["onresize"]) {
+                pfPortholeSetHeight();
+            }
+        }
+    </script>
+</body>
+</html>
+@RenderSection("PageEnd", required: false)

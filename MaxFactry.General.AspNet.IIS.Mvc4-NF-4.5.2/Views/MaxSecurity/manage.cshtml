@@ -1,0 +1,29 @@
+﻿<h1>Manage User Information</h1>
+<div class="row">From here you can manage your user account.</div>
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="row">
+        <ul>
+            <li>
+                @using (Html.BeginForm("Logout", "MaxSecurity", FormMethod.Post, new { id = "udLogoutForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <a href="javascript:document.getElementById('udLogoutForm').submit()">Log out</a>
+                }</li>
+
+            <li>@Html.ActionLink("Change Password", "ChangePassword", "MaxSecurity")</li>
+        </ul>
+    </div>
+}
+
+@if (User.IsInRole("Admin") || User.IsInRole("Admin - Manage Users"))
+{
+    <div class="row">You have access to manage other user's information too.</div>
+    <div class="row">
+        <ul>
+            <li>@Html.ActionLink("Manage Users", "ManageUser", "MaxSecurity")</li>
+            <li>@Html.ActionLink("Add User", "SignUp", "MaxSecurity", new { returnUrl = ViewContext.HttpContext.Request.Url.PathAndQuery }, htmlAttributes: new { Class = "ussSignupLink" })</li>
+        </ul>
+    </div>    
+
+}

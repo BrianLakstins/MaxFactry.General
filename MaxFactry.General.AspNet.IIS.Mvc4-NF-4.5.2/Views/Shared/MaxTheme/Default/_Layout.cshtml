@@ -1,0 +1,41 @@
+﻿@{
+    Html.MaxIncludeClientTool("Bootstrap");
+    Html.MaxIncludeClientTool("Bootstrap-Theme");
+    Html.MaxIncludeClientTool("SmartmenusBootstrapAddon");
+    string lsPartialController = "MaxPartial";
+    Type loControllerType = ViewContext.Controller.GetType();
+    Type loPartialControllerType = Type.GetType(loControllerType.Namespace + "." + loControllerType.Name.Replace("Controller", "PartialController") + "," + loControllerType.Assembly.ToString());
+    if (null != loPartialControllerType)
+    {
+        lsPartialController = loControllerType.Name.Replace("Controller", "Partial");
+    }
+}
+@RenderSection("PageStart", required: false)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    @* http://getbootstrap.com/getting-started/#support-ie8-ie9 *@
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@{Html.RenderAction("PartialHeadTitle", lsPartialController);}</title>
+    @Html.MaxGetClientToolHtml("HEAD")
+    @{Html.RenderAction("PartialHead", lsPartialController);}
+    @RenderSection("StyleSection", required: false)
+</head>
+<body>
+    @Html.MaxGetClientToolHtml("BODY")
+    <div id="udHeaderContainer">
+    @{Html.RenderAction("PartialThemeHeader", lsPartialController);}
+    </div>
+    <div id="udBodyContainer" class="container">
+    @RenderBody()
+    </div>
+    <div id="udFooterContainer">
+    @{Html.RenderAction("PartialThemeFooter", lsPartialController);}
+    </div>
+    @Html.MaxGetClientToolHtml("END")
+    @RenderSection("ScriptSection", required: false)
+</body>
+</html>
+@RenderSection("PageEnd", required: false)

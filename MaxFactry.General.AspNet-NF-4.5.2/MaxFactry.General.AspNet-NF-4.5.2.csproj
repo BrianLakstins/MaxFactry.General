@@ -1,0 +1,179 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8F6A762F-3FDE-4FC2-98AC-61CAE1F3553C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MaxFactry.General.AspNet</RootNamespace>
+    <AssemblyName>MaxFactry.General.AspNet-NF-4.5.2</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;net2;net4_52</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;net2;net4_52</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>MaxFactry.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\BusinessLayer\Entity\MaxClientToolEntity.cs">
+      <Link>BusinessLayer\Entity\MaxClientToolEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\BusinessLayer\Entity\MaxFileUploadEntity.cs">
+      <Link>BusinessLayer\Entity\MaxFileUploadEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\BusinessLayer\Entity\MaxFileUserListUploadEntity.cs">
+      <Link>BusinessLayer\Entity\MaxFileUserListUploadEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\BusinessLayer\Entity\MaxFormEntity.cs">
+      <Link>BusinessLayer\Entity\MaxFormEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\BusinessLayer\Entity\MaxFormValueEntity.cs">
+      <Link>BusinessLayer\Entity\MaxFormValueEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\BusinessLayer\Entity\MaxScriptFileEntity.cs">
+      <Link>BusinessLayer\Entity\MaxScriptFileEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\BusinessLayer\Entity\MaxServerVariableEntity.cs">
+      <Link>BusinessLayer\Entity\MaxServerVariableEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\BusinessLayer\Entity\MaxServerVariableValueEntity.cs">
+      <Link>BusinessLayer\Entity\MaxServerVariableValueEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\BusinessLayer\Entity\MaxStyleFileEntity.cs">
+      <Link>BusinessLayer\Entity\MaxStyleFileEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\BusinessLayer\Entity\MaxVirtualTextFileEntity.cs">
+      <Link>BusinessLayer\Entity\MaxVirtualTextFileEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\DataLayer\DataModel\MaxClientToolDataModel.cs">
+      <Link>DataLayer\DataModel\MaxClientToolDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\DataLayer\DataModel\MaxFileUploadDataModel.cs">
+      <Link>DataLayer\DataModel\MaxFileUploadDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\DataLayer\DataModel\MaxFileUserListUploadDataModel.cs">
+      <Link>DataLayer\DataModel\MaxFileUserListUploadDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\DataLayer\DataModel\MaxFormDataModel.cs">
+      <Link>DataLayer\DataModel\MaxFormDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\DataLayer\DataModel\MaxFormValueDataModel.cs">
+      <Link>DataLayer\DataModel\MaxFormValueDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\DataLayer\DataModel\MaxScriptFileDataModel.cs">
+      <Link>DataLayer\DataModel\MaxScriptFileDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\DataLayer\DataModel\MaxServerVariableDataModel.cs">
+      <Link>DataLayer\DataModel\MaxServerVariableDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\DataLayer\DataModel\MaxServerVariableValueDataModel.cs">
+      <Link>DataLayer\DataModel\MaxServerVariableValueDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\DataLayer\DataModel\MaxStyleFileDataModel.cs">
+      <Link>DataLayer\DataModel\MaxStyleFileDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\DataLayer\DataModel\MaxVirtualTextFileDataModel.cs">
+      <Link>DataLayer\DataModel\MaxVirtualTextFileDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\DataLayer\Repository\Interface\IMaxBaseAspNetRepositoryProvider.cs">
+      <Link>DataLayer\Repository\Interface\IMaxBaseAspNetRepositoryProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\DataLayer\Repository\MaxBaseAspNetRepository.cs">
+      <Link>DataLayer\Repository\MaxBaseAspNetRepository.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\DataLayer\Repository\Provider\MaxBaseAspNetRepositoryDefaultProvider.cs">
+      <Link>DataLayer\Repository\Provider\MaxBaseAspNetRepositoryDefaultProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\Library\Interface\IMaxAppLibraryProvider.cs">
+      <Link>Library\Interface\IMaxAppLibraryProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\Library\MaxAppLibrary.cs">
+      <Link>Library\MaxAppLibrary.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\Library\Provider\MaxAppLibraryDefaultProvider.cs">
+      <Link>Library\Provider\MaxAppLibraryDefaultProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\MaxStartup.cs">
+      <Link>MaxStartup.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\PresentationLayer\Library\Interface\IMaxOwinLibraryProvider.cs">
+      <Link>PresentationLayer\Library\Interface\IMaxOwinLibraryProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\PresentationLayer\Library\MaxOwinLibrary.cs">
+      <Link>PresentationLayer\Library\MaxOwinLibrary.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\PresentationLayer\Library\Provider\MaxOwinLibraryDefaultProvider.cs">
+      <Link>PresentationLayer\Library\Provider\MaxOwinLibraryDefaultProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\PresentationLayer\Models\MaxClientToolViewModel.cs">
+      <Link>PresentationLayer\Models\MaxClientToolViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\PresentationLayer\Models\MaxFileUploadViewModel.cs">
+      <Link>PresentationLayer\Models\MaxFileUploadViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\PresentationLayer\Models\MaxFileUserListUploadViewModel.cs">
+      <Link>PresentationLayer\Models\MaxFileUserListUploadViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\PresentationLayer\Models\MaxScriptFileViewModel.cs">
+      <Link>PresentationLayer\Models\MaxScriptFileViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\PresentationLayer\Models\MaxStyleFileViewModel.cs">
+      <Link>PresentationLayer\Models\MaxStyleFileViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet-NF-2.0\PresentationLayer\Models\MaxVirtualTextFileViewModel.cs">
+      <Link>PresentationLayer\Models\MaxVirtualTextFileViewModel.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MaxFactry.General-NF-4.5.2\MaxFactry.General-NF-4.5.2.csproj">
+      <Project>{a625c04c-84c7-4d75-8e53-8b37542235e0}</Project>
+      <Name>MaxFactry.General-NF-4.5.2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\_sm\MaxFactry.Base\MaxFactry.Base-NF-4.5.2\MaxFactry.Base-NF-4.5.2.csproj">
+      <Project>{2120b857-fad6-4310-9ec8-3d958087fee2}</Project>
+      <Name>MaxFactry.Base-NF-4.5.2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\_sm\MaxFactry.Base\_sm\MaxFactry.Core\MaxFactry.Core-NF-4.5.2\MaxFactry.Core-NF-4.5.2.csproj">
+      <Project>{db84bcde-6f72-4657-811f-40a824ae041f}</Project>
+      <Name>MaxFactry.Core-NF-4.5.2</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="MaxFactry.pfx" />
+    <None Include="MaxFactry.snk" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

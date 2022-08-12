@@ -1,0 +1,155 @@
+﻿@model System.Object
+@{
+    /*
+     * Copied from String.cshtml
+     *
+        additionalViewData definitions
+            Help - Help text that displays as a tool tip
+            Icon - Name of glyph from http://getbootstrap.com/components/#glyphicons to show at end of text edit field
+            LabelColumnWidth - Integer width of label column
+            InputControl - string for input control
+     */
+
+    string lsValue = string.Empty;
+    if (null != Model)
+    {
+        lsValue = Model.ToString();
+    }
+
+    string lsInputClass = string.Empty;
+    if (!ViewData.ModelState.IsValidField(ViewData.TemplateInfo.HtmlFieldPrefix))
+    {
+        lsInputClass = "has-error";
+    }
+
+    string lsHelp = string.Empty;
+    string lsIcon = "question-sign";
+    if (ViewData.ModelMetadata.IsRequired)
+    {
+        lsIcon = "asterisk";
+        lsHelp = "Required";
+    }
+
+    if (null != ViewData["Help"] && ViewData["Help"] is string)
+    {
+        lsHelp = (string)ViewData["Help"];
+    }
+
+    if (null != ViewData["Icon"] && ViewData["Icon"] is string)
+    {
+        lsIcon = (string)ViewData["Icon"];
+    }
+
+    if (!string.IsNullOrEmpty(lsHelp))
+    {
+        lsInputClass += " input-group";
+    }
+
+    IHtmlString lsInputControl = null;
+    if (null != ViewData["InputControl"] && ViewData["InputControl"] is IHtmlString)
+    {
+        lsInputControl = (IHtmlString)ViewData["InputControl"];
+    }
+
+    int lnLabelColumnWidth = 1;
+    if (null != ViewData["LabelColumnWidth"])
+    {
+        lnLabelColumnWidth = MaxFactry.Core.MaxConvertLibrary.ConvertToInt(typeof(object), ViewData["LabelColumnWidth"]);
+    }
+
+    int lnInputColumnWidth = 12 - lnLabelColumnWidth;
+    string lsInputType = "text";
+    string lsStep = string.Empty;
+    if (Model is double || Model is int || Model is long)
+    {
+        lsInputType = "number";
+        if (Model is double)
+        {
+            lsStep = " step=\"any\"";
+        }
+    }
+
+    if (null != ViewData["InputType"])
+    {
+        lsInputType = MaxFactry.Core.MaxConvertLibrary.ConvertToString(typeof(object), ViewData["InputType"]);
+    }
+
+    string lsLabelText = ViewData.ModelMetadata.DisplayName;
+    if (null != ViewData["LabelText"])
+    {
+        lsLabelText = MaxFactry.Core.MaxConvertLibrary.ConvertToString(typeof(object), ViewData["LabelText"]);
+    }
+
+    if (string.IsNullOrEmpty(lsLabelText))
+    {
+        lsLabelText = ViewData.ModelMetadata.PropertyName;
+    }
+
+    bool lbIsReadOnly = false;
+    if (null != ViewData["IsReadOnly"])
+    {
+        lbIsReadOnly = MaxFactry.Core.MaxConvertLibrary.ConvertToBoolean(typeof(object), ViewData["IsReadOnly"]);
+    }
+
+    if (ViewData.ModelMetadata.IsReadOnly)
+    {
+        lbIsReadOnly = true;
+    }
+
+    bool lbIsCheckBox = false;
+    if (null != ViewData["IsCheckBox"])
+    {
+        lbIsCheckBox = MaxFactry.Core.MaxConvertLibrary.ConvertToBoolean(typeof(object), ViewData["IsCheckBox"]);
+    }
+
+    string lsChecked = string.Empty;
+    if (lbIsCheckBox)
+    {
+        lnInputColumnWidth = 1;
+        lsInputType = "checkbox";
+        if (null != Model && MaxFactry.Core.MaxConvertLibrary.ConvertToBoolean(typeof(Object), Model))
+        {
+            lsChecked = "checked='checked'";
+        }
+    }
+}
+<div class="row">
+    <div class="form-group">
+        <label class="control-label col-sm-@lnLabelColumnWidth" for="@ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty)">@lsLabelText</label>
+        <div class="col-sm-@lnInputColumnWidth">
+            <div class="@lsInputClass">
+                @if (null != lsInputControl)
+                {
+                    @lsInputControl
+                }
+                else if (lbIsReadOnly)
+                {
+                    <p class="form-control-static" id="@ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty)">@lsValue</p>
+                }
+                else if (lbIsCheckBox)
+                {
+                    <input class="form-control" id="@ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty)" name="@ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty)" type="@lsInputType" value="true" @Html.Raw(lsChecked) />
+                    <input type="hidden" value="false" name="@ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty)" />
+                }
+                else
+                {
+                    <input class="form-control" id="@ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty)" name="@ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty)" type="@lsInputType" value="@lsValue" @Html.Raw(lsStep) />
+                }
+
+                @if (!string.IsNullOrEmpty(lsHelp))
+                {
+                    <span class="tooltipactive btn input-group-addon" data-placement="left" data-toggle="tooltip" title="@lsHelp">
+                        <span class="glyphicon glyphicon-@lsIcon"></span>
+                    </span>
+                }
+            </div>
+            @if (null != ViewData.ModelState[ViewData.TemplateInfo.HtmlFieldPrefix])
+            {
+                foreach (var loError in ViewData.ModelState[ViewData.TemplateInfo.HtmlFieldPrefix].Errors)
+                {
+                    <span class="help-block">@loError.ErrorMessage</span>
+                }
+            }
+        </div>
+    </div>
+</div>

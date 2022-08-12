@@ -1,0 +1,125 @@
+﻿@model MaxFactry.General.AspNet.PresentationLayer.MaxClientToolViewModel
+@{
+
+}
+
+@section StyleSection
+{
+
+}
+@section ScriptSection
+{
+    <script>
+
+    </script>
+
+}
+
+<h1>Client Tool Management</h1>
+<div>@ViewBag.Message</div>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+    <fieldset>
+        <legend>Create Client Tool</legend>
+        @Html.EditorFor(m => m.Name, additionalViewData: new { LabelColumnWidth = 2 })
+        @Html.EditorFor(m => m.Description, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.TextAreaFor(m => m.Description, new Dictionary<string, object> { { "class", "form-control" } }) })
+        @Html.EditorFor(m => m.Version, additionalViewData: new { LabelColumnWidth = 2 })
+        @Html.EditorFor(m => m.Location, additionalViewData: new { LabelColumnWidth = 2 })
+        @Html.EditorFor(m => m.LocalUrl, additionalViewData: new { LabelColumnWidth = 2 })
+        @Html.EditorFor(m => m.LocalMinUrl, additionalViewData: new { LabelColumnWidth = 2 })
+        @Html.EditorFor(m => m.CDNUrl, additionalViewData: new { LabelColumnWidth = 2 })
+        @Html.EditorFor(m => m.CDNMinUrl, additionalViewData: new { LabelColumnWidth = 2 })
+        @Html.EditorFor(m => m.Content, additionalViewData: new { LabelColumnWidth = 2, InputControl = Html.TextAreaFor(m => m.Content, new Dictionary<string, object> { { "class", "form-control" } }) })
+        @Html.EditorFor(m => m.IncludeFilter, additionalViewData: new { LabelColumnWidth = 2 })
+
+        <div class="row">
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="RequiredList">Required Client Tools</label>
+                <div class="col-sm-10">
+                    <div class="input-group" style="width:100%;">
+                        <select class="form-control chosen-select" data-placeholder="Required Client Tools" multiple="multiple" id="RequiredNameList" name="RequiredNameList">
+                            <option value=""></option>
+                            @{
+                                List<string> loNameList = new List<string>();
+                                var loClientToolList = new MaxFactry.General.AspNet.PresentationLayer.MaxClientToolViewModel().GetSortedList();
+                                foreach (var loModel in loClientToolList)
+                                {
+                                    if (!loNameList.Contains(loModel.Name))
+                                    {
+                                        loNameList.Add(loModel.Name);
+                                    }
+
+                                    string lsNameVer = loModel.Name + ":" + loModel.Version;
+
+                                    if (!loNameList.Contains(lsNameVer))
+                                    {
+                                        loNameList.Add(lsNameVer);
+                                    }
+                                }
+
+                                loNameList.Sort();
+
+                                foreach (var lsName in loNameList)
+                                {
+                                    if (Model.RequiredNameList.Contains(lsName))
+                                    {
+                                        <option value="@lsName" selected="selected">@lsName</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@lsName">@lsName</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @Html.EditorFor(m => m.Active, additionalViewData: new { LabelColumnWidth = 2, IsCheckBox = "true" })
+        <div class="row">
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <div class="input-group">
+                        <button type="submit" name="uoProcess" value="@MaxManageController.ProcessCancel" class="btn btn-default">Cancel</button>
+                        <button type="submit" name="uoProcess" value="@MaxManageController.ProcessCreate" class="btn btn-primary">Create</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </fieldset>
+}
+
+@{
+    var loList = Model.GetSortedList();
+
+    if (loList.Count > 0)
+    {
+        <table class="table-bordered table-condensed">
+            <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Name</th>
+                    <th>Version</th>
+                    <th>Location</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var loView in loList)
+                {
+                    <tr>
+                        <td>@Html.ActionLink("Edit", "ClientToolEdit", "MaxFileManage", new RouteValueDictionary { { "id", loView.Id } }, new Dictionary<string, object> { { "class", "btn btn-default" } })</td>
+                        <td>@loView.Name</td>
+                        <td>@loView.Version</td>
+                        <td>@loView.Location</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}

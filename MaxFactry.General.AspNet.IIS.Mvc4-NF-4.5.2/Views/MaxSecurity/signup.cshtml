@@ -1,0 +1,31 @@
+﻿@model MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer.MaxSecuritySignupViewModel
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>Create Account</legend>
+        @Html.EditorFor(m => m.UserName, additionalViewData: new { LabelColumnWidth = 2 })
+        @Html.EditorFor(m => m.Email, additionalViewData: new { LabelColumnWidth = 2 })
+        @Html.EditorFor(m => m.Password, additionalViewData: new { InputControl = Html.PasswordFor(m => m.Password, htmlAttributes: new { Class = "form-control" }), LabelColumnWidth = 2 })
+        @Html.EditorFor(m => m.ConfirmPassword, additionalViewData: new { InputControl = Html.PasswordFor(m => m.ConfirmPassword, htmlAttributes: new { Class = "form-control" }), LabelColumnWidth = 2 })
+
+
+        @if (Model.RequireSecretQuestionAndAnswer)
+        {
+            @Html.EditorFor(m => m.SecretQuestion, additionalViewData: new { LabelColumnWidth = 2 })
+            @Html.EditorFor(m => m.SecretAnswer, additionalViewData: new { LabelColumnWidth = 2 })
+        }
+        <div class="row">
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <div class="input-group">
+                        <input name="uoProcess" type="submit" value="Register" class="btn btn-primary" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        @Html.HiddenFor(m => m.ReturnUrl)
+    </fieldset>
+}

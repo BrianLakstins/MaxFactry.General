@@ -1,0 +1,143 @@
+﻿@model MaxFactry.General.AspNet.PresentationLayer.MaxFileUserListUploadViewModel
+
+@{
+    ViewBag.MetaKeywords = "cms, efactory, maxfactry";
+    ViewBag.MetaDescription = "Portal home page for eFactory Solutions Web App platform based on MaxFactry framework.";
+    ViewBag.HeadTitle = "eFS Web App Portal - ";
+}
+<div>@ViewBag.Message</div>
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary()
+    
+        if (!String.IsNullOrEmpty(Model.Id))
+        {
+        <fieldset>
+            @Html.HiddenFor(m => m.Id)
+            <legend>Edit File Name</legend>
+                    @Html.DisplayFor(m => m.Id, additionalViewData: new { LabelColumnWidth = 2 })
+                    @Html.DisplayFor(m => m.CreatedDate, additionalViewData: new { LabelColumnWidth = 2})
+                    @Html.DisplayFor(m => m.LastUpdateDate, additionalViewData: new { LabelColumnWidth = 2 })
+                    @Html.DisplayFor(m => m.UploadName, additionalViewData: new { LabelColumnWidth = 2 })
+                    @Html.EditorFor(m => m.Name, additionalViewData: new { LabelColumnWidth = 2 })
+                    @Html.EditorFor(m => m.FileName, additionalViewData: new { LabelColumnWidth = 2 })
+                    @Html.DisplayFor(m => m.MimeType, additionalViewData: new { LabelColumnWidth = 2 })
+
+            <div class="row">
+                <div class="form-group">
+                    <label class="control-label col-sm-2" for="ContentUrl">ContentUrl</label>
+                    <div class="col-sm-10">
+                        <div class="">
+                            <p class="form-control-static" id="ContentUrl">@Model.ContentUrl <a href="@Model.ContentUrl" target="_blank">View</a></p>
+                            <p class="form-control-static" id="ContentUrl"><a class="btn btn-default" onclick="copyTextToClipboard('@Model.ContentUrl');">Copy Url</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+                    @Html.EditorFor(m => m.IsDownload, additionalViewData: new { LabelColumnWidth = 2 })
+            <div class="row">
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <div class="input-group">
+                        <button type="submit" name="uoProcess" value="@MaxManageController.ProcessDelete" onclick="return (confirm('are you sure?'));" class="btn btn-danger">Delete</button>
+                        <button type="submit" name="uoProcess" value="@MaxManageController.ProcessCancel" class="btn btn-default">Cancel</button>
+                        <button type="submit" name="uoProcess" value="@MaxManageController.ProcessDone" class="btn btn-default">Done</button>
+                        <button type="submit" name="uoProcess" value="@MaxManageController.ProcessSave" class="btn btn-primary">Save</button>
+                        <br /><br />
+                        <button type="submit" name="uoProcess" value="@(MaxManageController.ProcessSave)Test" class="btn btn-primary">Test</button>
+                        <br /><br />
+                        <button type="submit" name="uoProcess" value="@(MaxManageController.ProcessSave)Import" class="btn btn-primary">Import</button>
+                        <p>
+                            Import Rules
+                            <ul>
+                                <li>Email is required.</li>
+                                <li>Username will match email if username is not included.</li>
+                                <li>Password will be random if not included.</li>
+                            </ul>
+                        </p>
+                    </div>
+                </div>
+            </div>
+                </div>
+        </fieldset>        
+        }
+
+    }
+
+@section ScriptSection
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.tooltipactive').tooltip({ container: 'body' });
+            $('#ContentUrl').on('focus', function () {
+                $(this).select();
+            }).on('mouseup', function (e) {
+                e.preventDefault();
+            });
+        });
+
+        var copySupported = document.queryCommandSupported('copy');
+
+        function copyTextToClipboard(text) {
+            var textArea = document.createElement("textarea");
+
+            //
+            // *** This styling is an extra step which is likely not required. ***
+            //
+            // Why is it here? To ensure:
+            // 1. the element is able to have focus and selection.
+            // 2. if element was to flash render it has minimal visual impact.
+            // 3. less flakyness with selection and copying which **might** occur if
+            //    the textarea element is not visible.
+            //
+            // The likelihood is the element won't even render, not even a flash,
+            // so some of these are just precautions. However in IE the element
+            // is visible whilst the popup box asking the user for permission for
+            // the web page to copy to the clipboard.
+            //
+
+            // Place in top-left corner of screen regardless of scroll position.
+            textArea.style.position = 'fixed';
+            textArea.style.top = 0;
+            textArea.style.left = 0;
+
+            // Ensure it has a small width and height. Setting to 1px / 1em
+            // doesn't work as this gives a negative w/h on some browsers.
+            textArea.style.width = '2em';
+            textArea.style.height = '2em';
+
+            // We don't need padding, reducing the size if it does flash render.
+            textArea.style.padding = 0;
+
+            // Clean up any borders.
+            textArea.style.border = 'none';
+            textArea.style.outline = 'none';
+            textArea.style.boxShadow = 'none';
+
+            // Avoid flash of white box if rendered for any reason.
+            textArea.style.background = 'transparent';
+
+
+            textArea.value = text;
+
+            document.body.appendChild(textArea);
+
+            textArea.select();
+
+            try {
+                var successful = document.execCommand('copy');
+                var msg = successful ? 'successful' : 'unsuccessful';
+                console.log('Copying text command was ' + msg);
+            } catch (err) {
+                console.log('Oops, unable to copy');
+            }
+
+            document.body.removeChild(textArea);
+        }
+    </script>
+
+}

@@ -1,0 +1,8 @@
+﻿
+    <li><a href="/">Home</a></li>
+    <li><a href="/about">About</a></li>
+@if (Html.MaxIsInRole("Admin,Admin - Views"))
+{
+    <li><a href="/MaxFileManage/VirtualTextFileEdit?name=%2Fviews%2Fmaxpartial%2Fcontent%2F_partialnavlinklist.cshtml" target="_blank">Edit</a></li>
+}
+

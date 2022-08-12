@@ -1,0 +1,163 @@
+﻿@model MaxFactry.General.AspNet.PresentationLayer.MaxStyleFileViewModel
+@{
+    Html.MaxIncludeClientTool("JQuery");
+    Html.MaxIncludeClientTool("Require");
+}
+
+@section StyleSection
+{
+    <style>
+        #udCodeContent {
+            position: relative;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 50px;
+        }
+    </style>
+
+
+}
+
+<div>@ViewBag.Message</div>
+@using (Html.BeginForm("StyleFileEdit", "MaxFileManage", FormMethod.Post, new Dictionary<string, object> { { "role", "form" }, { "class", "form-horizontal" } }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+    <fieldset>
+        @Html.HiddenFor(m => m.Id)
+        @Html.HiddenFor(m => m.Name)
+        <legend>Edit Style File</legend>
+        @Html.DisplayFor(m => m.Name, additionalViewData: new { LabelColumnWidth = 1 })
+        @Html.DisplayFor(m => m.Version, additionalViewData: new { LabelColumnWidth = 1 })
+        @Html.EditorFor(m => m.FileVersion, additionalViewData: new { LabelColumnWidth = 1 })
+        <div class="row">
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="ContentUrl">Url</label>
+                <div class="col-sm-10">
+                    <div class="">
+                        <p class="form-control-static" id="ContentUrl">/css/@Model.ContentName?id=@Model.Id <a href="/css/@Model.ContentName?id=@Model.Id" target="_blank">View</a></p>
+                        <p class="form-control-static" id="ContentUrl"><a class="btn btn-default" onclick="copyTextToClipboard('/css/@Model.ContentName?id=@Model.Id');">Copy Url</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="form-group">
+                <label class="control-label col-sm-1" for="Content">Content</label>
+                <div class="col-sm-11">
+                    <textarea id='udCodeContent'></textarea>
+                    @Html.TextAreaFor(m => m.Content, new Dictionary<string, object> { { "class", "form-control" }, { "style", "display:none;" } })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                <div class="col-sm-offset-1 col-sm-4">
+                    <div class="input-group">
+                        <button type="submit" name="uoProcess" value="@MaxManageController.ProcessDelete" onclick="return (confirm('are you sure?'));" class="btn btn-danger">Delete</button>
+                        <button type="submit" name="uoProcess" value="@MaxManageController.ProcessCancel" class="btn btn-default">Cancel</button>
+                        <button type="submit" name="uoProcess" value="@MaxManageController.ProcessDone" class="btn btn-default">Done</button>
+                        <button type="submit" name="uoProcess" value="@MaxManageController.ProcessSave" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </fieldset>        
+}
+
+@section ScriptSection
+{
+<script>
+    requirejs.config({
+        //By default load any module IDs from js/lib
+        baseUrl: '//s.dns9.co/ct/ace',
+        "paths": {
+            "ace": "//s.dns9.co/ct/ace/ace"
+        }
+    });
+
+    requirejs(['ace'], function (ace) {
+        var editor = ace.edit("udCodeContent");
+        editor.setFontSize('12px');
+        editor.setOptions({
+            maxLines: 30,
+            minLines: 10
+        });
+        editor.resize();
+        editor.setTheme("theme/chrome_razor");
+        editor.getSession().setMode("mode/css");
+        editor.setValue(jQuery('#Content').val());
+        editor.getSession().on('change', function (e) {
+            jQuery('#Content').val(editor.getValue());
+        });
+
+    });
+
+</script>
+
+
+
+    <script type="text/javascript">
+        var copySupported = document.queryCommandSupported('copy');
+
+        function copyTextToClipboard(text) {
+            var textArea = document.createElement("textarea");
+
+            //
+            // *** This styling is an extra step which is likely not required. ***
+            //
+            // Why is it here? To ensure:
+            // 1. the element is able to have focus and selection.
+            // 2. if element was to flash render it has minimal visual impact.
+            // 3. less flakyness with selection and copying which **might** occur if
+            //    the textarea element is not visible.
+            //
+            // The likelihood is the element won't even render, not even a flash,
+            // so some of these are just precautions. However in IE the element
+            // is visible whilst the popup box asking the user for permission for
+            // the web page to copy to the clipboard.
+            //
+
+            // Place in top-left corner of screen regardless of scroll position.
+            textArea.style.position = 'fixed';
+            textArea.style.top = 0;
+            textArea.style.left = 0;
+
+            // Ensure it has a small width and height. Setting to 1px / 1em
+            // doesn't work as this gives a negative w/h on some browsers.
+            textArea.style.width = '2em';
+            textArea.style.height = '2em';
+
+            // We don't need padding, reducing the size if it does flash render.
+            textArea.style.padding = 0;
+
+            // Clean up any borders.
+            textArea.style.border = 'none';
+            textArea.style.outline = 'none';
+            textArea.style.boxShadow = 'none';
+
+            // Avoid flash of white box if rendered for any reason.
+            textArea.style.background = 'transparent';
+
+
+            textArea.value = text;
+
+            document.body.appendChild(textArea);
+
+            textArea.select();
+
+            try {
+                var successful = document.execCommand('copy');
+                var msg = successful ? 'successful' : 'unsuccessful';
+                console.log('Copying text command was ' + msg);
+            } catch (err) {
+                console.log('Oops, unable to copy');
+            }
+
+            document.body.removeChild(textArea);
+        }
+    </script>
+
+}

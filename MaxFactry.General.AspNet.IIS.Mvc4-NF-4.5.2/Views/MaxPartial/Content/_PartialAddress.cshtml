@@ -1,0 +1,12 @@
+﻿<address itemscope itemtype="http://schema.org/Organization">
+    <div class="org" itemprop="name">Organization Name</div>
+    <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+    <div itemprop="streetAddress">Street Address</div>
+    <span itemprop="addressLocality">City</span>, <span itemprop="addressRegion">State</span> <span itemprop="postalCode">Zip</span><br />
+    </div>
+    Phone: <span itemprop="telephone"><a class="tel" href="tel:+Phone">Phone</a></span><br />
+</address>
+@if (Html.MaxIsInRole("Admin,Admin - Views"))
+{ 
+<div><a href="/MaxFileManage/VirtualTextFileEdit?name=%2Fviews%2Fmaxpartial%2Fcontent%2F_partialaddress.cshtml" target="_blank">Edit</a></div>
+}

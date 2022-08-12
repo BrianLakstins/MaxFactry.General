@@ -1,0 +1,86 @@
+﻿@model System.Boolean
+@{
+    /*
+     * http://msdn.microsoft.com/en-us/library/ee407390(v=vs.118).aspx
+     * "If the property type is Boolean, the method renders an HTML input element for a check box."
+        additionalViewData definitions
+            Help - Help text that displays as a tool tip
+            Icon - Name of glyph from http://getbootstrap.com/components/#glyphicons to show at end of text edit field
+            LabelColumnWidth - Integer width of label column
+            InputControl - string for input control
+     */
+
+    string lsInputClass = string.Empty;
+    if (!ViewData.ModelState.IsValidField(ViewData.TemplateInfo.HtmlFieldPrefix))
+    {
+        lsInputClass = "has-error";
+    }
+
+    string lsHelp = string.Empty;
+    string lsIcon = "question-sign";
+
+    if (null != ViewData["Help"] && ViewData["Help"] is string)
+    {
+        lsHelp = (string)ViewData["Help"];
+    }
+
+    if (null != ViewData["Icon"] && ViewData["Icon"] is string)
+    {
+        lsIcon = (string)ViewData["Icon"];
+    }
+
+    if (!string.IsNullOrEmpty(lsHelp))
+    {
+        lsInputClass += " input-group";
+    }
+
+    IHtmlString lsInputControl = null;
+    if (null != ViewData["InputControl"] && ViewData["InputControl"] is IHtmlString)
+    {
+        lsInputControl = (IHtmlString)ViewData["InputControl"];
+    }
+
+    int lnLabelColumnWidth = 1;
+    if (null != ViewData["LabelColumnWidth"])
+    {
+        lnLabelColumnWidth = MaxFactry.Core.MaxConvertLibrary.ConvertToInt(ViewData.GetType(), ViewData["LabelColumnWidth"]);
+    }
+
+    int lnInputColumnWidth = 1;
+    string lsInputType = "checkbox";
+    string lsChecked = string.Empty;
+    if (Model.Equals(true))
+    {
+        lsChecked = "checked='checked'";
+    }
+}
+<div class="row">
+<div class="form-group">
+    <label class="control-label col-sm-@lnLabelColumnWidth" for="@ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty)">@ViewData.ModelMetadata.DisplayName</label>
+    <div class="col-sm-@lnInputColumnWidth">
+        <div class="@lsInputClass">
+            @if (null != lsInputControl)
+            {
+                @lsInputControl
+            }
+            else
+            {
+            <input readonly="readonly" aria-readonly="true" class="form-control read-only" id="@ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty)" name="@ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty)" type="@lsInputType" value="true" @lsChecked />
+            }
+
+            @if (!string.IsNullOrEmpty(lsHelp))
+            {
+            <span class="tooltipactive btn input-group-addon" data-placement="left" data-toggle="tooltip" title="@lsHelp">
+                <span class="glyphicon glyphicon-@lsIcon"></span></span>
+            }
+        </div>
+        @if (null != ViewData.ModelState[ViewData.TemplateInfo.HtmlFieldPrefix])
+        {
+            foreach (var loError in ViewData.ModelState[ViewData.TemplateInfo.HtmlFieldPrefix].Errors)
+            {
+                <span class="help-block">@loError.ErrorMessage</span>
+            }
+        }
+    </div>
+</div>
+</div>

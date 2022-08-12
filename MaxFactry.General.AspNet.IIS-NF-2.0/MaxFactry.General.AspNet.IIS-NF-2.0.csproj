@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{EC87C7D8-89B6-457C-B766-D946F45B7604}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MaxFactry.General.AspNet.IIS</RootNamespace>
+    <AssemblyName>MaxFactry.General.AspNet.IIS-NF-2.0</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;net2</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;net2</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>MaxFactry.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Web" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Library\Interface\IMaxApplicationEventLibraryProvider.cs" />
+    <Compile Include="Library\Interface\IMaxApplicationLibraryProvider.cs" />
+    <Compile Include="Library\MaxApplicationEventLibrary.cs" />
+    <Compile Include="Library\MaxApplicationLibrary.cs" />
+    <Compile Include="Library\Provider\MaxAppLibraryDefaultProvider.cs" />
+    <Compile Include="Library\Provider\MaxApplicationEventLibraryDefaultProvider.cs" />
+    <Compile Include="MaxFactry.Base\DataLayer\Library\Provider\MaxDataLibraryGeneralAspNetProvider.cs" />
+    <Compile Include="MaxFactry.Core\Library\Provider\MaxConfigurationLibraryAspNetIISProvider.cs" />
+    <Compile Include="MaxFactry.Core\Library\Provider\MaxLogLibraryAspNetIISProvider.cs" />
+    <Compile Include="MaxFactry.Module.Core.AspNet\PresentationLayer\Library\Provider\MaxOwinLibraryIISProvider.cs" />
+    <Compile Include="MaxFactry.Module.Security\BusinessLayer\Entity\MaxUserMembershipEntity.cs" />
+    <Compile Include="MaxStartup.cs" />
+    <Compile Include="PresentationLayer\Models\MaxVirtualTextFileIISViewModel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="System.Web\Caching\MaxCacheDependencyOverride.cs" />
+    <Compile Include="System.Web\Caching\MaxOutputCacheProviderverride.cs" />
+    <Compile Include="System.Web\Hosting\MaxVirtualDirectoryOverride.cs" />
+    <Compile Include="System.Web\Hosting\MaxVirtualFileOverride.cs" />
+    <Compile Include="System.Web\Hosting\MaxVirtualPathProviderOverride.cs" />
+    <Compile Include="System.Web\MaxHttpApplicationOverride.cs" />
+    <Compile Include="System.Web\Security\MaxMembershipProviderOverride.cs" />
+    <Compile Include="System.Web\Security\MaxMembershipUser.cs" />
+    <Compile Include="System.Web\Security\MaxRoleProviderOverride.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MaxFactry.General-NF-2.0\MaxFactry.General-NF-2.0.csproj">
+      <Project>{7ea91872-343d-4607-84ac-956e07195d64}</Project>
+      <Name>MaxFactry.General-NF-2.0</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MaxFactry.General.AspNet-NF-2.0\MaxFactry.General.AspNet-NF-2.0.csproj">
+      <Project>{51751036-dccf-4d29-8884-18e3adb85df3}</Project>
+      <Name>MaxFactry.General.AspNet-NF-2.0</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\_sm\MaxFactry.Base\MaxFactry.Base-NF-2.0\MaxFactry.Base-NF-2.0.csproj">
+      <Project>{b4784207-457e-4c7c-bf95-f72a901ed032}</Project>
+      <Name>MaxFactry.Base-NF-2.0</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\_sm\MaxFactry.Base\_sm\MaxFactry.Core\MaxFactry.Core-NF-2.0\MaxFactry.Core-NF-2.0.csproj">
+      <Project>{27e6cf32-fd87-4ae5-afa2-fad5cb86ae0c}</Project>
+      <Name>MaxFactry.Core-NF-2.0</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MaxFactry.Core.Provider\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="MaxFactry.snk" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
