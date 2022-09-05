@@ -1,0 +1,1 @@
+﻿MaxFactry General contains general libraries to support the MaxFactry Framework.  It contains Libraries to support dynamic three layer application development.
