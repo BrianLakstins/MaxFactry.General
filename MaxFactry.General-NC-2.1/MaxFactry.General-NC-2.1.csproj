@@ -87,8 +87,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\_sm\MaxFactry.Base\MaxFactry.Base-NC-2.1\MaxFactry.Base-NC-2.1.csproj" />
-    <ProjectReference Include="..\_sm\MaxFactry.Base\_sm\MaxFactry.Core\MaxFactry.Core-NC-2.1\MaxFactry.Core-NC-2.1.csproj" />
+    <PackageReference Include="MaxFactry.Base" Version="1.0.1" />
   </ItemGroup>
 
 </Project>
