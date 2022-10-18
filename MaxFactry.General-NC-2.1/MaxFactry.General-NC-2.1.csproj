@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <RootNamespace>MaxFactry.General_NC_2._1</RootNamespace>
+    <AssemblyVersion>1.0.2.2</AssemblyVersion>
+    <FileVersion>2022.10.18.01</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -87,7 +89,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MaxFactry.Base" Version="1.0.1" />
+    <PackageReference Include="MaxFactry.Base" Version="1.0.2.2" />
   </ItemGroup>
 
 </Project>

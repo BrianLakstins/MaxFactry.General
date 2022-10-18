@@ -91,10 +91,10 @@ namespace MaxFactry.General.BusinessLayer
         /// Loads all entities of this type for this storage key
         /// </summary>
         /// <returns>List of entities</returns>
-        public override MaxEntityList LoadAll()
+        public override MaxEntityList LoadAll(params string[] laFields)
         {
             int lnTotal = -1;
-            MaxDataList loDataList = MaxBaseIdRepository.Select(this.Data, new MaxDataQuery(), 0, 0, string.Empty, out lnTotal);
+            MaxDataList loDataList = MaxBaseIdRepository.Select(this.Data, new MaxDataQuery(), 0, 0, string.Empty, out lnTotal, laFields);
             MaxEntityList loEntityList = MaxEntityList.Create(this.GetType(), loDataList);
             return loEntityList;
         }
