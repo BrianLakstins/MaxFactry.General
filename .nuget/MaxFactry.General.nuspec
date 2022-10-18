@@ -2,7 +2,7 @@
 <package  xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>    
     <id>MaxFactry.General</id>
-    <version>1.0.1.0</version>
+    <version>1.0.2.2</version>
     <title>MaxFactry General</title>
     <authors>Brian Lakstins</authors>
     <owners>brianlakstins</owners>
@@ -15,13 +15,13 @@
     <tags></tags>
 	  <dependencies>
 		  <group targetFramework=".NETFramework2.0">
-			  <dependency id="MaxFactry.Base" version="1.0.1" />
+			  <dependency id="MaxFactry.Base" version="1.0.2.2" />
 		  </group>
 		  <group targetFramework=".NETFramework4.5.2">
-			  <dependency id="MaxFactry.Base" version="1.0.1" />
+			  <dependency id="MaxFactry.Base" version="1.0.2.2" />
 		  </group>
 		  <group targetFramework=".NETCoreApp2.1">
-			  <dependency id="MaxFactry.Base" version="1.0.1" />
+			  <dependency id="MaxFactry.Base" version="1.0.2.2" />
 		  </group>
 	  </dependencies>
 	<summary>MaxFactry General supports the MaxFactry Framework</summary>
