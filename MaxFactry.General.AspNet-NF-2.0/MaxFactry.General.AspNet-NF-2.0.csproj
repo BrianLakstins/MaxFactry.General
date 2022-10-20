@@ -36,12 +36,6 @@
     <AssemblyOriginatorKeyFile>MaxFactry.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MaxFactry.Base-NF-2.0, Version=1.0.3.0, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
-      <HintPath>..\..\_nuget\MaxFactry.Base.1.0.3\lib\net20\MaxFactry.Base-NF-2.0.dll</HintPath>
-    </Reference>
-    <Reference Include="MaxFactry.Core-NF-2.0, Version=1.0.3.0, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
-      <HintPath>..\..\_nuget\MaxFactry.Core.1.0.3\lib\net20\MaxFactry.Core-NF-2.0.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
@@ -86,13 +80,20 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="MaxFactry.snk" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MaxFactry.General-NF-2.0\MaxFactry.General-NF-2.0.csproj">
       <Project>{7ea91872-343d-4607-84ac-956e07195d64}</Project>
       <Name>MaxFactry.General-NF-2.0</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MaxFactry.Base">
+      <Version>1.0.3</Version>
+    </PackageReference>
+    <PackageReference Include="MaxFactry.Core">
+      <Version>1.0.3</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
