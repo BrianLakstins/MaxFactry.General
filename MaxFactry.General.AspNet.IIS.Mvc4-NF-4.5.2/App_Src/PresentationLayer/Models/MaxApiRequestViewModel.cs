@@ -34,22 +34,50 @@
 
 namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 {
+    using System;
+    using System.Net.Http;
+    using System.Web.Security;
+    using System.Collections.Generic;
     using MaxFactry.Core;
+    using MaxFactry.General.BusinessLayer;
 
-	/// <summary>
-	/// View model for parsing a request to any api call
-	/// </summary>
-	public class MaxApiRequestViewModel
+    /// <summary>
+    /// View model for parsing a request to any api call
+    /// </summary>
+    public class MaxApiRequestViewModel
     {
-        public MaxApiRequestViewModel()
+        private Guid _oId = Guid.Empty;
+
+        private HttpRequestMessage _oRequest = null;
+
+        private MembershipUser _oUser = null;
+
+        private List<string> _oRoleList = null;
+
+        public MaxApiRequestViewModel(HttpRequestMessage loRequest)
         {
-            this.Item = new MaxIndex();
+            _oRequest = loRequest;
         }
 
-        public MaxApiRequestViewModel(MaxIndex loItem)
+        public Guid Id
         {
-            this.Item = loItem;
+            get
+            {
+                if (Guid.Empty == this._oId)
+                {
+                    if (null != this.Item && this.Item.Contains("Id"))
+                    {
+                        this._oId = MaxConvertLibrary.ConvertToGuid(typeof(object), this.Item["Id"]);
+                    }
+                }
+
+                return this._oId;
+            }
         }
+
+        public string[] RequestFieldList { get; set; }
+
+        public string[] ResponseFieldList { get; set; }
 
         public string Content { get; set; }
 
@@ -57,6 +85,60 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
         public MaxIndex Item { get; set; }
 
-        public MaxIndex[] ItemList { get; set; }
+        public HttpRequestMessage Request
+        {
+            get
+            {
+                return _oRequest;
+            }
+        }
+
+        public List<string> RoleList
+        {
+            get
+            {
+                if (null == _oRoleList)
+                {
+                    this._oRoleList = new List<string>();
+                    if (null != this.User && !string.IsNullOrEmpty(this.User.UserName))
+                    {
+                        this._oRoleList.AddRange(Roles.GetRolesForUser(this.User.UserName));
+                    }
+                }
+
+                return _oRoleList;
+            }
+        }
+
+        public MembershipUser User
+        {
+            get
+            {
+                if (null == this._oUser)
+                {
+                    this._oUser = Membership.GetUser();
+                    if (null == this._oUser)
+                    {
+                        string lsClientToken = this.AccessToken;
+                        if (null != this._oRequest.Headers.Authorization && this._oRequest.Headers.Authorization.Scheme == "Bearer")
+                        {
+                            lsClientToken = this._oRequest.Headers.Authorization.Parameter;
+                        }
+
+                        if (!string.IsNullOrEmpty(lsClientToken))
+                        {
+                            MaxUserAuthTokenEntity loTokenEntity = MaxUserAuthTokenEntity.GetByToken(lsClientToken);
+                            if (null != loTokenEntity && loTokenEntity.IsActive && loTokenEntity.TokenType == "Bearer" && DateTime.UtcNow < loTokenEntity.CreatedDate.AddSeconds(loTokenEntity.Expiration))
+                            {
+                                Guid loUserId = MaxConvertLibrary.ConvertToGuid(typeof(object), loTokenEntity.UserKey);
+                                this._oUser = Membership.GetUser(loUserId);
+                            }
+                        }
+                    }
+                }
+
+                return this._oUser;
+            }
+        }
     }
 }

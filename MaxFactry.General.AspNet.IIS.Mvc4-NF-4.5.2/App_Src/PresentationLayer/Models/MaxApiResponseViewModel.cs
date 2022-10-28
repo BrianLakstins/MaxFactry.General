@@ -34,14 +34,17 @@
 
 namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 {
-    using MaxFactry.Core;
+    using System.Net;
     using System.Collections.Generic;
+    using MaxFactry.Core;
 
 	/// <summary>
 	/// View model for responding to any api call
 	/// </summary>
 	public class MaxApiResponseViewModel
     {
+        private HttpStatusCode _oStatus = HttpStatusCode.OK;
+
         public MaxApiResponseViewModel()
         {
             this.Item = new MaxIndex();
@@ -65,5 +68,11 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         public List<MaxIndex> ItemList { get; set; }
 
         public MaxIndex Page { get; set; }
+
+        public HttpStatusCode Status
+        {
+            get { return _oStatus; }
+            set { _oStatus = value; }
+        }
     }
 }
