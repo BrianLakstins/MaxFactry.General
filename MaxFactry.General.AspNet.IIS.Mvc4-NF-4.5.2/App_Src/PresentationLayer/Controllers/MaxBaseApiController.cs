@@ -229,6 +229,18 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             MaxIndex loItem = new MaxIndex();
             try
             {
+                NameValueCollection loQSData = HttpUtility.ParseQueryString(this.Request.RequestUri.Query);
+                foreach (string lsName in loQSData.AllKeys)
+                {
+                    string lsValue = loQSData[lsName];
+                    if (!string.IsNullOrEmpty(lsValue))
+                    {
+                        lsValue = lsValue.Trim();
+                    }
+
+                    loItem.Add(lsName, lsValue);
+                }
+
                 lsMediaType = string.Empty;
                 if (null != this.Request.Content && null != this.Request.Content.Headers && null != this.Request.Content.Headers.ContentType)
                 {
@@ -275,77 +287,75 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
             if (!string.IsNullOrEmpty(lsContent) && lsMediaType == "application/json")
             {
+                //// JSON content
                 dynamic loData = Newtonsoft.Json.JsonConvert.DeserializeObject(lsContent);
-                MaxIndex loIndex = this.GetIndex(loData);
-                if (loIndex.Contains("access_token"))
+                MaxIndex loJSData = this.GetIndex(loData);
+                string[] laKey = loJSData.GetSortedKeyList();
+                foreach (string lsKey in laKey)
                 {
-                    loR.AccessToken = loIndex.GetValueString("access_token");
-                    loIndex.Remove("access_token");
+                    loItem.Add(lsKey, loJSData[lsKey]);
                 }
-
-                if (loIndex.Contains("RequestFieldList"))
-                {
-                    string[] laRequestFieldList = loIndex["RequestFieldList"] as string[];
-                    if (null == laRequestFieldList) {
-                        laRequestFieldList = loIndex.GetValueString("RequestFieldList").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                    }
-
-                    if (null != laRequestFieldList)
-                    {
-                        loR.RequestFieldList = laRequestFieldList;
-                        loIndex.Remove("RequestFieldList");
-                    }
-                }
-
-                if (loIndex.Contains("ResponseFieldList"))
-                {
-                    string[] laResponseFieldList = loIndex["ResponseFieldList"] as string[];
-                    if (null == laResponseFieldList)
-                    {
-                        laResponseFieldList = loIndex.GetValueString("ResponseFieldList").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                    }
-
-                    if (null != laResponseFieldList)
-                    {
-                        loR.ResponseFieldList = laResponseFieldList;
-                        loIndex.Remove("ResponseFieldList");
-                    }
-                }
-
-                loItem = loIndex;
             }
-            else
+            else if (!string.IsNullOrEmpty(lsContent) && lsMediaType == "application/x-www-form-urlencoded")
             {
-                NameValueCollection loData = HttpUtility.ParseQueryString(this.Request.RequestUri.Query);
-                if (!string.IsNullOrEmpty(lsContent) && lsMediaType == "application/x-www-form-urlencoded")
-                {
-                    loData = HttpUtility.ParseQueryString(lsContent);
-                }
-
+                //// Url encoded content
+                NameValueCollection loData = HttpUtility.ParseQueryString(lsContent);
                 foreach (string lsName in loData.AllKeys)
                 {
-                    if (lsName == "access_token")
+                    string lsValue = loData[lsName];
+                    if (!string.IsNullOrEmpty(lsValue))
                     {
-                        loR.AccessToken = MaxConvertLibrary.ConvertToString(typeof(object), loData[lsName]);
+                        lsValue = lsValue.Trim();
                     }
-                    else if (lsName == "RequestFieldList")
-                    {
-                        loR.RequestFieldList = MaxConvertLibrary.ConvertToString(typeof(object), loData[lsName]).Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                    }
-                    else if (lsName == "ResponseFieldList")
-                    {
-                        loR.ResponseFieldList = MaxConvertLibrary.ConvertToString(typeof(object), loData[lsName]).Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                    }
-                    else
-                    {
-                        string lsValue = loData[lsName];
-                        if (!string.IsNullOrEmpty(lsValue))
-                        {
-                            lsValue = lsValue.Trim();
-                        }
 
-                        loItem.Add(lsName, lsValue);
+                    loItem.Add(lsName, lsValue);
+                }
+            }
+
+
+            if (loItem.Contains("access_token"))
+            {
+                loR.AccessToken = loItem.GetValueString("access_token");
+                loItem.Remove("access_token");
+            }
+
+            if (loItem.Contains("RequestFieldList"))
+            {
+                object[] laRequestFieldList = loItem["RequestFieldList"] as object[];
+                if (null == laRequestFieldList)
+                {
+                    laRequestFieldList = loItem.GetValueString("RequestFieldList").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                }
+
+                if (null != laRequestFieldList)
+                {
+                    loR.RequestFieldList = new string[laRequestFieldList.Length];
+                    for (int lnF = 0; lnF < laRequestFieldList.Length; lnF++)
+                    {
+                        loR.RequestFieldList[lnF] = laRequestFieldList[lnF].ToString();
                     }
+
+                    loItem.Remove("RequestFieldList");
+                }
+            }
+
+            if (loItem.Contains("ResponseFieldList"))
+            {
+                object[] laResponseFieldList = loItem["ResponseFieldList"] as object[];
+                if (null == laResponseFieldList)
+                {
+                    laResponseFieldList = loItem.GetValueString("ResponseFieldList").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                }
+
+                if (null != laResponseFieldList)
+                {
+                    loR.ResponseFieldList = new string[laResponseFieldList.Length];
+                    for (int lnF = 0; lnF < laResponseFieldList.Length; lnF++)
+                    {
+                        loR.ResponseFieldList[lnF] = laResponseFieldList[lnF].ToString();
+                    }
+
+                    loItem.Remove("ResponseFieldList");
                 }
             }
 
@@ -353,7 +363,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             return loR;
         }
 
-        protected MaxIndex GetIndex(dynamic loData)
+        protected virtual MaxIndex GetIndex(dynamic loData)
         {
             MaxIndex loR = new MaxIndex();
             foreach (Newtonsoft.Json.Linq.JProperty loProperty in loData.Properties())
@@ -384,7 +394,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     }
                 }
                 else
-                { 
+                {
                     if (loProperty.Value.Type == Newtonsoft.Json.Linq.JTokenType.String)
                     {
                         string lsValue = MaxConvertLibrary.ConvertToString(typeof(object), loProperty.Value);
@@ -393,7 +403,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     else
                     {
                         loR.Add(lsName, loProperty.Value);
-                    }                    
+                    }
                 }
             }
 
@@ -543,7 +553,6 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             return loEntity;
         }
 
-
         /// <summary>
         /// Maps an entity and request to a response
         /// </summary>
@@ -670,7 +679,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                             }
                             else
                             {
-                                loR.Item = this.MapResponse(loEntity, loRequest);
+                                loR.Item = loEntity.MapIndex(loRequest.RequestFieldList);
                                 if (string.IsNullOrEmpty(loR.Message.Success))
                                 {
                                     loR.Message.Success = "Got Item";
@@ -710,7 +719,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 }
                 catch (Exception loE)
                 {
-                    loR.Message.Error = "Exception during processing.";
+                    loR.Message.Error = "Exception during processing (" + loE.Message + ")";
                     MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "Process", MaxEnumGroup.LogCritical, loR.Message.Error, loE));
                 }
             }
