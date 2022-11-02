@@ -592,11 +592,6 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 IsPasswordResetNeeded = "IsPasswordResetNeeded"
             };
 
-            var loResponseItemList = new
-            {
-                RoleName = "RoleName"
-            };
-
             MaxApiResponseViewModel loR = GetResponse(loResponseItem);
             if (this.Request.Method != HttpMethod.Options)
             {
@@ -659,11 +654,6 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
                                     string[] laRole = Roles.GetRolesForUser(loUser.UserName);
                                     loR.Item.Add(loResponseItem.RoleList, laRole);
-                                    foreach (string lsRole in laRole)
-                                    {
-                                        MaxIndex loRole = new MaxIndex();
-                                        loRole.Add(loResponseItemList.RoleName, lsRole);
-                                    }
                                 }
                             }
                             else
@@ -694,6 +684,14 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         {
                             loR.Message.Error = "A matching username or password cannot be found.";
                         }
+                    }
+                    else if (string.IsNullOrEmpty(lsPassword))
+                    {
+                        loR.Message.Error = "Password is required.";
+                    }
+                    else
+                    {
+                        loR.Message.Error = "Username or email is required.";
                     }
                 }
                 catch (Exception loE)
@@ -764,7 +762,6 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 MaxApiRequestViewModel loRequest = await this.GetRequest();
                 try
                 {
-
                     MaxSecurityResetPasswordViewModel loModel = new MaxSecurityResetPasswordViewModel();
                     loModel.UserName = loRequest.Item.GetValueString(loRequestItem.UserName);
                     loModel.Password = loRequest.Item.GetValueString(loRequestItem.NewPassword);
