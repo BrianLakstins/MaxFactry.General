@@ -539,6 +539,10 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                     {
                                         loProperty.SetValue(loEntity, MaxConvertLibrary.ConvertToGuid(typeof(object), loRequest.Item[lsField]));
                                     }
+                                    else if (loProperty.PropertyType == typeof(DateTime))
+                                    {
+                                        loProperty.SetValue(loEntity, MaxConvertLibrary.ConvertToDateTime(typeof(object), loRequest.Item[lsField]));
+                                    }
                                     else
                                     {
                                         loProperty.SetValue(loEntity, loRequest.Item[lsField]);
