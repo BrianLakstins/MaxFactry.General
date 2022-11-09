@@ -2,7 +2,7 @@
 <package  xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>    
     <id>MaxFactry.General</id>
-    <version>1.0.4</version>
+    <version>1.0.9</version>
     <title>MaxFactry General</title>
     <authors>Brian Lakstins</authors>
     <owners>brianlakstins</owners>
