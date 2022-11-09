@@ -57,6 +57,10 @@ namespace MaxFactry.General.AspNet.PresentationLayer.Provider
     {
         private static MaxIndex _oHostIndex = new MaxIndex();
 
+        private static MaxIndex _oIANATZIndex = new MaxIndex();
+
+        private static object _oLock = new object();
+
         private bool HasRequest
         {
             get
@@ -322,6 +326,52 @@ namespace MaxFactry.General.AspNet.PresentationLayer.Provider
                 }
             }
         }
+
+        public override void SetTimeZoneIdForRequest()
+        {
+            HttpCookie loCookieTZ = HttpContext.Current.Request.Cookies["MaxTZ"];
+            if (null != loCookieTZ)
+            {
+                string lsIANATimeZone = loCookieTZ.Value;
+                string lsTimeZoneId = null;
+                if (!_oIANATZIndex.Contains(lsIANATimeZone))
+                {
+                    lock (_oIANATZIndex)
+                    {
+                        if (!_oIANATZIndex.Contains(lsIANATimeZone))
+                        { 
+                            string lsMapping = MaxFactry.Core.MaxFactryLibrary.GetStringResource(typeof(MaxOwinLibraryIISProvider), "Mapping");
+                            string[] laMapping = lsMapping.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+                            for (int lnM = 0; lnM < laMapping.Length && string.IsNullOrEmpty(lsTimeZoneId); lnM++)
+                            {
+                                if (laMapping[lnM].Contains(lsIANATimeZone))
+                                {
+                                    string[] laMap = laMapping[lnM].Split(new char[] { ',' });
+                                    string[] laName = laMap[2].Split(new char[] { ' ' });
+                                    foreach (string lsName in laName)
+                                    {
+                                        if (loCookieTZ.Value == lsName)
+                                        {
+                                            lsTimeZoneId = laMap[0];
+                                        }
+                                    }
+                                }
+                            }
+
+                            _oIANATZIndex.Add(lsIANATimeZone, lsTimeZoneId);
+                        }
+                    }
+                }
+
+                if (string.IsNullOrEmpty(lsTimeZoneId) && _oIANATZIndex.Contains(lsIANATimeZone))
+                {
+                    lsTimeZoneId = _oIANATZIndex.GetValueString(lsIANATimeZone);
+                }
+
+                MaxConfigurationLibrary.SetValue(MaxEnumGroup.ScopeProcess, MaxConvertLibrary.MaxTimeZoneIdKey, lsTimeZoneId);
+            }
+        }
+
 
 #if net4_52
         protected bool IsHeadersWritten
