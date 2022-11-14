@@ -1,0 +1,266 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A625C04C-84C7-4D75-8E53-8B37542235E0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MaxFactry.General</RootNamespace>
+    <AssemblyName>MaxFactry.General-NF-4.5.2</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;net2;net4_52</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;net2;net4_52</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>MaxFactry.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxEmailEntity.cs">
+      <Link>BusinessLayer\Entity\MaxEmailEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxFileDownloadEntity.cs">
+      <Link>BusinessLayer\Entity\MaxFileDownloadEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxPaymentCardEntity.cs">
+      <Link>BusinessLayer\Entity\MaxPaymentCardEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxProfileIndexEntity.cs">
+      <Link>BusinessLayer\Entity\MaxProfileIndexEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxRoleEntity.cs">
+      <Link>BusinessLayer\Entity\MaxRoleEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxUserAuthEntity.cs">
+      <Link>BusinessLayer\Entity\MaxUserAuthEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxUserAuthGrantEntity.cs">
+      <Link>BusinessLayer\Entity\MaxUserAuthGrantEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxUserAuthTokenEntity.cs">
+      <Link>BusinessLayer\Entity\MaxUserAuthTokenEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxUserConfigurationEntity.cs">
+      <Link>BusinessLayer\Entity\MaxUserConfigurationEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxUserEntity.cs">
+      <Link>BusinessLayer\Entity\MaxUserEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxUserIndexEntity.cs">
+      <Link>BusinessLayer\Entity\MaxUserIndexEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxUserLogEntity.cs">
+      <Link>BusinessLayer\Entity\MaxUserLogEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxUserPasswordEntity.cs">
+      <Link>BusinessLayer\Entity\MaxUserPasswordEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxUSStateEntity.cs">
+      <Link>BusinessLayer\Entity\MaxUSStateEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Structure\MaxCSSStyleStructure.cs">
+      <Link>BusinessLayer\Structure\MaxCSSStyleStructure.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Structure\MaxHtmlTagStructure.cs">
+      <Link>BusinessLayer\Structure\MaxHtmlTagStructure.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxEmailDataModel.cs">
+      <Link>DataLayer\DataModel\MaxEmailDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxFileDownloadDataModel.cs">
+      <Link>DataLayer\DataModel\MaxFileDownloadDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxPaymentCardDataModel.cs">
+      <Link>DataLayer\DataModel\MaxPaymentCardDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxProfileIndexDataModel.cs">
+      <Link>DataLayer\DataModel\MaxProfileIndexDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxRoleDataModel.cs">
+      <Link>DataLayer\DataModel\MaxRoleDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxRoleUserRelationDataModel.cs">
+      <Link>DataLayer\DataModel\MaxRoleUserRelationDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUserAuthDataModel.cs">
+      <Link>DataLayer\DataModel\MaxUserAuthDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUserAuthGrantDataModel.cs">
+      <Link>DataLayer\DataModel\MaxUserAuthGrantDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUserAuthTokenDataModel.cs">
+      <Link>DataLayer\DataModel\MaxUserAuthTokenDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUserConfigurationDataModel.cs">
+      <Link>DataLayer\DataModel\MaxUserConfigurationDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUserDataModel.cs">
+      <Link>DataLayer\DataModel\MaxUserDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUserIndexDataModel.cs">
+      <Link>DataLayer\DataModel\MaxUserIndexDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUserLogDataModel.cs">
+      <Link>DataLayer\DataModel\MaxUserLogDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUserPasswordDataModel.cs">
+      <Link>DataLayer\DataModel\MaxUserPasswordDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUSStateDataModel.cs">
+      <Link>DataLayer\DataModel\MaxUSStateDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\Interface\IMaxGeneralRepositoryProvider.cs">
+      <Link>DataLayer\Repository\Interface\IMaxGeneralRepositoryProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\Interface\IMaxPaymentCardRepositoryProvider.cs">
+      <Link>DataLayer\Repository\Interface\IMaxPaymentCardRepositoryProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\Interface\IMaxUserLogRepositoryProvider.cs">
+      <Link>DataLayer\Repository\Interface\IMaxUserLogRepositoryProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\Interface\IMaxUserRepositoryProvider.cs">
+      <Link>DataLayer\Repository\Interface\IMaxUserRepositoryProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\Interface\IMaxUSStateRepositoryProvider.cs">
+      <Link>DataLayer\Repository\Interface\IMaxUSStateRepositoryProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\MaxGeneralRepository.cs">
+      <Link>DataLayer\Repository\MaxGeneralRepository.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\MaxPaymentCardRepository.cs">
+      <Link>DataLayer\Repository\MaxPaymentCardRepository.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\MaxRoleUserRelationRepository.cs">
+      <Link>DataLayer\Repository\MaxRoleUserRelationRepository.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\MaxSecurityRepository.cs">
+      <Link>DataLayer\Repository\MaxSecurityRepository.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\MaxUSStateRepository.cs">
+      <Link>DataLayer\Repository\MaxUSStateRepository.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\Provider\MaxGeneralRepositoryDefaultProvider.cs">
+      <Link>DataLayer\Repository\Provider\MaxGeneralRepositoryDefaultProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\Provider\MaxPaymentCardRepositoryProvider.cs">
+      <Link>DataLayer\Repository\Provider\MaxPaymentCardRepositoryProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\Provider\MaxSecurityRepositoryDefaultProvider.cs">
+      <Link>DataLayer\Repository\Provider\MaxSecurityRepositoryDefaultProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\Provider\MaxUSStateRepositoryProvider.cs">
+      <Link>DataLayer\Repository\Provider\MaxUSStateRepositoryProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\Library\Interface\IMaxAppLibraryProvider.cs">
+      <Link>Library\Interface\IMaxAppLibraryProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\Library\MaxAppLibrary.cs">
+      <Link>Library\MaxAppLibrary.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\Library\Provider\MaxAppLibraryDefaultProvider.cs">
+      <Link>Library\Provider\MaxAppLibraryDefaultProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\MaxFactry.Core\Library\Provider\MaxConfigurationLibraryGeneralProvider.cs">
+      <Link>MaxFactry.Core\Library\Provider\MaxConfigurationLibraryGeneralProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\MaxStartup.cs">
+      <Link>MaxStartup.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\PresentationLayer\Attribute\MaxCreditCardValidationAttribute.cs">
+      <Link>PresentationLayer\Attribute\MaxCreditCardValidationAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\PresentationLayer\Attribute\MaxDateFutureValidationAttribute.cs">
+      <Link>PresentationLayer\Attribute\MaxDateFutureValidationAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\PresentationLayer\Attribute\MaxEmailValidationAttribute.cs">
+      <Link>PresentationLayer\Attribute\MaxEmailValidationAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\PresentationLayer\Attribute\MaxPhoneValidationAttribute.cs">
+      <Link>PresentationLayer\Attribute\MaxPhoneValidationAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\PresentationLayer\Library\Interface\IMaxDesignLibraryProvider.cs">
+      <Link>PresentationLayer\Library\Interface\IMaxDesignLibraryProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\PresentationLayer\Library\Interface\IMaxShortCodeLibraryProvider.cs">
+      <Link>PresentationLayer\Library\Interface\IMaxShortCodeLibraryProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\PresentationLayer\Library\MaxDesignLibrary.cs">
+      <Link>PresentationLayer\Library\MaxDesignLibrary.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\PresentationLayer\Library\MaxShortCodeLibrary.cs">
+      <Link>PresentationLayer\Library\MaxShortCodeLibrary.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\PresentationLayer\Library\Provider\MaxDesignLibraryDefaultProvider.cs">
+      <Link>PresentationLayer\Library\Provider\MaxDesignLibraryDefaultProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\PresentationLayer\Library\Provider\MaxShortCodeLibraryDefaultProvider.cs">
+      <Link>PresentationLayer\Library\Provider\MaxShortCodeLibraryDefaultProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\PresentationLayer\Models\MaxUserAuthGrantViewModel.cs">
+      <Link>PresentationLayer\Models\MaxUserAuthGrantViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\PresentationLayer\Models\MaxUserAuthViewModel.cs">
+      <Link>PresentationLayer\Models\MaxUserAuthViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\PresentationLayer\Models\MaxUserViewModel.cs">
+      <Link>PresentationLayer\Models\MaxUserViewModel.cs</Link>
+    </Compile>
+    <Compile Include="MaxHttpEventListener.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="MaxFactry.pfx" />
+    <None Include="MaxFactry.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\MaxFactry.Base\MaxFactry.Base-NF-4.5.2\MaxFactry.Base-NF-4.5.2.ref.csproj">
+      <Project>{2120b857-fad6-4310-9ec8-3d958087fee2}</Project>
+      <Name>MaxFactry.Base-NF-4.5.2.ref</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MaxFactry.Core\MaxFactry.Core-NF-4.5.2\MaxFactry.Core-NF-4.5.2.csproj">
+      <Project>{db84bcde-6f72-4657-811f-40a824ae041f}</Project>
+      <Name>MaxFactry.Core-NF-4.5.2</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
