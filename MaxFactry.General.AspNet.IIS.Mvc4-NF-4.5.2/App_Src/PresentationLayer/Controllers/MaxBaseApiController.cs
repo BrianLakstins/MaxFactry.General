@@ -208,7 +208,8 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         {
             HttpResponseMessage loR = this.GetResponseMessage();
             loR.StatusCode = loReturn.Status;
-            loR.Content = new StringContent(MaxConvertLibrary.SerializeObjectToString(typeof(object), loReturn));
+            string lsContent = MaxConvertLibrary.SerializeObjectToString(typeof(object), loReturn);
+            loR.Content = new StringContent(lsContent);
             loR.Content.Headers.Remove("Content-Type");
             loR.Content.Headers.Add("Content-Type", "text/json");
             MaxLogLibrary.ClearRecent();
@@ -541,7 +542,8 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                     }
                                     else if (loProperty.PropertyType == typeof(DateTime))
                                     {
-                                        loProperty.SetValue(loEntity, MaxConvertLibrary.ConvertToDateTime(typeof(object), loRequest.Item[lsField]));
+                                        DateTime loDateTime = MaxConvertLibrary.ConvertToDateTimeUtc(typeof(object), loRequest.Item[lsField]);
+                                        loProperty.SetValue(loEntity, loDateTime);
                                     }
                                     else
                                     {
