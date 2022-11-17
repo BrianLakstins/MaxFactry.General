@@ -83,6 +83,8 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         private const string _sHttpContext = "MS_HttpContext";
         private const string _sRemoteEndpointMessage = "System.ServiceModel.Channels.RemoteEndpointMessageProperty";
         private const string _sOwinContext = "MS_OwinContext";
+        private string _sDateRangeKeyText = "Last7Days,LastWeek,Last30Days,LastMonth,ThisMonth,LastQuarter,ThisQuarter,Custom,All";
+        private string _sDateRangeNameText = "Last 7 days,Last week,Last 30 days,Last month,This month,Last Quarter,This Quarter,Custom,All";
 
 
         public MaxBaseApiController()
@@ -703,21 +705,56 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                             }
                             else
                             {
-                                MaxEntityList loList = loEntity.LoadAllCache(loRequest.ResponseFieldList);
-                                SortedList<string, MaxBaseIdEntity> loSortedList = new SortedList<string, MaxBaseIdEntity>();
-                                for (int lnE = 0; lnE < loList.Count; lnE++)
+                                var loResponsePage = new
                                 {
-                                    MaxBaseIdEntity loListEntity = loList[lnE] as MaxBaseIdEntity;
-                                    if (loListEntity.IsActive || this.HasPermission(loRequest, loEntity, loRequest.Id, (int)MaxEnumGroup.PermissionSelectInactive))
+                                    Total = "Total",
+                                    ItemList = "ItemList"
+                                };
+
+                                var loRequestPage = new
+                                {
+                                    Page = "Page",
+                                    PageLength = "PageLength",
+                                    SortBy = "SortBy"
+                                };
+
+                                int lnPage = MaxConvertLibrary.ConvertToInt(typeof(object), loRequest.Item.GetValueString(loRequestPage.Page));
+                                int lnPageLength = MaxConvertLibrary.ConvertToInt(typeof(object), loRequest.Item.GetValueString(loRequestPage.PageLength));
+                                if (lnPage < 1 || lnPageLength < 0)
+                                {
+                                    lnPage = 1;
+                                    lnPageLength = 50;
+                                }
+                                string lsSortBy = loRequest.Item.GetValueString(loRequestPage.SortBy);
+                                if (!string.IsNullOrEmpty(lsSortBy) && lnPage > 0 && lnPageLength > 0)
+                                {
+                                    MaxEntityList loList = loEntity.LoadAllByPage(lnPage, lnPageLength, lsSortBy, loRequest.ResponseFieldList);
+                                    loR.Page.Add(loResponsePage.Total, loList.Total);
+                                    for (int lnE = 0; lnE < loList.Count; lnE++)
                                     {
-                                        loSortedList.Add(loListEntity.GetDefaultSortString(), loListEntity);
+                                        MaxBaseIdEntity loListEntity = loList[lnE] as MaxBaseIdEntity;
+                                        MaxIndex loItem = loListEntity.MapIndex(loRequest.ResponseFieldList);
+                                        loR.ItemList.Add(loItem);
                                     }
                                 }
-
-                                foreach (string lsKey in loSortedList.Keys)
+                                else
                                 {
-                                    MaxIndex loItem = loSortedList[lsKey].MapIndex(loRequest.ResponseFieldList);
-                                    loR.ItemList.Add(loItem);
+                                    MaxEntityList loList = loEntity.LoadAllCache(loRequest.ResponseFieldList);
+                                    SortedList<string, MaxBaseIdEntity> loSortedList = new SortedList<string, MaxBaseIdEntity>();
+                                    for (int lnE = 0; lnE < loList.Count; lnE++)
+                                    {
+                                        MaxBaseIdEntity loListEntity = loList[lnE] as MaxBaseIdEntity;
+                                        if (loListEntity.IsActive || this.HasPermission(loRequest, loEntity, loRequest.Id, (int)MaxEnumGroup.PermissionSelectInactive))
+                                        {
+                                            loSortedList.Add(loListEntity.GetDefaultSortString(), loListEntity);
+                                        }
+                                    }
+
+                                    foreach (string lsKey in loSortedList.Keys)
+                                    {
+                                        MaxIndex loItem = loSortedList[lsKey].MapIndex(loRequest.ResponseFieldList);
+                                        loR.ItemList.Add(loItem);
+                                    }
                                 }
                             }
                         }
@@ -806,6 +843,129 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         {
             string lsR = loIndex.GetValueString(lsName).Trim();
             return lsR;
+        }
+
+        [HttpGet]
+        [HttpOptions]
+        [ActionName("daterange")]
+        public HttpResponseMessage DateRange()
+        {
+            HttpStatusCode loStatus = HttpStatusCode.OK;
+            var loResponseItem = new
+            {
+                Key = "Key",
+                Name = "Name"
+            };
+
+            MaxApiResponseViewModel loR = this.GetResponse(loResponseItem);
+            if (this.Request.Method == HttpMethod.Get)
+            {
+                List<string> loDateRangeKeyList = new List<string>(this._sDateRangeKeyText.Split(new char[] { ',' }));
+                List<string> loDateRangeNameList = new List<string>(this._sDateRangeNameText.Split(new char[] { ',' }));
+                for (int lnD = 0; lnD < loDateRangeKeyList.Count; lnD++)
+                {
+                    MaxIndex loItem = this.GetDateFilter(loDateRangeKeyList[lnD], DateTime.MinValue, DateTime.MaxValue);
+                    loItem.Add(loResponseItem.Key, loDateRangeKeyList[lnD]);
+                    loItem.Add(loResponseItem.Name, loDateRangeNameList[lnD]);
+                    loR.ItemList.Add(loItem);
+                }
+            }
+
+            return this.GetResponseMessage(loR, loStatus);
+        }
+
+        protected MaxIndex GetDateFilter(string lsDateRangeName, DateTime ldStartDate, DateTime ldEndDate)
+        {
+            MaxIndex loR = new MaxIndex();
+            if (!string.IsNullOrEmpty(lsDateRangeName))
+            {
+                List<string> loDateRangeKeyList = new List<string>(this._sDateRangeKeyText.Split(new char[] { ',' }));
+                if (loDateRangeKeyList.Contains(lsDateRangeName))
+                {
+                    if (lsDateRangeName == loDateRangeKeyList[0])
+                    {
+                        ldEndDate = DateTime.UtcNow.Date;
+                        ldStartDate = ldEndDate.AddDays(-7);
+                    }
+                    else if (lsDateRangeName == loDateRangeKeyList[1])
+                    {
+                        ldStartDate = DateTime.UtcNow.Date.AddDays(-1 * (int)DateTime.UtcNow.Date.DayOfWeek).AddDays(-7);
+                        ldEndDate = ldStartDate.AddDays(7);
+                    }
+                    else if (lsDateRangeName == loDateRangeKeyList[2])
+                    {
+                        ldEndDate = DateTime.UtcNow.Date;
+                        ldStartDate = ldEndDate.AddDays(-30);
+                    }
+                    else if (lsDateRangeName == loDateRangeKeyList[3])
+                    {
+                        ldStartDate = DateTime.UtcNow.Date.AddMonths(-1);
+                        ldStartDate = new DateTime(ldStartDate.Year, ldStartDate.Month, 1);
+                        ldEndDate = ldStartDate.AddMonths(1);
+                    }
+                    else if (lsDateRangeName == loDateRangeKeyList[4])
+                    {
+                        ldStartDate = new DateTime(DateTime.UtcNow.Date.Year, DateTime.UtcNow.Date.Month, 1);
+                        ldEndDate = ldStartDate.AddMonths(1);
+                    }
+                    else if (lsDateRangeName == loDateRangeKeyList[5])
+                    {
+                        ldStartDate = new DateTime(DateTime.UtcNow.Date.Year, DateTime.UtcNow.Date.Month, 1);
+                        int lnCount = 0;
+                        while ((ldStartDate.Month != 1 && ldStartDate.Month != 4 && ldStartDate.Month != 7 && ldStartDate.Month != 10) || lnCount == 0)
+                        {
+                            if (ldStartDate.Month == 1 || ldStartDate.Month == 4 || ldStartDate.Month == 7 || ldStartDate.Month == 10)
+                            {
+                                lnCount++;
+                            }
+
+                            ldStartDate = ldStartDate.AddMonths(-1);
+                        }
+
+                        ldEndDate = ldStartDate.AddMonths(3);
+                    }
+                    else if (lsDateRangeName == loDateRangeKeyList[6])
+                    {
+                        ldStartDate = new DateTime(DateTime.UtcNow.Date.Year, DateTime.UtcNow.Date.Month, 1);
+                        while (ldStartDate.Month != 1 && ldStartDate.Month != 4 && ldStartDate.Month != 7 && ldStartDate.Month != 10)
+                        {
+                            ldStartDate = ldStartDate.AddMonths(-1);
+                        }
+
+                        ldEndDate = ldStartDate.AddMonths(3);
+                    }
+                    else if (lsDateRangeName == loDateRangeKeyList[8])
+                    {
+                        ldStartDate = DateTime.MinValue;
+                        ldEndDate = DateTime.MaxValue;
+                    }
+                }
+            }
+            else if (ldEndDate == DateTime.MinValue)
+            {
+                ldStartDate = DateTime.Now.Date;
+                ldEndDate = DateTime.MaxValue;
+            }
+
+            loR.Add("StartDate", ldStartDate);
+            loR.Add("EndDate", ldEndDate);
+            return loR;
+        }
+
+        protected MaxIndex GetDateFilter(MaxIndex loRequestIndex)
+        {
+            MaxIndex loR = new MaxIndex();
+            var loRequestItem = new
+            {
+                StartDate = "StartDate",
+                EndDate = "EndDate",
+                DateRange = "DateRange"
+            };
+
+            DateTime ldStartDate = MaxConvertLibrary.ConvertToDateTime(typeof(object), loRequestIndex.GetValueString(loRequestItem.StartDate));
+            DateTime ldEndDate = MaxConvertLibrary.ConvertToDateTime(typeof(object), loRequestIndex.GetValueString(loRequestItem.EndDate));
+            loR = this.GetDateFilter(loRequestIndex.GetValueString(loRequestItem.DateRange), ldStartDate, ldEndDate);
+            return loR;
         }
     }
 }
