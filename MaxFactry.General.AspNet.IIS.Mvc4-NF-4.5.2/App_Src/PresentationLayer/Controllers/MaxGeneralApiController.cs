@@ -129,5 +129,52 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             int lnR = loForm.ArchiveCreatedOver30();
             return lnR;
         }
+
+        [HttpGet]
+        [HttpOptions]
+        [ActionName("daterange")]
+        public async Task<HttpResponseMessage> DateRange()
+        {
+            HttpStatusCode loStatus = HttpStatusCode.OK;
+            var loResponseItem = new
+            {
+                Key = "Key",
+                Name = "Name"
+            };
+
+            MaxApiResponseViewModel loR = this.GetResponse(loResponseItem);
+            if (this.Request.Method == HttpMethod.Get)
+            {
+                var loRequestItem = new
+                {
+                    RangeIndexList = "RangeIndexList"
+                };
+
+                MaxApiRequestViewModel loRequest = await this.GetRequest();
+
+                string[] laDateRangeName = _sDateRangeNameText.Split(new char[] { ',' });
+                string lsRangeIndexList = loRequest.Item.GetValueString(loRequestItem.RangeIndexList);
+                if (!string.IsNullOrEmpty(lsRangeIndexList))
+                {
+                    string[] laRangeIndex = lsRangeIndexList.Split(new char[] { ',' });
+                    for (int lnR = 0; lnR < laRangeIndex.Length; lnR++)
+                    {
+                        int lnRangeIndex = MaxConvertLibrary.ConvertToInt(typeof(object), laRangeIndex[lnR]);
+                        MaxIndex loItem = GetDateFilter(lnRangeIndex, DateTime.MinValue, DateTime.MaxValue);
+                        loR.ItemList.Add(loItem);
+                    }
+                }
+                else
+                {
+                    for (int lnD = 0; lnD < laDateRangeName.Length; lnD++)
+                    {
+                        MaxIndex loItem = GetDateFilter(lnD, DateTime.MinValue, DateTime.MaxValue);
+                        loR.ItemList.Add(loItem);
+                    }
+                }
+            }
+
+            return this.GetResponseMessage(loR, loStatus);
+        }
     }
 }
