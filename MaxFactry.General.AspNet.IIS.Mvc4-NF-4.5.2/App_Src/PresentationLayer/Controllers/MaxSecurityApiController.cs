@@ -177,29 +177,13 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                             if (loGrantEntity.LoadByIdCache(loGrantId) && loGrantEntity.UserAuthId == loEntity.Id && loGrantEntity.IsActive && loGrantEntity.RedirectUri == lsRedirectUri)
                             {
                                 string lsToken = MaxUserAuthTokenEntity.GenerateToken(false);
-                                MaxUserAuthTokenEntity loTokenEntity = MaxUserAuthTokenEntity.Create();
-                                loTokenEntity.Expiration = 3600 * 24 * 365; //// One year
-                                loTokenEntity.TokenType = "Bearer";
-                                loTokenEntity.TokenHash = MaxUserAuthTokenEntity.GetTokenHash(lsToken);
-                                loTokenEntity.UserAuthGrantId = loGrantEntity.Id;
-                                loTokenEntity.UserAuthId = loEntity.Id;
-                                loTokenEntity.UserKey = loGrantEntity.UserKey;
-                                loTokenEntity.IsActive = true;
-                                loTokenEntity.Insert();
-                                string lsTokenType = loTokenEntity.TokenType;
+                                string lsTokenType = "Bearer";
+                                MaxUserAuthTokenEntity loTokenEntity = MaxUserAuthTokenEntity.AddToken(lsToken, lsTokenType, DateTime.UtcNow.AddYears(1), loGrantEntity.UserKey, loGrantEntity.Id, loEntity.Id);
                                 string lsAccessToken = loTokenEntity.GetClientToken(lsToken);
                                 int lnExpiresIn = loTokenEntity.Expiration;
 
                                 lsToken = MaxUserAuthTokenEntity.GenerateToken(false);
-                                loTokenEntity = MaxUserAuthTokenEntity.Create();
-                                loTokenEntity.Expiration = 3600 * 24 * 365 * 50; //// 50 years
-                                loTokenEntity.TokenType = "Refresh";
-                                loTokenEntity.TokenHash = MaxUserAuthTokenEntity.GetTokenHash(lsToken);
-                                loTokenEntity.UserAuthGrantId = loGrantEntity.Id;
-                                loTokenEntity.UserAuthId = loEntity.Id;
-                                loTokenEntity.UserKey = loGrantEntity.UserKey;
-                                loTokenEntity.IsActive = true;
-                                loTokenEntity.Insert();
+                                loTokenEntity = MaxUserAuthTokenEntity.AddToken(lsToken, "Refresh", DateTime.UtcNow.AddYears(50), loGrantEntity.UserKey, loGrantEntity.Id, loEntity.Id);
                                 string lsRefreshToken = loTokenEntity.GetClientToken(lsToken);
 
                                 //// Send token to client in proper format
@@ -240,6 +224,63 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             loR.Content.Headers.Remove("Content-Type");
             loR.Content.Headers.Add("Content-Type", "application/json");
             return loR;
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [HttpOptions]
+        [ActionName("usertoken")]
+        public async Task<HttpResponseMessage> UserToken()
+        {
+            HttpStatusCode loStatus = HttpStatusCode.Unauthorized;
+            var loResponseItem = new
+            {
+                UserName = "UserName",
+                Email = "Email",
+                Id = "Id",
+                AccessToken = "AccessToken",
+                ExpiresIn = "ExpiresIn"
+            };
+
+            MaxApiResponseViewModel loR = GetResponse(loResponseItem);
+            if (this.Request.Method != HttpMethod.Options)
+            {
+                var loRequestItem = new
+                {
+                    TokenType = "TokenType",
+                    Expiration = "Expiration"
+                };
+
+                MaxApiRequestViewModel loRequest = await this.GetRequest();
+                MembershipUser loUser = this.GetUser(loRequest);
+                if (null != loUser)
+                {
+                    loStatus = HttpStatusCode.OK;
+                    string lsToken = MaxUserAuthTokenEntity.GenerateToken(false);
+                    string lsTokenType = "Bearer";
+                    DateTime loExpiration = DateTime.UtcNow.AddYears(1);
+                    if (loRequest.Item.Contains(loRequestItem.TokenType))
+                    {
+                        lsTokenType = loRequest.Item.GetValueString(loRequestItem.TokenType);
+                    }
+
+                    if (loRequest.Item.Contains(loRequestItem.Expiration))
+                    {
+                        loExpiration = MaxConvertLibrary.ConvertToDateTimeUtc(typeof(object), loRequest.Item.GetValueString(loRequestItem.Expiration));
+                    }
+
+                    MaxUserAuthTokenEntity loTokenEntity = MaxUserAuthTokenEntity.AddToken(lsToken, lsTokenType, loExpiration, loUser.ProviderUserKey.ToString(), Guid.Empty, Guid.Empty);
+                    loR.Item.Add(loResponseItem.UserName, loUser.UserName);
+                    loR.Item.Add(loResponseItem.Email, loUser.Email);
+                    loR.Item.Add(loResponseItem.Id, loUser.ProviderUserKey);
+                    loR.Item.Add(loResponseItem.AccessToken, loTokenEntity.GetClientToken(lsToken));
+                    loR.Item.Add(loResponseItem.ExpiresIn, loTokenEntity.Expiration);
+                }
+            }
+
+            return this.GetResponseMessage(loR, loStatus);
         }
 
         /// <summary>

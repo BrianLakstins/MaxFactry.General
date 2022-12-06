@@ -78,7 +78,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
             actionExecutedContext.Response.Headers.Add("Access-Control-Allow-Origin", lsOrigin);
             actionExecutedContext.Response.Headers.Add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-            actionExecutedContext.Response.Headers.Add("Access-Control-Allow-Headers", "origin, content-type, accept");
+            actionExecutedContext.Response.Headers.Add("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
             actionExecutedContext.Response.Headers.Add("Access-Control-Allow-Credentials", "true");
             actionExecutedContext.Response.Headers.Add("Access-Control-Max-Age", "600");
             base.OnActionExecuted(actionExecutedContext);

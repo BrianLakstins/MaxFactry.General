@@ -341,5 +341,19 @@ namespace MaxFactry.General.BusinessLayer
 
             return lsR;
         }
+
+        public static MaxUserAuthTokenEntity AddToken(string lsToken, string lsTokenType, DateTime loExpiration, string lsUserKey, Guid loGrantId, Guid loUserAuthId)
+        {
+            MaxUserAuthTokenEntity loR = MaxUserAuthTokenEntity.Create();
+            loR.Expiration = MaxConvertLibrary.ConvertToInt(typeof(object), (loExpiration - DateTime.UtcNow).TotalSeconds);
+            loR.TokenType = lsTokenType;
+            loR.TokenHash = MaxUserAuthTokenEntity.GetTokenHash(lsToken);
+            loR.UserAuthGrantId = loGrantId;
+            loR.UserAuthId = loUserAuthId;
+            loR.UserKey = lsUserKey;
+            loR.IsActive = true;
+            loR.Insert();
+            return loR;
+        }
     }
 }
