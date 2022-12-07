@@ -181,6 +181,28 @@ namespace MaxFactry.General.BusinessLayer
             }
         }
 
+        public bool IsExpired
+        {
+            get
+            {
+                bool lbR = true;
+                if (DateTime.UtcNow < this.ExpirationDate)
+                {
+                    lbR = false;
+                }
+
+                return lbR;
+            }
+        }
+
+        public DateTime ExpirationDate
+        {
+            get
+            {
+                return this.CreatedDate.AddSeconds(this.Expiration);
+            }
+        }
+
         /// <summary>
         /// Gets the Data Model for this entity
         /// </summary>

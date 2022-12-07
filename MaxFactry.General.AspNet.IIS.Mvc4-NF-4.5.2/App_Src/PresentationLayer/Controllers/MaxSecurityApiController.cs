@@ -229,7 +229,9 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         /// <summary>
         /// </summary>
         /// <returns></returns>
+        [HttpGet]
         [HttpPost]
+        [HttpDelete]
         [HttpOptions]
         [ActionName("usertoken")]
         public async Task<HttpResponseMessage> UserToken()
@@ -241,7 +243,9 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 Email = "Email",
                 Id = "Id",
                 AccessToken = "AccessToken",
-                ExpiresIn = "ExpiresIn"
+                ExpiresIn = "ExpiresIn",
+                CreatedDate = "CreatedDate",
+                ExpirationDate = "ExpirationDate"
             };
 
             MaxApiResponseViewModel loR = GetResponse(loResponseItem);
@@ -249,6 +253,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             {
                 var loRequestItem = new
                 {
+                    Id = "Id",
                     TokenType = "TokenType",
                     Expiration = "Expiration"
                 };
@@ -258,7 +263,8 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 if (null != loUser)
                 {
                     loStatus = HttpStatusCode.OK;
-                    string lsToken = MaxUserAuthTokenEntity.GenerateToken(false);
+                    MaxUserAuthTokenEntity loEntity = MaxUserAuthTokenEntity.Create();
+                    MaxEntityList loList = loEntity.LoadAllActiveByUserKeyCache(loUser.ProviderUserKey.ToString());
                     string lsTokenType = "Bearer";
                     DateTime loExpiration = DateTime.UtcNow.AddYears(1);
                     if (loRequest.Item.Contains(loRequestItem.TokenType))
@@ -271,12 +277,56 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         loExpiration = MaxConvertLibrary.ConvertToDateTimeUtc(typeof(object), loRequest.Item.GetValueString(loRequestItem.Expiration));
                     }
 
-                    MaxUserAuthTokenEntity loTokenEntity = MaxUserAuthTokenEntity.AddToken(lsToken, lsTokenType, loExpiration, loUser.ProviderUserKey.ToString(), Guid.Empty, Guid.Empty);
-                    loR.Item.Add(loResponseItem.UserName, loUser.UserName);
-                    loR.Item.Add(loResponseItem.Email, loUser.Email);
-                    loR.Item.Add(loResponseItem.Id, loUser.ProviderUserKey);
-                    loR.Item.Add(loResponseItem.AccessToken, loTokenEntity.GetClientToken(lsToken));
-                    loR.Item.Add(loResponseItem.ExpiresIn, loTokenEntity.Expiration);
+                    Guid loId = MaxConvertLibrary.ConvertToGuid(typeof(object), loRequest.Item.GetValueString(loRequestItem.Id));
+                    if (loId != Guid.Empty)
+                    {
+                        loR.Item.Add(loResponseItem.Id, loId);
+                    }
+
+                    MaxUserAuthTokenEntity loCurrentEntity = null;
+                    for (int lnE = 0; lnE < loList.Count; lnE++)
+                    {
+                        loEntity = loList[lnE] as MaxUserAuthTokenEntity;
+                        if (Request.Method == HttpMethod.Delete && loEntity.Id == loId)
+                        {
+                            loEntity.Delete();
+                            loR.Message.Success = "Token deleted.";
+                        }
+                        else if (!loEntity.IsExpired)
+                        {
+                            DateTime loExpirationDate = MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loEntity.ExpirationDate);
+                            MaxIndex loItem = new MaxIndex();
+                            loItem.Add(loResponseItem.Id, loEntity.Id);
+                            loItem.Add(loResponseItem.CreatedDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loEntity.CreatedDate));
+                            loItem.Add(loResponseItem.ExpirationDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loExpirationDate));
+                            loR.ItemList.Add(loItem);
+                            if (loExpiration.AddHours(-12) < loEntity.ExpirationDate && loEntity.ExpirationDate < loExpiration.AddHours(12) && loEntity.TokenType == lsTokenType)
+                            {
+                                loCurrentEntity = loEntity;
+                            }
+                        }
+                    }
+
+                    if (Request.Method == HttpMethod.Post)
+                    {
+                        if (null == loCurrentEntity)
+                        {
+                            string lsToken = MaxUserAuthTokenEntity.GenerateToken(false);
+                            loCurrentEntity = MaxUserAuthTokenEntity.AddToken(lsToken, lsTokenType, loExpiration, loUser.ProviderUserKey.ToString(), Guid.Empty, Guid.Empty);
+                            loR.Item.Add(loResponseItem.AccessToken, loCurrentEntity.GetClientToken(lsToken));
+                            loR.Message.Success = "Token created.";
+                            loR.Item.Add(loResponseItem.UserName, loUser.UserName);
+                            loR.Item.Add(loResponseItem.Email, loUser.Email);
+                            loR.Item.Add(loResponseItem.Id, loCurrentEntity.Id);
+                            loR.Item.Add(loResponseItem.ExpiresIn, loCurrentEntity.Expiration);
+                            loR.Item.Add(loResponseItem.CreatedDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loCurrentEntity.CreatedDate));
+                            loR.Item.Add(loResponseItem.ExpirationDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loCurrentEntity.ExpirationDate));
+                        }
+                        else
+                        {
+                            loR.Message.Warning = "Token already exists with expiration date near requested date.";
+                        }
+                    }
                 }
             }
 
