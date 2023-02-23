@@ -40,7 +40,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 #if DEBUG
-[assembly: AssemblyTitle("Debug - MaxFactry General AspNet .Net 2.0)]
+[assembly: AssemblyTitle("Debug - MaxFactry General AspNet .Net 2.0")]
 [assembly: AssemblyDescription("Debug - MaxFactry General AspNet Library .Net 2.0")]
 [assembly: AssemblyProduct("Debug - MaxFactry General AspNet Library .Net 2.0")]
 #else

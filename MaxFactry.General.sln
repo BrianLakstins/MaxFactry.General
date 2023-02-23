@@ -40,9 +40,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.General-NF-4.7.2"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.General-NF-4.8", "MaxFactry.General-NF-4.8\MaxFactry.General-NF-4.8.csproj", "{5000A43B-95CD-4D65-AA38-09CA664639E4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.General-NC-3.1", "MaxFactry.General-NC-3.1\MaxFactry.General-NC-3.1.csproj", "{5462E1DA-A122-4E7F-9F06-32405D495893}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MaxFactry.General-NC-3.1", "MaxFactry.General-NC-3.1\MaxFactry.General-NC-3.1.csproj", "{5462E1DA-A122-4E7F-9F06-32405D495893}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.General-NC-6.0", "MaxFactry.General-NC-6.0\MaxFactry.General-NC-6.0.csproj", "{B0C42B60-DA57-4A3B-AC6A-0F443A5EA05B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MaxFactry.General-NC-6.0", "MaxFactry.General-NC-6.0\MaxFactry.General-NC-6.0.csproj", "{B0C42B60-DA57-4A3B-AC6A-0F443A5EA05B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.General.AspNet-NF-4.7.2", "MaxFactry.General.AspNet-NF-4.7.2\MaxFactry.General.AspNet-NF-4.7.2.csproj", "{ECFBE803-88B9-43A7-AF76-C8586DEB12C4}"
 EndProject
@@ -51,6 +51,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.General.AspNet.IIS-NF-4.7.2", "MaxFactry.General.AspNet.IIS-NF-4.7.2\MaxFactry.General.AspNet.IIS-NF-4.7.2.csproj", "{5626CD7F-13B7-4F05-B593-D473D444A817}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.General.AspNet-NF-4.8", "MaxFactry.General.AspNet-NF-4.8\MaxFactry.General.AspNet-NF-4.8.csproj", "{CE5B06CB-CBA3-4D09-9800-1E2BB4D059B9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.General.AspNet.IIS.Mvc5-NF-4.7.2", "MaxFactry.General.AspNet.IIS.Mvc5-NF-4.7.2\MaxFactry.General.AspNet.IIS.Mvc5-NF-4.7.2.csproj", "{AB4E73B6-5861-4C46-9A4E-BCCEF00F3CE7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.General.AspNet.IIS.Mvc5-NF-4.8", "MaxFactry.General.AspNet.IIS.Mvc5-NF-4.8\MaxFactry.General.AspNet.IIS.Mvc5-NF-4.8.csproj", "{727034C7-66E1-4723-95D4-A9AF249262CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -126,6 +130,14 @@ Global
 		{CE5B06CB-CBA3-4D09-9800-1E2BB4D059B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE5B06CB-CBA3-4D09-9800-1E2BB4D059B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE5B06CB-CBA3-4D09-9800-1E2BB4D059B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB4E73B6-5861-4C46-9A4E-BCCEF00F3CE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB4E73B6-5861-4C46-9A4E-BCCEF00F3CE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB4E73B6-5861-4C46-9A4E-BCCEF00F3CE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB4E73B6-5861-4C46-9A4E-BCCEF00F3CE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{727034C7-66E1-4723-95D4-A9AF249262CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{727034C7-66E1-4723-95D4-A9AF249262CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{727034C7-66E1-4723-95D4-A9AF249262CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{727034C7-66E1-4723-95D4-A9AF249262CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

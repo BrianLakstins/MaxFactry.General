@@ -1,0 +1,529 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\_nuget\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\..\_nuget\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="..\..\_nuget\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\..\_nuget\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{727034C7-66E1-4723-95D4-A9AF249262CA}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MaxFactry.General.AspNet.IIS.Mvc5</RootNamespace>
+    <AssemblyName>MaxFactry.General.AspNet.IIS.Mvc5-NF-4.8</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <Use64BitIISExpress />
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Fizzler, Version=1.1.21209.0, Culture=neutral, PublicKeyToken=4ebff4844e382110, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\Fizzler.1.1.0\lib\net35\Fizzler.dll</HintPath>
+    </Reference>
+    <Reference Include="Fizzler.Systems.HtmlAgilityPack, Version=1.1.21209.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\Fizzler.Systems.HtmlAgilityPack.1.1.1\lib\net35\Fizzler.Systems.HtmlAgilityPack.dll</HintPath>
+    </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.5.1.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\HtmlAgilityPack.1.5.1\lib\Net45\HtmlAgilityPack.dll</HintPath>
+    </Reference>
+    <Reference Include="MaxFactry.Base-NF-4.8, Version=1.0.11.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\MaxFactry.Base.1.0.12\lib\net48\MaxFactry.Base-NF-4.8.dll</HintPath>
+    </Reference>
+    <Reference Include="MaxFactry.Core-NF-4.8, Version=1.0.6.0, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\MaxFactry.Core.1.0.6\lib\net48\MaxFactry.Core-NF-4.8.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Owin, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\Microsoft.Owin.4.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="RazorEngine, Version=3.3.0.0, Culture=neutral, PublicKeyToken=9ee697374c7e744a, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\RazorEngine.3.3.0\lib\net40\RazorEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\Microsoft.AspNet.WebApi.Client.5.2.7\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Channels" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\Microsoft.AspNet.WebApi.Core.5.2.7\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\Microsoft.AspNet.WebApi.WebHost.5.2.7\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\Microsoft.AspNet.Mvc.5.2.7\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\Microsoft.AspNet.Razor.3.2.7\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Net.Http">
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+    </Reference>
+    <Reference Include="System.Web.Optimization">
+      <HintPath>..\..\_nuget\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="WebGrease">
+      <Private>True</Private>
+      <HintPath>..\..\_nuget\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+    </Reference>
+    <Reference Include="Antlr3.Runtime">
+      <Private>True</Private>
+      <HintPath>..\..\_nuget\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Web.config" />
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\Library\Interface\IMaxAppLibraryProvider.cs">
+      <Link>App_Src\Library\Interface\IMaxAppLibraryProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\Library\MaxAppLibrary.cs">
+      <Link>App_Src\Library\MaxAppLibrary.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\Library\Provider\MaxAppLibraryDefaultProvider.cs">
+      <Link>App_Src\Library\Provider\MaxAppLibraryDefaultProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\MaxFactry.General\PresentationLayer\Provider\MaxDesignLibraryASPNetIISMvc4Provider.cs">
+      <Link>App_Src\MaxFactry.General\PresentationLayer\Provider\MaxDesignLibraryASPNetIISMvc4Provider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\MaxFactry.General\PresentationLayer\Provider\MaxShortCodeLibraryFileProvider.cs">
+      <Link>App_Src\MaxFactry.General\PresentationLayer\Provider\MaxShortCodeLibraryFileProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Attribute\MaxAuthorizeAttribute.cs">
+      <Link>App_Src\PresentationLayer\Attribute\MaxAuthorizeAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Attribute\MaxEnableCorsAttribute.cs">
+      <Link>App_Src\PresentationLayer\Attribute\MaxEnableCorsAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Attribute\MaxEnableCorsAttributeWebApi.cs">
+      <Link>App_Src\PresentationLayer\Attribute\MaxEnableCorsAttributeWebApi.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Attribute\MaxEnableEmbedAttribute.cs">
+      <Link>App_Src\PresentationLayer\Attribute\MaxEnableEmbedAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Attribute\MaxExceptionFilterAttribute.cs">
+      <Link>App_Src\PresentationLayer\Attribute\MaxExceptionFilterAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Attribute\MaxRequireHttpsAttribute.cs">
+      <Link>App_Src\PresentationLayer\Attribute\MaxRequireHttpsAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Controllers\MaxBaseApiController.cs">
+      <Link>App_Src\PresentationLayer\Controllers\MaxBaseApiController.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Controllers\MaxBaseController.cs">
+      <Link>App_Src\PresentationLayer\Controllers\MaxBaseController.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Controllers\MaxBaseControllerSecure.cs">
+      <Link>App_Src\PresentationLayer\Controllers\MaxBaseControllerSecure.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Controllers\MaxFileManageController.cs">
+      <Link>App_Src\PresentationLayer\Controllers\MaxFileManageController.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Controllers\MaxFileManagePartialController.cs">
+      <Link>App_Src\PresentationLayer\Controllers\MaxFileManagePartialController.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Controllers\MaxManageController.cs">
+      <Link>App_Src\PresentationLayer\Controllers\MaxManageController.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Controllers\MaxPartialController.cs">
+      <Link>App_Src\PresentationLayer\Controllers\MaxPartialController.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Controllers\MaxSecurityController.cs">
+      <Link>App_Src\PresentationLayer\Controllers\MaxSecurityController.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Controllers\MaxSecurityPartialController.cs">
+      <Link>App_Src\PresentationLayer\Controllers\MaxSecurityPartialController.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Controllers\MaxSystemController.cs">
+      <Link>App_Src\PresentationLayer\Controllers\MaxSystemController.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Handler\MaxFileHandler.cs">
+      <Link>App_Src\PresentationLayer\Handler\MaxFileHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Handler\MaxScriptHandler.cs">
+      <Link>App_Src\PresentationLayer\Handler\MaxScriptHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Handler\MaxSessionControllerHandler.cs">
+      <Link>App_Src\PresentationLayer\Handler\MaxSessionControllerHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Handler\MaxSessionRouteHandler.cs">
+      <Link>App_Src\PresentationLayer\Handler\MaxSessionRouteHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Handler\MaxStyleHandler.cs">
+      <Link>App_Src\PresentationLayer\Handler\MaxStyleHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Library\MaxHtmlHelperLibrary.cs">
+      <Link>App_Src\PresentationLayer\Library\MaxHtmlHelperLibrary.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Library\MaxModelBinderForMaxIndex.cs">
+      <Link>App_Src\PresentationLayer\Library\MaxModelBinderForMaxIndex.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\MaxHtmlHelperCoreExtension.cs">
+      <Link>App_Src\PresentationLayer\MaxHtmlHelperCoreExtension.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Models\MaxApiMessageViewModel.cs">
+      <Link>App_Src\PresentationLayer\Models\MaxApiMessageViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Models\MaxApiRequestViewModel.cs">
+      <Link>App_Src\PresentationLayer\Models\MaxApiRequestViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Models\MaxApiResponseViewModel.cs">
+      <Link>App_Src\PresentationLayer\Models\MaxApiResponseViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Models\MaxSecurityChangePasswordViewModel.cs">
+      <Link>App_Src\PresentationLayer\Models\MaxSecurityChangePasswordViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Models\MaxSecurityLoginViewModel.cs">
+      <Link>App_Src\PresentationLayer\Models\MaxSecurityLoginViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Models\MaxSecurityManageUserViewModel.cs">
+      <Link>App_Src\PresentationLayer\Models\MaxSecurityManageUserViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Models\MaxSecurityResetPasswordViewModel.cs">
+      <Link>App_Src\PresentationLayer\Models\MaxSecurityResetPasswordViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Models\MaxSecuritySignupViewModel.cs">
+      <Link>App_Src\PresentationLayer\Models\MaxSecuritySignupViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\System.Web\MaxHttpApplicationMvc4Override.cs">
+      <Link>App_Src\System.Web\MaxHttpApplicationMvc4Override.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\MaxStartup.cs">
+      <Link>MaxStartup.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\_ViewStart.cshtml">
+      <Link>Views\_ViewStart.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\Shared\MaxTheme\Default\_Layout.cshtml">
+      <Link>Views\Shared\MaxTheme\Default\_Layout.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\Shared\MaxTheme\Default\_LayoutBlank.cshtml">
+      <Link>Views\Shared\MaxTheme\Default\_LayoutBlank.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\Shared\MaxTheme\Default\_LayoutEmailLitmus.cshtml">
+      <Link>Views\Shared\MaxTheme\Default\_LayoutEmailLitmus.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\Shared\MaxTheme\Default\_LayoutEmailLitmusPartialFooter.cshtml">
+      <Link>Views\Shared\MaxTheme\Default\_LayoutEmailLitmusPartialFooter.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\Shared\MaxTheme\Default\_LayoutEmailLitmusPartialHeader.cshtml">
+      <Link>Views\Shared\MaxTheme\Default\_LayoutEmailLitmusPartialHeader.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\Shared\MaxTheme\Default\_LayoutEmailSimple.cshtml">
+      <Link>Views\Shared\MaxTheme\Default\_LayoutEmailSimple.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\Shared\MaxTheme\Default\_LayoutEmailSimplePartialFooter.cshtml">
+      <Link>Views\Shared\MaxTheme\Default\_LayoutEmailSimplePartialFooter.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\Shared\MaxTheme\Default\_LayoutEmbed.cshtml">
+      <Link>Views\Shared\MaxTheme\Default\_LayoutEmbed.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\Shared\MaxTheme\Default\_LayoutManage.cshtml">
+      <Link>Views\Shared\MaxTheme\Default\_LayoutManage.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\Shared\EditorTemplates\Boolean.cshtml">
+      <Link>Views\Shared\EditorTemplates\Boolean.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\Shared\EditorTemplates\Date.cshtml">
+      <Link>Views\Shared\EditorTemplates\Date.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\Shared\EditorTemplates\DateTime.cshtml">
+      <Link>Views\Shared\EditorTemplates\DateTime.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\Shared\EditorTemplates\DateTimeValue.cshtml">
+      <Link>Views\Shared\EditorTemplates\DateTimeValue.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\Shared\EditorTemplates\Int32.cshtml">
+      <Link>Views\Shared\EditorTemplates\Int32.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\Shared\EditorTemplates\Int32Value.cshtml">
+      <Link>Views\Shared\EditorTemplates\Int32Value.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\Shared\EditorTemplates\MaxFormGroup.cshtml">
+      <Link>Views\Shared\EditorTemplates\MaxFormGroup.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\Shared\EditorTemplates\Password.cshtml">
+      <Link>Views\Shared\EditorTemplates\Password.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\Shared\EditorTemplates\ReadOnly.cshtml">
+      <Link>Views\Shared\EditorTemplates\ReadOnly.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\Shared\EditorTemplates\String.cshtml">
+      <Link>Views\Shared\EditorTemplates\String.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\Shared\EditorTemplates\StringValue.cshtml">
+      <Link>Views\Shared\EditorTemplates\StringValue.cshtml</Link>
+    </EmbeddedResource>
+    <Content Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\Shared\DisplayTemplates\Boolean.cshtml">
+      <Link>Views\Shared\DisplayTemplates\Boolean.cshtml</Link>
+    </Content>
+    <Content Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\Shared\DisplayTemplates\String.cshtml">
+      <Link>Views\Shared\DisplayTemplates\String.cshtml</Link>
+    </Content>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxSystem\Content\_Robots.cshtml">
+      <Link>Views\MaxSystem\Content\_Robots.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxSecurityPartial\Content\_PartialNavLinkList.cshtml">
+      <Link>Views\MaxSecurityPartial\Content\_PartialNavLinkList.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxSecurity\changedpassword.cshtml">
+      <Link>Views\MaxSecurity\changedpassword.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxSecurity\changepassword.cshtml">
+      <Link>Views\MaxSecurity\changepassword.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxSecurity\Index.cshtml">
+      <Link>Views\MaxSecurity\Index.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxSecurity\loggedin.cshtml">
+      <Link>Views\MaxSecurity\loggedin.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxSecurity\loggedout.cshtml">
+      <Link>Views\MaxSecurity\loggedout.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxSecurity\login.cshtml">
+      <Link>Views\MaxSecurity\login.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxSecurity\logout.cshtml">
+      <Link>Views\MaxSecurity\logout.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxSecurity\manage.cshtml">
+      <Link>Views\MaxSecurity\manage.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxSecurity\manageuser.cshtml">
+      <Link>Views\MaxSecurity\manageuser.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxSecurity\signedup.cshtml">
+      <Link>Views\MaxSecurity\signedup.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxSecurity\signup.cshtml">
+      <Link>Views\MaxSecurity\signup.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxSecurity\_ViewStart.cshtml">
+      <Link>Views\MaxSecurity\_ViewStart.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxPartial\MaxTheme\Default\_PartialFooter.cshtml">
+      <Link>Views\MaxPartial\MaxTheme\Default\_PartialFooter.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxPartial\MaxTheme\Default\_PartialHeader.cshtml">
+      <Link>Views\MaxPartial\MaxTheme\Default\_PartialHeader.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxPartial\MaxTheme\Default\_PartialManageFooter.cshtml">
+      <Link>Views\MaxPartial\MaxTheme\Default\_PartialManageFooter.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxPartial\MaxTheme\Default\_PartialManageHeader.cshtml">
+      <Link>Views\MaxPartial\MaxTheme\Default\_PartialManageHeader.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxPartial\Content\_PartialAddress.cshtml">
+      <Link>Views\MaxPartial\Content\_PartialAddress.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxPartial\Content\_PartialHead.cshtml">
+      <Link>Views\MaxPartial\Content\_PartialHead.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxPartial\Content\_PartialHeadTitle.cshtml">
+      <Link>Views\MaxPartial\Content\_PartialHeadTitle.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxPartial\Content\_PartialManageHead.cshtml">
+      <Link>Views\MaxPartial\Content\_PartialManageHead.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxPartial\Content\_PartialManageHeadTitle.cshtml">
+      <Link>Views\MaxPartial\Content\_PartialManageHeadTitle.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxPartial\Content\_PartialManageNavSectionLinkList.cshtml">
+      <Link>Views\MaxPartial\Content\_PartialManageNavSectionLinkList.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxPartial\Content\_PartialNavLinkList.cshtml">
+      <Link>Views\MaxPartial\Content\_PartialNavLinkList.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxPartial\Content\_PartialNavTitle.cshtml">
+      <Link>Views\MaxPartial\Content\_PartialNavTitle.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxFileManagePartial\Content\_PartialNavLinkList.cshtml">
+      <Link>Views\MaxFileManagePartial\Content\_PartialNavLinkList.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxFileManage\File.cshtml">
+      <Link>Views\MaxFileManage\File.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxFileManage\FileEdit.cshtml">
+      <Link>Views\MaxFileManage\FileEdit.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxFileManage\Index.cshtml">
+      <Link>Views\MaxFileManage\Index.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxFileManage\ScriptFile.cshtml">
+      <Link>Views\MaxFileManage\ScriptFile.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxFileManage\ScriptFileEdit.cshtml">
+      <Link>Views\MaxFileManage\ScriptFileEdit.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxFileManage\StyleFile.cshtml">
+      <Link>Views\MaxFileManage\StyleFile.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxFileManage\StyleFileEdit.cshtml">
+      <Link>Views\MaxFileManage\StyleFileEdit.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxFileManage\VirtualTextFile.cshtml">
+      <Link>Views\MaxFileManage\VirtualTextFile.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxFileManage\VirtualTextFileEdit.cshtml">
+      <Link>Views\MaxFileManage\VirtualTextFileEdit.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxFileManage\VirtualTextFileInlineCSS.cshtml">
+      <Link>Views\MaxFileManage\VirtualTextFileInlineCSS.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxFileManage\_ViewStart.cshtml">
+      <Link>Views\MaxFileManage\_ViewStart.cshtml</Link>
+    </EmbeddedResource>
+    <Content Include="MaxFactry.snk" />
+    <Content Include="Views\MaxFileManage\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Views\Web.config" />
+    <None Include="packages.config" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MaxFactry.General-NF-4.8\MaxFactry.General-NF-4.8.csproj">
+      <Project>{5000a43b-95cd-4d65-aa38-09ca664639e4}</Project>
+      <Name>MaxFactry.General-NF-4.8</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MaxFactry.General.AspNet-NF-4.8\MaxFactry.General.AspNet-NF-4.8.csproj">
+      <Project>{ce5b06cb-cba3-4d09-9800-1e2bb4d059b9}</Project>
+      <Name>MaxFactry.General.AspNet-NF-4.8</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MaxFactry.General.AspNet.IIS-NF-4.8\MaxFactry.General.AspNet.IIS-NF-4.8.csproj">
+      <Project>{de1cd87e-f76b-43e7-825a-83fb645e1ffa}</Project>
+      <Name>MaxFactry.General.AspNet.IIS-NF-4.8</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>58521</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:58521/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\_nuget\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\_nuget\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+    <Error Condition="!Exists('..\..\_nuget\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\_nuget\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+    <Error Condition="!Exists('..\..\_nuget\StrongNamer.0.2.5\build\StrongNamer.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\_nuget\StrongNamer.0.2.5\build\StrongNamer.targets'))" />
+  </Target>
+  <Import Project="..\..\_nuget\StrongNamer.0.2.5\build\StrongNamer.targets" Condition="Exists('..\..\_nuget\StrongNamer.0.2.5\build\StrongNamer.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>
