@@ -44,7 +44,9 @@ namespace MaxFactry.General.PresentationLayer.Provider
     using MaxFactry.General.BusinessLayer;
     using Fizzler.Systems.HtmlAgilityPack;
     using HtmlAgilityPack;
+    using RazorEngine;
     using RazorEngine.Templating;
+    using System.Web.UI;
 
 
     /// <summary>
@@ -244,6 +246,18 @@ namespace MaxFactry.General.PresentationLayer.Provider
             }
 
             string lsCacheKey = MaxFactry.Base.DataLayer.MaxDataLibrary.GetStorageKey(null) + MaxEncryptionLibrary.GetHash(typeof(object), MaxEncryptionLibrary.MD5Hash, lsViewText);
+#if mvc5
+            if (_oRazorCacheIndex.Contains(lsCacheKey))
+            {
+                lsR = Engine.Razor.Run(lsCacheKey, loModel.GetType(), loModel, loViewBag);
+            }
+            else
+            {
+                lsR = Engine.Razor.RunCompile(lsViewText, lsCacheKey, loModel.GetType(), loModel, loViewBag);
+                _oRazorCacheIndex.Add(lsCacheKey, true);
+            }
+
+#else
             if (_oRazorCacheIndex.Contains(lsCacheKey))
             {
                 lsR = RazorEngine.Razor.Run(lsCacheKey, loModel, loViewBag);
@@ -254,6 +268,7 @@ namespace MaxFactry.General.PresentationLayer.Provider
                 _oRazorCacheIndex.Add(lsCacheKey, true);
                 lsR = RazorEngine.Razor.Run(lsCacheKey, loModel, loViewBag);
             }
+#endif
 
             return lsR;
         }
