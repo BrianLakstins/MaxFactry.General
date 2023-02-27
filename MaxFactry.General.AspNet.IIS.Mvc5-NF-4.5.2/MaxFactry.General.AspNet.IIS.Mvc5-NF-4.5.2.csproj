@@ -55,11 +55,25 @@
     <Reference Include="HtmlAgilityPack, Version=1.5.1.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
       <HintPath>..\..\_nuget\HtmlAgilityPack.1.5.1\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
-    <Reference Include="MaxFactry.Base-NF-4.5.2, Version=1.0.13.0, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
-      <HintPath>..\..\_nuget\MaxFactry.Base.1.0.13\lib\net452\MaxFactry.Base-NF-4.5.2.dll</HintPath>
+    <Reference Include="MaxFactry.Base-NF-4.5.2, Version=1.0.15.0, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\MaxFactry.Base.1.0.15\lib\net452\MaxFactry.Base-NF-4.5.2.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="MaxFactry.Core-NF-4.5.2, Version=1.0.6.0, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
-      <HintPath>..\..\_nuget\MaxFactry.Core.1.0.6\lib\net452\MaxFactry.Core-NF-4.5.2.dll</HintPath>
+    <Reference Include="MaxFactry.Core-NF-4.5.2, Version=1.0.7.1, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\MaxFactry.Core.1.0.7.1\lib\net452\MaxFactry.Core-NF-4.5.2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MaxFactry.General-NF-4.5.2, Version=1.0.12.3, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\MaxFactry.General.1.0.12\lib\net452\MaxFactry.General-NF-4.5.2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MaxFactry.General.AspNet-NF-4.5.2, Version=1.0.12.0, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\MaxFactry.General.AspNet.1.0.12\lib\net452\MaxFactry.General.AspNet-NF-4.5.2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MaxFactry.General.AspNet.IIS-NF-4.5.2, Version=1.0.12.0, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\MaxFactry.General.AspNet.IIS.1.0.12\lib\net452\MaxFactry.General.AspNet.IIS-NF-4.5.2.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\_nuget\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
@@ -449,20 +463,6 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\MaxFactry.General-NF-4.5.2\MaxFactry.General-NF-4.5.2.csproj">
-      <Project>{a625c04c-84c7-4d75-8e53-8b37542235e0}</Project>
-      <Name>MaxFactry.General-NF-4.5.2</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MaxFactry.General.AspNet-NF-4.5.2\MaxFactry.General.AspNet-NF-4.5.2.csproj">
-      <Project>{8f6a762f-3fde-4fc2-98ac-61cae1f3553c}</Project>
-      <Name>MaxFactry.General.AspNet-NF-4.5.2</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MaxFactry.General.AspNet.IIS-NF-4.5.2\MaxFactry.General.AspNet.IIS-NF-4.5.2.csproj">
-      <Project>{788ee320-dcde-457e-84df-e9f3869968d5}</Project>
-      <Name>MaxFactry.General.AspNet.IIS-NF-4.5.2</Name>
-    </ProjectReference>
-  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -494,14 +494,13 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <Import Project="..\..\_nuget\StrongNamer.0.2.5\build\StrongNamer.targets" Condition="Exists('..\..\_nuget\StrongNamer.0.2.5\build\StrongNamer.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\_nuget\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\_nuget\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
     <Error Condition="!Exists('..\..\_nuget\StrongNamer.0.2.5\build\StrongNamer.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\_nuget\StrongNamer.0.2.5\build\StrongNamer.targets'))" />
   </Target>
-  <Import Project="..\..\_nuget\StrongNamer.0.2.5\build\StrongNamer.targets" Condition="Exists('..\..\_nuget\StrongNamer.0.2.5\build\StrongNamer.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
