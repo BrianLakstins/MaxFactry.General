@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_references", "_references", "{98E74278-96DF-4CF5-A247-9647EE5A9909}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{97D97ECA-B93B-4C51-B0C3-F6D435523736}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet", "NuGet", "{BA7EAE1B-81BF-447A-8854-90A2776AD3C1}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\MaxFactry.General.AspNet.nuspec = .nuget\MaxFactry.General.AspNet.nuspec
+		.nuget\nuget.config = .nuget\nuget.config
+		.nuget\package.bat = .nuget\package.bat
+		.nuget\readme.md = .nuget\readme.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.General.AspNet-NF-4.8", "MaxFactry.General.AspNet-NF-4.8\MaxFactry.General.AspNet-NF-4.8.csproj", "{CE5B06CB-CBA3-4D09-9800-1E2BB4D059B9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.General.AspNet-NF-4.7.2", "MaxFactry.General.AspNet-NF-4.7.2\MaxFactry.General.AspNet-NF-4.7.2.csproj", "{ECFBE803-88B9-43A7-AF76-C8586DEB12C4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.General.AspNet-NF-4.5.2", "MaxFactry.General.AspNet-NF-4.5.2\MaxFactry.General.AspNet-NF-4.5.2.csproj", "{8F6A762F-3FDE-4FC2-98AC-61CAE1F3553C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.General.AspNet-NF-2.0", "MaxFactry.General.AspNet-NF-2.0\MaxFactry.General.AspNet-NF-2.0.csproj", "{51751036-DCCF-4D29-8884-18E3ADB85DF3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CE5B06CB-CBA3-4D09-9800-1E2BB4D059B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE5B06CB-CBA3-4D09-9800-1E2BB4D059B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE5B06CB-CBA3-4D09-9800-1E2BB4D059B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE5B06CB-CBA3-4D09-9800-1E2BB4D059B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECFBE803-88B9-43A7-AF76-C8586DEB12C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECFBE803-88B9-43A7-AF76-C8586DEB12C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECFBE803-88B9-43A7-AF76-C8586DEB12C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECFBE803-88B9-43A7-AF76-C8586DEB12C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F6A762F-3FDE-4FC2-98AC-61CAE1F3553C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F6A762F-3FDE-4FC2-98AC-61CAE1F3553C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F6A762F-3FDE-4FC2-98AC-61CAE1F3553C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F6A762F-3FDE-4FC2-98AC-61CAE1F3553C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51751036-DCCF-4D29-8884-18E3ADB85DF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51751036-DCCF-4D29-8884-18E3ADB85DF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51751036-DCCF-4D29-8884-18E3ADB85DF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51751036-DCCF-4D29-8884-18E3ADB85DF3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {378343BF-A2F2-4E07-A30F-2E86528D1F50}
+	EndGlobalSection
+EndGlobal

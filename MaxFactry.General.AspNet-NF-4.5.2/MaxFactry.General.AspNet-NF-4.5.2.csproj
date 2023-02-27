@@ -155,17 +155,8 @@
     <None Include="MaxFactry.snk" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MaxFactry.General-NF-4.5.2\MaxFactry.General-NF-4.5.2.csproj">
-      <Project>{a625c04c-84c7-4d75-8e53-8b37542235e0}</Project>
-      <Name>MaxFactry.General-NF-4.5.2</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="MaxFactry.Base">
+    <PackageReference Include="MaxFactry.General">
       <Version>1.0.12</Version>
-    </PackageReference>
-    <PackageReference Include="MaxFactry.Core">
-      <Version>1.0.6</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
