@@ -1,13 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>MaxFactry.General</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	  <Version>1.0.10</Version>
-	  <AssemblyVersion>1.0.10</AssemblyVersion>
-	  <FileVersion>2023.02.21.01</FileVersion>	  
+	  <Version>1.0.12.3</Version>
+	  <AssemblyVersion>1.0.12.3</AssemblyVersion>
+	  <FileVersion>2023.02.27.01</FileVersion>
+	  <SignAssembly>True</SignAssembly>
+	  <AssemblyOriginatorKeyFile>MaxFactry.snk</AssemblyOriginatorKeyFile>  
   </PropertyGroup>
 
 	<ItemGroup>
@@ -84,8 +86,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-    <PackageReference Include="MaxFactry.Base" Version="1.0.12" />
-    <PackageReference Include="MaxFactry.Core" Version="1.0.6" />
-  </ItemGroup>
+	  <PackageReference Include="MaxFactry.Base" Version="1.0.15" />
+	</ItemGroup>
 
 </Project>

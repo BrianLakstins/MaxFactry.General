@@ -11,26 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.General-NF-2.0", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.General-NF-4.5.2", "MaxFactry.General-NF-4.5.2\MaxFactry.General-NF-4.5.2.csproj", "{A625C04C-84C7-4D75-8E53-8B37542235E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.General.AspNet-NF-2.0", "MaxFactry.General.AspNet-NF-2.0\MaxFactry.General.AspNet-NF-2.0.csproj", "{51751036-DCCF-4D29-8884-18E3ADB85DF3}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.General.AspNet-NF-4.5.2", "MaxFactry.General.AspNet-NF-4.5.2\MaxFactry.General.AspNet-NF-4.5.2.csproj", "{8F6A762F-3FDE-4FC2-98AC-61CAE1F3553C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.General.AspNet.IIS-NF-4.5.2", "MaxFactry.General.AspNet.IIS-NF-4.5.2\MaxFactry.General.AspNet.IIS-NF-4.5.2.csproj", "{788EE320-DCDE-457E-84DF-E9F3869968D5}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2", "MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2.csproj", "{3A10B3B8-D2DD-4A75-BAB1-54B38FBBCAE2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.General.AspNet.IIS.Mvc5-NF-4.5.2", "MaxFactry.General.AspNet.IIS.Mvc5-NF-4.5.2\MaxFactry.General.AspNet.IIS.Mvc5-NF-4.5.2.csproj", "{240CA3E4-F54C-469F-BCBE-7179645EB147}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MaxFactry.General-NC-2.1", "MaxFactry.General-NC-2.1\MaxFactry.General-NC-2.1.csproj", "{3B596BF0-6248-4152-B074-50E69F3CAEAF}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.General.AspNet.IIS-NF-2.0", "MaxFactry.General.AspNet.IIS-NF-2.0\MaxFactry.General.AspNet.IIS-NF-2.0.csproj", "{EC87C7D8-89B6-457C-B766-D946F45B7604}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet", "NuGet", "{BA7EAE1B-81BF-447A-8854-90A2776AD3C1}"
 	ProjectSection(SolutionItems) = preProject
-		.nuget\MaxFactry.General.AspNet.IIS.Mvc4.nuspec = .nuget\MaxFactry.General.AspNet.IIS.Mvc4.nuspec
-		.nuget\MaxFactry.General.AspNet.IIS.Mvc5.nuspec = .nuget\MaxFactry.General.AspNet.IIS.Mvc5.nuspec
-		.nuget\MaxFactry.General.AspNet.IIS.nuspec = .nuget\MaxFactry.General.AspNet.IIS.nuspec
-		.nuget\MaxFactry.General.AspNet.nuspec = .nuget\MaxFactry.General.AspNet.nuspec
 		.nuget\MaxFactry.General.nuspec = .nuget\MaxFactry.General.nuspec
 		.nuget\nuget.config = .nuget\nuget.config
 		.nuget\package.bat = .nuget\package.bat
@@ -44,18 +28,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MaxFactry.General-NC-3.1", "MaxFactry.General-NC-3.1\MaxFactry.General-NC-3.1.csproj", "{5462E1DA-A122-4E7F-9F06-32405D495893}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MaxFactry.General-NC-6.0", "MaxFactry.General-NC-6.0\MaxFactry.General-NC-6.0.csproj", "{B0C42B60-DA57-4A3B-AC6A-0F443A5EA05B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.General.AspNet-NF-4.7.2", "MaxFactry.General.AspNet-NF-4.7.2\MaxFactry.General.AspNet-NF-4.7.2.csproj", "{ECFBE803-88B9-43A7-AF76-C8586DEB12C4}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.General.AspNet.IIS-NF-4.8", "MaxFactry.General.AspNet.IIS-NF-4.8\MaxFactry.General.AspNet.IIS-NF-4.8.csproj", "{DE1CD87E-F76B-43E7-825A-83FB645E1FFA}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.General.AspNet.IIS-NF-4.7.2", "MaxFactry.General.AspNet.IIS-NF-4.7.2\MaxFactry.General.AspNet.IIS-NF-4.7.2.csproj", "{5626CD7F-13B7-4F05-B593-D473D444A817}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.General.AspNet-NF-4.8", "MaxFactry.General.AspNet-NF-4.8\MaxFactry.General.AspNet-NF-4.8.csproj", "{CE5B06CB-CBA3-4D09-9800-1E2BB4D059B9}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.General.AspNet.IIS.Mvc5-NF-4.7.2", "MaxFactry.General.AspNet.IIS.Mvc5-NF-4.7.2\MaxFactry.General.AspNet.IIS.Mvc5-NF-4.7.2.csproj", "{AB4E73B6-5861-4C46-9A4E-BCCEF00F3CE7}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.General.AspNet.IIS.Mvc5-NF-4.8", "MaxFactry.General.AspNet.IIS.Mvc5-NF-4.8\MaxFactry.General.AspNet.IIS.Mvc5-NF-4.8.csproj", "{727034C7-66E1-4723-95D4-A9AF249262CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,34 +43,10 @@ Global
 		{A625C04C-84C7-4D75-8E53-8B37542235E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A625C04C-84C7-4D75-8E53-8B37542235E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A625C04C-84C7-4D75-8E53-8B37542235E0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{51751036-DCCF-4D29-8884-18E3ADB85DF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{51751036-DCCF-4D29-8884-18E3ADB85DF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{51751036-DCCF-4D29-8884-18E3ADB85DF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{51751036-DCCF-4D29-8884-18E3ADB85DF3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8F6A762F-3FDE-4FC2-98AC-61CAE1F3553C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8F6A762F-3FDE-4FC2-98AC-61CAE1F3553C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8F6A762F-3FDE-4FC2-98AC-61CAE1F3553C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8F6A762F-3FDE-4FC2-98AC-61CAE1F3553C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{788EE320-DCDE-457E-84DF-E9F3869968D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{788EE320-DCDE-457E-84DF-E9F3869968D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{788EE320-DCDE-457E-84DF-E9F3869968D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{788EE320-DCDE-457E-84DF-E9F3869968D5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3A10B3B8-D2DD-4A75-BAB1-54B38FBBCAE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3A10B3B8-D2DD-4A75-BAB1-54B38FBBCAE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3A10B3B8-D2DD-4A75-BAB1-54B38FBBCAE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3A10B3B8-D2DD-4A75-BAB1-54B38FBBCAE2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{240CA3E4-F54C-469F-BCBE-7179645EB147}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{240CA3E4-F54C-469F-BCBE-7179645EB147}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{240CA3E4-F54C-469F-BCBE-7179645EB147}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{240CA3E4-F54C-469F-BCBE-7179645EB147}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3B596BF0-6248-4152-B074-50E69F3CAEAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3B596BF0-6248-4152-B074-50E69F3CAEAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B596BF0-6248-4152-B074-50E69F3CAEAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B596BF0-6248-4152-B074-50E69F3CAEAF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EC87C7D8-89B6-457C-B766-D946F45B7604}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EC87C7D8-89B6-457C-B766-D946F45B7604}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EC87C7D8-89B6-457C-B766-D946F45B7604}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EC87C7D8-89B6-457C-B766-D946F45B7604}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CA606A5F-79AE-4D65-8E5B-67B944EEDECF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CA606A5F-79AE-4D65-8E5B-67B944EEDECF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA606A5F-79AE-4D65-8E5B-67B944EEDECF}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -115,30 +63,6 @@ Global
 		{B0C42B60-DA57-4A3B-AC6A-0F443A5EA05B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0C42B60-DA57-4A3B-AC6A-0F443A5EA05B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0C42B60-DA57-4A3B-AC6A-0F443A5EA05B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ECFBE803-88B9-43A7-AF76-C8586DEB12C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ECFBE803-88B9-43A7-AF76-C8586DEB12C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ECFBE803-88B9-43A7-AF76-C8586DEB12C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ECFBE803-88B9-43A7-AF76-C8586DEB12C4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DE1CD87E-F76B-43E7-825A-83FB645E1FFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DE1CD87E-F76B-43E7-825A-83FB645E1FFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DE1CD87E-F76B-43E7-825A-83FB645E1FFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DE1CD87E-F76B-43E7-825A-83FB645E1FFA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5626CD7F-13B7-4F05-B593-D473D444A817}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5626CD7F-13B7-4F05-B593-D473D444A817}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5626CD7F-13B7-4F05-B593-D473D444A817}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5626CD7F-13B7-4F05-B593-D473D444A817}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CE5B06CB-CBA3-4D09-9800-1E2BB4D059B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CE5B06CB-CBA3-4D09-9800-1E2BB4D059B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CE5B06CB-CBA3-4D09-9800-1E2BB4D059B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CE5B06CB-CBA3-4D09-9800-1E2BB4D059B9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AB4E73B6-5861-4C46-9A4E-BCCEF00F3CE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AB4E73B6-5861-4C46-9A4E-BCCEF00F3CE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AB4E73B6-5861-4C46-9A4E-BCCEF00F3CE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AB4E73B6-5861-4C46-9A4E-BCCEF00F3CE7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{727034C7-66E1-4723-95D4-A9AF249262CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{727034C7-66E1-4723-95D4-A9AF249262CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{727034C7-66E1-4723-95D4-A9AF249262CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{727034C7-66E1-4723-95D4-A9AF249262CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

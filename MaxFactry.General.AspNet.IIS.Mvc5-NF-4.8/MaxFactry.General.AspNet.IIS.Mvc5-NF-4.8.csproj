@@ -476,10 +476,6 @@
       <Project>{5000a43b-95cd-4d65-aa38-09ca664639e4}</Project>
       <Name>MaxFactry.General-NF-4.8</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MaxFactry.General.AspNet-NF-4.8\MaxFactry.General.AspNet-NF-4.8.csproj">
-      <Project>{ce5b06cb-cba3-4d09-9800-1e2bb4d059b9}</Project>
-      <Name>MaxFactry.General.AspNet-NF-4.8</Name>
-    </ProjectReference>
     <ProjectReference Include="..\MaxFactry.General.AspNet.IIS-NF-4.8\MaxFactry.General.AspNet.IIS-NF-4.8.csproj">
       <Project>{de1cd87e-f76b-43e7-825a-83fb645e1ffa}</Project>
       <Name>MaxFactry.General.AspNet.IIS-NF-4.8</Name>
