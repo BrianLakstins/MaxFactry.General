@@ -80,28 +80,15 @@
     <None Include="Resources\Mapping.csv" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MaxFactry.General-NF-2.0\MaxFactry.General-NF-2.0.csproj">
-      <Project>{7ea91872-343d-4607-84ac-956e07195d64}</Project>
-      <Name>MaxFactry.General-NF-2.0</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MaxFactry.General.AspNet-NF-2.0\MaxFactry.General.AspNet-NF-2.0.csproj">
-      <Project>{51751036-dccf-4d29-8884-18e3adb85df3}</Project>
-      <Name>MaxFactry.General.AspNet-NF-2.0</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="MaxFactry.Base">
-      <Version>1.0.12</Version>
-    </PackageReference>
-    <PackageReference Include="MaxFactry.Core">
-      <Version>1.0.6</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MaxFactry.General.AspNet">
+      <Version>1.0.12</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

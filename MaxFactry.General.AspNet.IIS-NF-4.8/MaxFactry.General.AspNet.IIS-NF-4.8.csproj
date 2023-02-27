@@ -30,6 +30,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>MaxFactry.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -118,18 +124,15 @@
     <None Include="Resources\Mapping.csv" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MaxFactry.Base">
-      <Version>1.0.12</Version>
-    </PackageReference>
-    <PackageReference Include="MaxFactry.Core">
-      <Version>1.0.6</Version>
-    </PackageReference>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MaxFactry.General-NF-4.8\MaxFactry.General-NF-4.8.csproj">
-      <Project>{5000a43b-95cd-4d65-aa38-09ca664639e4}</Project>
-      <Name>MaxFactry.General-NF-4.8</Name>
-    </ProjectReference>
+    <PackageReference Include="MaxFactry.General.AspNet">
+      <Version>1.0.12</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

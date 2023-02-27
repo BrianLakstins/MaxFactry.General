@@ -30,110 +30,111 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-	<ItemGroup>
-		<Reference Include="System" />
-		<Reference Include="System.configuration" />
-		<Reference Include="System.Web" />
-		<Reference Include="System.Web.ApplicationServices" />
-	</ItemGroup>
-	<ItemGroup>
-		<Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\Library\Interface\IMaxApplicationEventLibraryProvider.cs">
-			<Link>Library\Interface\IMaxApplicationEventLibraryProvider.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\Library\Interface\IMaxApplicationLibraryProvider.cs">
-			<Link>Library\Interface\IMaxApplicationLibraryProvider.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\Library\MaxApplicationEventLibrary.cs">
-			<Link>Library\MaxApplicationEventLibrary.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\Library\MaxApplicationLibrary.cs">
-			<Link>Library\MaxApplicationLibrary.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\Library\Provider\MaxAppLibraryDefaultProvider.cs">
-			<Link>Library\Provider\MaxAppLibraryDefaultProvider.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\Library\Provider\MaxApplicationEventLibraryDefaultProvider.cs">
-			<Link>Library\Provider\MaxApplicationEventLibraryDefaultProvider.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\MaxFactry.Core\Library\Provider\MaxConfigurationLibraryAspNetIISProvider.cs">
-			<Link>MaxFactry.Core\Library\Provider\MaxConfigurationLibraryAspNetIISProvider.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\MaxFactry.Core\Library\Provider\MaxLogLibraryAspNetIISProvider.cs">
-			<Link>MaxFactry.Core\Library\Provider\MaxLogLibraryAspNetIISProvider.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\MaxFactry.Module.Core.AspNet\PresentationLayer\Library\Provider\MaxOwinLibraryIISProvider.cs">
-			<Link>MaxFactry.Module.Core.AspNet\PresentationLayer\Library\Provider\MaxOwinLibraryIISProvider.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\MaxFactry.Module.Security\BusinessLayer\Entity\MaxUserMembershipEntity.cs">
-			<Link>MaxFactry.Module.Security\BusinessLayer\Entity\MaxUserMembershipEntity.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\MaxResource.cs">
-			<Link>MaxResource.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\MaxStartup.cs">
-			<Link>MaxStartup.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\PresentationLayer\Models\MaxVirtualTextFileIISViewModel.cs">
-			<Link>PresentationLayer\Models\MaxVirtualTextFileIISViewModel.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\System.Web\Caching\MaxCacheDependencyOverride.cs">
-			<Link>System.Web\Caching\MaxCacheDependencyOverride.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\System.Web\Caching\MaxOutputCacheProviderverride.cs">
-			<Link>System.Web\Caching\MaxOutputCacheProviderverride.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\System.Web\Hosting\MaxVirtualDirectoryOverride.cs">
-			<Link>System.Web\Hosting\MaxVirtualDirectoryOverride.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\System.Web\Hosting\MaxVirtualFileOverride.cs">
-			<Link>System.Web\Hosting\MaxVirtualFileOverride.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\System.Web\Hosting\MaxVirtualPathProviderOverride.cs">
-			<Link>System.Web\Hosting\MaxVirtualPathProviderOverride.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\System.Web\MaxHttpApplicationOverride.cs">
-			<Link>System.Web\MaxHttpApplicationOverride.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\System.Web\Security\MaxMembershipProviderOverride.cs">
-			<Link>System.Web\Security\MaxMembershipProviderOverride.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\System.Web\Security\MaxMembershipUser.cs">
-			<Link>System.Web\Security\MaxMembershipUser.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\System.Web\Security\MaxRoleProviderOverride.cs">
-			<Link>System.Web\Security\MaxRoleProviderOverride.cs</Link>
-		</Compile>
-		<Compile Include="MaxFactry.Base\DataLayer\Library\Provider\MaxDataLibraryGeneralAspNetProvider.cs" />
-		<Compile Include="Properties\AssemblyInfo.cs" />
-		<Compile Include="Properties\Resources.Designer.cs">
-			<AutoGen>True</AutoGen>
-			<DesignTime>True</DesignTime>
-			<DependentUpon>Resources.resx</DependentUpon>
-		</Compile>
-	</ItemGroup>
-	<ItemGroup>
-		<None Include="app.config" />
-		<None Include="MaxFactry.pfx" />
-		<None Include="MaxFactry.snk" />
-		<None Include="Resources\Mapping.csv" />
-	</ItemGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>MaxFactry.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MaxFactry.Base">
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.ApplicationServices" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\Library\Interface\IMaxApplicationEventLibraryProvider.cs">
+      <Link>Library\Interface\IMaxApplicationEventLibraryProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\Library\Interface\IMaxApplicationLibraryProvider.cs">
+      <Link>Library\Interface\IMaxApplicationLibraryProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\Library\MaxApplicationEventLibrary.cs">
+      <Link>Library\MaxApplicationEventLibrary.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\Library\MaxApplicationLibrary.cs">
+      <Link>Library\MaxApplicationLibrary.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\Library\Provider\MaxAppLibraryDefaultProvider.cs">
+      <Link>Library\Provider\MaxAppLibraryDefaultProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\Library\Provider\MaxApplicationEventLibraryDefaultProvider.cs">
+      <Link>Library\Provider\MaxApplicationEventLibraryDefaultProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\MaxFactry.Core\Library\Provider\MaxConfigurationLibraryAspNetIISProvider.cs">
+      <Link>MaxFactry.Core\Library\Provider\MaxConfigurationLibraryAspNetIISProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\MaxFactry.Core\Library\Provider\MaxLogLibraryAspNetIISProvider.cs">
+      <Link>MaxFactry.Core\Library\Provider\MaxLogLibraryAspNetIISProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\MaxFactry.Module.Core.AspNet\PresentationLayer\Library\Provider\MaxOwinLibraryIISProvider.cs">
+      <Link>MaxFactry.Module.Core.AspNet\PresentationLayer\Library\Provider\MaxOwinLibraryIISProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\MaxFactry.Module.Security\BusinessLayer\Entity\MaxUserMembershipEntity.cs">
+      <Link>MaxFactry.Module.Security\BusinessLayer\Entity\MaxUserMembershipEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\MaxResource.cs">
+      <Link>MaxResource.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\MaxStartup.cs">
+      <Link>MaxStartup.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\PresentationLayer\Models\MaxVirtualTextFileIISViewModel.cs">
+      <Link>PresentationLayer\Models\MaxVirtualTextFileIISViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\System.Web\Caching\MaxCacheDependencyOverride.cs">
+      <Link>System.Web\Caching\MaxCacheDependencyOverride.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\System.Web\Caching\MaxOutputCacheProviderverride.cs">
+      <Link>System.Web\Caching\MaxOutputCacheProviderverride.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\System.Web\Hosting\MaxVirtualDirectoryOverride.cs">
+      <Link>System.Web\Hosting\MaxVirtualDirectoryOverride.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\System.Web\Hosting\MaxVirtualFileOverride.cs">
+      <Link>System.Web\Hosting\MaxVirtualFileOverride.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\System.Web\Hosting\MaxVirtualPathProviderOverride.cs">
+      <Link>System.Web\Hosting\MaxVirtualPathProviderOverride.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\System.Web\MaxHttpApplicationOverride.cs">
+      <Link>System.Web\MaxHttpApplicationOverride.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\System.Web\Security\MaxMembershipProviderOverride.cs">
+      <Link>System.Web\Security\MaxMembershipProviderOverride.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\System.Web\Security\MaxMembershipUser.cs">
+      <Link>System.Web\Security\MaxMembershipUser.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS-NF-2.0\System.Web\Security\MaxRoleProviderOverride.cs">
+      <Link>System.Web\Security\MaxRoleProviderOverride.cs</Link>
+    </Compile>
+    <Compile Include="MaxFactry.Base\DataLayer\Library\Provider\MaxDataLibraryGeneralAspNetProvider.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="MaxFactry.pfx" />
+    <None Include="MaxFactry.snk" />
+    <None Include="Resources\Mapping.csv" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MaxFactry.General.AspNet">
       <Version>1.0.12</Version>
-    </PackageReference>
-    <PackageReference Include="MaxFactry.Core">
-      <Version>1.0.6</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MaxFactry.General-NF-4.7.2\MaxFactry.General-NF-4.7.2.csproj">
-      <Project>{ca606a5f-79ae-4d65-8e5b-67b944eedecf}</Project>
-      <Name>MaxFactry.General-NF-4.7.2</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MaxFactry.General.AspNet-NF-4.7.2\MaxFactry.General.AspNet-NF-4.7.2.csproj">
-      <Project>{ecfbe803-88b9-43a7-af76-c8586deb12c4}</Project>
-      <Name>MaxFactry.General.AspNet-NF-4.7.2</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

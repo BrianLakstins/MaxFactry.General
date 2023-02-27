@@ -123,23 +123,13 @@
     <None Include="Resources\Mapping.csv" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MaxFactry.General-NF-4.5.2\MaxFactry.General-NF-4.5.2.csproj">
-      <Project>{a625c04c-84c7-4d75-8e53-8b37542235e0}</Project>
-      <Name>MaxFactry.General-NF-4.5.2</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MaxFactry.General.AspNet-NF-4.5.2\MaxFactry.General.AspNet-NF-4.5.2.csproj">
-      <Project>{8f6a762f-3fde-4fc2-98ac-61cae1f3553c}</Project>
-      <Name>MaxFactry.General.AspNet-NF-4.5.2</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MaxFactry.Base">
+    <PackageReference Include="MaxFactry.General.AspNet">
       <Version>1.0.12</Version>
     </PackageReference>
   </ItemGroup>
