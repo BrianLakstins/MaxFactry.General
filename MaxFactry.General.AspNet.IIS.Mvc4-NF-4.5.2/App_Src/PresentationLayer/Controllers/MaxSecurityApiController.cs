@@ -236,7 +236,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         [ActionName("usertoken")]
         public async Task<HttpResponseMessage> UserToken()
         {
-            HttpStatusCode loStatus = HttpStatusCode.Unauthorized;
+            HttpStatusCode loStatus = HttpStatusCode.OK;
             var loResponseItem = new
             {
                 UserName = "UserName",
@@ -251,6 +251,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             MaxApiResponseViewModel loR = GetResponse(loResponseItem);
             if (this.Request.Method != HttpMethod.Options)
             {
+                loStatus = HttpStatusCode.Unauthorized;
                 var loRequestItem = new
                 {
                     Id = "Id",
