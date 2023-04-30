@@ -135,6 +135,7 @@ namespace MaxFactry.General.DataLayer.Provider
                         loData.Set(loDataModel.Content, File.OpenRead(lsFromFileName));
                         loData.Set(loDataModel.ContentLength, loFileInfo.Length);
                         loData.Set(loDataModel.ContentName, loFileInfo.Name);
+                        loData.Set(loDataModel.ContentDate, loFileInfo.CreationTimeUtc);
                         loData.Set(loDataModel.ContentType, MaxStorageReadRepository.GetMimeType(loData, lsFromFileName));
                         loData.Set(loDataModel.MimeType, MaxStorageReadRepository.GetMimeType(loData, lsFromFileName));
                     }

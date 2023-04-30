@@ -122,6 +122,19 @@ namespace MaxFactry.General.BusinessLayer
             }
         }
 
+        public Guid RelatedId
+        {
+            get
+            {
+                return this.GetGuid(this.DataModel.RelatedId);
+            }
+
+            set
+            {
+                this.Set(this.DataModel.RelatedId, value);
+            }
+        }
+
         /// <summary>
         /// Gets the Data Model for this entity
         /// </summary>
