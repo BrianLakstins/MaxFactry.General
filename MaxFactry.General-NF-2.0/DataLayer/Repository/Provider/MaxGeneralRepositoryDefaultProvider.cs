@@ -120,5 +120,28 @@ namespace MaxFactry.General.DataLayer.Provider
         }
 
 #endif
+
+        public override bool Insert(MaxData loData)
+        {
+            if (loData.DataModel is MaxBaseIdFileDataModel)
+            {
+                MaxBaseIdFileDataModel loDataModel = loData.DataModel as MaxBaseIdFileDataModel;
+                if (null == loData.Get(loDataModel.Content))
+                {
+                    string lsFromFileName = loData.Get(loDataModel.FromFileName) as string;
+                    if (!string.IsNullOrEmpty(lsFromFileName) && File.Exists(lsFromFileName))
+                    {
+                        FileInfo loFileInfo = new FileInfo(lsFromFileName);
+                        loData.Set(loDataModel.Content, File.OpenRead(lsFromFileName));
+                        loData.Set(loDataModel.ContentLength, loFileInfo.Length);
+                        loData.Set(loDataModel.ContentName, loFileInfo.Name);
+                        loData.Set(loDataModel.ContentType, MaxStorageReadRepository.GetMimeType(loData, lsFromFileName));
+                        loData.Set(loDataModel.MimeType, MaxStorageReadRepository.GetMimeType(loData, lsFromFileName));
+                    }
+                }
+            }
+
+            return base.Insert(loData);
+        }
     }
 }

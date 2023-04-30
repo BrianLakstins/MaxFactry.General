@@ -95,6 +95,8 @@ namespace MaxFactry.General.AspNet.PresentationLayer
 
         bool IsRecaptchaVerified(string lsSecret, string lsResponse, string lsRemoteIP);
 
+        bool IshCaptchaVerified(string lsSecret, string lsResponse, string lsRemoteIP);
+
         string GetTitle();
 
         string GetRedirectUrl(Uri loUrl);

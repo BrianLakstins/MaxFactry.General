@@ -235,6 +235,47 @@ namespace MaxFactry.General.AspNet.PresentationLayer.Provider
             return lbR;
         }
 
+        public bool IshCaptchaVerified(string lsSecret, string lsResponse, string lsRemoteIP)
+        {
+            bool lbR = false;
+            string lsPostData = String.Format("secret={0}&response={1}&remoteip={2}", lsSecret, lsResponse, lsRemoteIP);
+
+            byte[] laPostData = System.Text.Encoding.ASCII.GetBytes(lsPostData);
+
+            Uri loUri = new Uri("https://hcaptcha.com/siteverify", UriKind.Absolute);
+
+            try
+            {
+                System.Net.WebRequest loRequest = System.Net.WebRequest.Create(loUri);
+                loRequest.ContentType = "application/x-www-form-urlencoded";
+                loRequest.ContentLength = laPostData.Length;
+                loRequest.Method = "POST";
+                System.IO.Stream loDataIn = loRequest.GetRequestStream();
+                loDataIn.Write(laPostData, 0, laPostData.Length);
+                loDataIn.Close();
+
+                System.Net.WebResponse loResponse = loRequest.GetResponse();
+
+                System.IO.Stream loDataOut = loResponse.GetResponseStream();
+                System.IO.StreamReader loReader = new System.IO.StreamReader(loDataOut);
+                string lsDataOut = loReader.ReadToEnd();
+                loReader.Close();
+                loDataOut.Close();
+                loResponse.Close();
+
+                if (lsDataOut.Replace(" ", string.Empty).Contains("\"success\":true"))
+                {
+                    lbR = true;
+                }
+            }
+            catch (Exception loE)
+            {
+                MaxLogLibrary.Log(new MaxLogEntryStructure(MaxEnumGroup.LogError, "Error validating hCaptcha", loE));
+            }
+
+            return lbR;
+        }
+
         public virtual string GetTitle()
         {
             object loValue = MaxConfigurationLibrary.GetValue(MaxEnumGroup.ScopeAny, "__MaxTitle");

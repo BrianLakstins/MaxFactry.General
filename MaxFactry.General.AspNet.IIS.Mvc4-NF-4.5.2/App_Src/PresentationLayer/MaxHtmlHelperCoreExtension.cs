@@ -83,7 +83,6 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             return LabelExtensions.LabelFor(helper, loLabelExpression, loLabelIndex);
         }
 
-
         /// <summary>
         /// Gets the Html for an input form element
         /// </summary>
@@ -190,8 +189,6 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             loContainer.Content += loInputColumn.ToString();
             return new HtmlString(loContainer.ToString());
         }
-
-
 
         /// <summary>
         /// Gets the Html for an input form element
@@ -513,8 +510,6 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
             return new HtmlString(loGroupDiv.ToString());
         }
-
-
 
         /// <summary>
         /// Gets the Html for a textarea form element
@@ -858,6 +853,11 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         public static bool MaxIsRecaptchVerified(string lsSecret, string lsResponse, string lsRemoteIP)
         {
             return MaxOwinLibrary.IsRecaptchaVerified(lsSecret, lsResponse, lsRemoteIP);
+        }
+
+        public static bool MaxIshCaptchVerified(string lsSecret, string lsResponse, string lsRemoteIP)
+        {
+            return MaxOwinLibrary.IshCaptchVerified(lsSecret, lsResponse, lsRemoteIP);
         }
 
         public static string MaxFileGetUrl<T>(this HtmlHelper<T> helper, string lsName)
