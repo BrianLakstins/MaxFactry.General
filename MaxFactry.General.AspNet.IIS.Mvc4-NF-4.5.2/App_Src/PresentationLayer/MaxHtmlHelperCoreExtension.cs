@@ -855,9 +855,9 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             return MaxOwinLibrary.IsRecaptchaVerified(lsSecret, lsResponse, lsRemoteIP);
         }
 
-        public static bool MaxIshCaptchVerified(string lsSecret, string lsResponse, string lsRemoteIP)
+        public static bool MaxIshCaptchaVerified(string lsSecret, string lsResponse, string lsRemoteIP)
         {
-            return MaxOwinLibrary.IshCaptchVerified(lsSecret, lsResponse, lsRemoteIP);
+            return MaxOwinLibrary.IshCaptchaVerified(lsSecret, lsResponse, lsRemoteIP);
         }
 
         public static string MaxFileGetUrl<T>(this HtmlHelper<T> helper, string lsName)
