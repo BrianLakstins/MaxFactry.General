@@ -249,10 +249,10 @@ namespace MaxFactry.General.AspNet.BusinessLayer
             }
 
             this.ContentName = this.FileName;
-            this.ContentType = GetMimeType(this.ContentName);
+            this.ContentType = this.GetMimeType();
             if (string.IsNullOrEmpty(this.MimeType))
             {
-                this.MimeType = GetMimeType(this.ContentName);
+                this.MimeType = this.GetMimeType();
             }
 
             return base.Insert();
@@ -261,8 +261,8 @@ namespace MaxFactry.General.AspNet.BusinessLayer
         public override bool Update()
         {
             this.ContentName = this.FileName;
-            this.ContentType = GetMimeType(this.ContentName);
-            this.MimeType = GetMimeType(this.ContentName);
+            this.ContentType = this.GetMimeType();
+            this.MimeType = this.GetMimeType();
             return base.Update();
         }      
 
