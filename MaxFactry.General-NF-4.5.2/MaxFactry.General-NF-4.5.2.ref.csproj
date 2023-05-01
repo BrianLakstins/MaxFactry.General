@@ -54,6 +54,9 @@
     <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxFileDownloadEntity.cs">
       <Link>BusinessLayer\Entity\MaxFileDownloadEntity.cs</Link>
     </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxFileEntity.cs">
+      <Link>BusinessLayer\Entity\MaxFileEntity.cs</Link>
+    </Compile>
     <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxPaymentCardEntity.cs">
       <Link>BusinessLayer\Entity\MaxPaymentCardEntity.cs</Link>
     </Compile>
@@ -98,6 +101,9 @@
     </Compile>
     <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxEmailDataModel.cs">
       <Link>DataLayer\DataModel\MaxEmailDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxFileDataModel.cs">
+      <Link>DataLayer\DataModel\MaxFileDataModel.cs</Link>
     </Compile>
     <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxFileDownloadDataModel.cs">
       <Link>DataLayer\DataModel\MaxFileDownloadDataModel.cs</Link>
