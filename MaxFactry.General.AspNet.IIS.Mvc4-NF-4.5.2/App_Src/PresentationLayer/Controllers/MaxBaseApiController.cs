@@ -74,6 +74,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
     using MaxFactry.Base.BusinessLayer;
     using MaxFactry.General.AspNet.PresentationLayer;
     using MaxFactry.General.BusinessLayer;
+    using System.Web.UI;
 
     /// <summary>
     /// Base class for any Api controller.
@@ -703,6 +704,65 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             return loR;
         }
 
+        protected virtual MaxApiResponseViewModel ProcessLoadList(MaxApiRequestViewModel loRequest, MaxBaseIdEntity loEntity)
+        {
+            MaxApiResponseViewModel loR = new MaxApiResponseViewModel();
+            var loResponsePage = new
+            {
+                Total = "Total",
+                ItemList = "ItemList"
+            };
+
+            var loRequestPage = new
+            {
+                Page = "Page",
+                PageLength = "PageLength",
+                SortBy = "SortBy"
+            };
+
+            int lnPage = MaxConvertLibrary.ConvertToInt(typeof(object), loRequest.Item.GetValueString(loRequestPage.Page));
+            int lnPageLength = MaxConvertLibrary.ConvertToInt(typeof(object), loRequest.Item.GetValueString(loRequestPage.PageLength));
+            if (lnPage < 1 || lnPageLength < 0)
+            {
+                lnPage = 1;
+                lnPageLength = 50;
+            }
+            string lsSortBy = loRequest.Item.GetValueString(loRequestPage.SortBy);
+
+            if (!string.IsNullOrEmpty(lsSortBy) && lnPage > 0 && lnPageLength > 0)
+            {
+                MaxEntityList loList = loEntity.LoadAllByPage(lnPage, lnPageLength, lsSortBy, loRequest.ResponseFieldList);
+                loR.Page.Add(loResponsePage.Total, loList.Total);
+                for (int lnE = 0; lnE < loList.Count; lnE++)
+                {
+                    MaxBaseIdEntity loListEntity = loList[lnE] as MaxBaseIdEntity;
+                    MaxIndex loItem = loListEntity.MapIndex(loRequest.ResponseFieldList);
+                    loR.ItemList.Add(loItem);
+                }
+            }
+            else
+            {
+                MaxEntityList loList = loEntity.LoadAllCache(loRequest.ResponseFieldList);
+                SortedList<string, MaxBaseIdEntity> loSortedList = new SortedList<string, MaxBaseIdEntity>();
+                for (int lnE = 0; lnE < loList.Count; lnE++)
+                {
+                    MaxBaseIdEntity loListEntity = loList[lnE] as MaxBaseIdEntity;
+                    if (loListEntity.IsActive || this.HasPermission(loRequest, loEntity, loRequest.Id, (int)MaxEnumGroup.PermissionSelectInactive))
+                    {
+                        loSortedList.Add(loListEntity.GetDefaultSortString(), loListEntity);
+                    }
+                }
+
+                foreach (string lsKey in loSortedList.Keys)
+                {
+                    MaxIndex loItem = loSortedList[lsKey].MapIndex(loRequest.ResponseFieldList);
+                    loR.ItemList.Add(loItem);
+                }
+            }
+
+            return loR;
+        }
+
         /// <summary>
         /// Process an api call for an entity
         /// </summary>
@@ -747,57 +807,9 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                             }
                             else
                             {
-                                var loResponsePage = new
-                                {
-                                    Total = "Total",
-                                    ItemList = "ItemList"
-                                };
-
-                                var loRequestPage = new
-                                {
-                                    Page = "Page",
-                                    PageLength = "PageLength",
-                                    SortBy = "SortBy"
-                                };
-
-                                int lnPage = MaxConvertLibrary.ConvertToInt(typeof(object), loRequest.Item.GetValueString(loRequestPage.Page));
-                                int lnPageLength = MaxConvertLibrary.ConvertToInt(typeof(object), loRequest.Item.GetValueString(loRequestPage.PageLength));
-                                if (lnPage < 1 || lnPageLength < 0)
-                                {
-                                    lnPage = 1;
-                                    lnPageLength = 50;
-                                }
-                                string lsSortBy = loRequest.Item.GetValueString(loRequestPage.SortBy);
-                                if (!string.IsNullOrEmpty(lsSortBy) && lnPage > 0 && lnPageLength > 0)
-                                {
-                                    MaxEntityList loList = loEntity.LoadAllByPage(lnPage, lnPageLength, lsSortBy, loRequest.ResponseFieldList);
-                                    loR.Page.Add(loResponsePage.Total, loList.Total);
-                                    for (int lnE = 0; lnE < loList.Count; lnE++)
-                                    {
-                                        MaxBaseIdEntity loListEntity = loList[lnE] as MaxBaseIdEntity;
-                                        MaxIndex loItem = loListEntity.MapIndex(loRequest.ResponseFieldList);
-                                        loR.ItemList.Add(loItem);
-                                    }
-                                }
-                                else
-                                {
-                                    MaxEntityList loList = loEntity.LoadAllCache(loRequest.ResponseFieldList);
-                                    SortedList<string, MaxBaseIdEntity> loSortedList = new SortedList<string, MaxBaseIdEntity>();
-                                    for (int lnE = 0; lnE < loList.Count; lnE++)
-                                    {
-                                        MaxBaseIdEntity loListEntity = loList[lnE] as MaxBaseIdEntity;
-                                        if (loListEntity.IsActive || this.HasPermission(loRequest, loEntity, loRequest.Id, (int)MaxEnumGroup.PermissionSelectInactive))
-                                        {
-                                            loSortedList.Add(loListEntity.GetDefaultSortString(), loListEntity);
-                                        }
-                                    }
-
-                                    foreach (string lsKey in loSortedList.Keys)
-                                    {
-                                        MaxIndex loItem = loSortedList[lsKey].MapIndex(loRequest.ResponseFieldList);
-                                        loR.ItemList.Add(loItem);
-                                    }
-                                }
+                                MaxApiResponseViewModel loLoadListResponse = this.ProcessLoadList(loRequest, loEntity);
+                                loR.Page = loLoadListResponse.Page;
+                                loR.ItemList = loLoadListResponse.ItemList;
                             }
                         }
                     }
