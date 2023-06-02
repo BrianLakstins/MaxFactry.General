@@ -322,7 +322,8 @@ namespace MaxFactry.General.BusinessLayer
             for (int lnE = 0; lnE < loList.Count; lnE++)
             {
                 MaxUserAuthTokenEntity loEntity = loList[lnE] as MaxUserAuthTokenEntity;
-                if (DateTime.UtcNow.AddHours(1) < loEntity.CreatedDate.AddSeconds(loEntity.Expiration))
+                //// Tokens need to still be good for at least a minute
+                if (DateTime.UtcNow.AddMinutes(1) < loEntity.CreatedDate.AddSeconds(loEntity.Expiration))
                 {
                     lsR = loEntity.Token;
                 }
