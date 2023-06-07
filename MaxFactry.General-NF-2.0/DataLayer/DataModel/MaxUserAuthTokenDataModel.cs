@@ -93,9 +93,11 @@ namespace MaxFactry.General.DataLayer
 			this.AddNullable(this.UserAuthGrantId, typeof(Guid));
 			this.AddNullable(this.TokenHash, typeof(string));
 			this.AddNullable(this.Token, typeof(string));
-			this.AddNullable(this.Expiration, typeof(int));
+            this.AddPropertyAttribute(this.Token, "IsEncrypted", "true");
+            this.AddNullable(this.Expiration, typeof(int));
 			this.AddNullable(this.TokenType, typeof(string));
 			this.AddNullable(this.TokenResult, typeof(MaxLongString));
+			this.AddPropertyAttribute(this.TokenResult, "IsEncrypted", "true");
 
 			this.RepositoryProviderType = typeof(MaxFactry.General.DataLayer.Provider.MaxSecurityRepositoryDefaultProvider);
             this.RepositoryType = typeof(MaxSecurityRepository);
