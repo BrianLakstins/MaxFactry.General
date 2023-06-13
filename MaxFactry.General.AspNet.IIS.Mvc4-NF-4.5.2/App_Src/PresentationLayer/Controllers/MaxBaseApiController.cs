@@ -941,19 +941,19 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 {
                     // Last month
                     ldStartDate = DateTime.UtcNow.Date.AddMonths(-1);
-                    ldStartDate = new DateTime(ldStartDate.Year, ldStartDate.Month, 1);
+                    ldStartDate = new DateTime(ldStartDate.Year, ldStartDate.Month, 1, 0, 0, 0, DateTimeKind.Utc);
                     ldEndDate = ldStartDate.AddMonths(1);
                 }
                 else if (laDateRangeName[lnDateRangeIndex] == "This month")
                 {
                     // This month
-                    ldStartDate = new DateTime(DateTime.UtcNow.Date.Year, DateTime.UtcNow.Date.Month, 1);
+                    ldStartDate = new DateTime(DateTime.UtcNow.Date.Year, DateTime.UtcNow.Date.Month, 1, 0, 0, 0, DateTimeKind.Utc);
                     ldEndDate = ldStartDate.AddMonths(1);
                 }
                 else if (laDateRangeName[lnDateRangeIndex] == "Last Quarter")
                 {
                     // Last Quarter
-                    ldStartDate = new DateTime(DateTime.UtcNow.Date.Year, DateTime.UtcNow.Date.Month, 1);
+                    ldStartDate = new DateTime(DateTime.UtcNow.Date.Year, DateTime.UtcNow.Date.Month, 1, 0, 0, 0, DateTimeKind.Utc);
                     int lnCount = 0;
                     while ((ldStartDate.Month != 1 && ldStartDate.Month != 4 && ldStartDate.Month != 7 && ldStartDate.Month != 10) || lnCount == 0)
                     {
@@ -970,7 +970,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 else if (laDateRangeName[lnDateRangeIndex] == "This Quarter")
                 {
                     // This Quarter
-                    ldStartDate = new DateTime(DateTime.UtcNow.Date.Year, DateTime.UtcNow.Date.Month, 1);
+                    ldStartDate = new DateTime(DateTime.UtcNow.Date.Year, DateTime.UtcNow.Date.Month, 1, 0, 0, 0, DateTimeKind.Utc);
                     while (ldStartDate.Month != 1 && ldStartDate.Month != 4 && ldStartDate.Month != 7 && ldStartDate.Month != 10)
                     {
                         ldStartDate = ldStartDate.AddMonths(-1);
