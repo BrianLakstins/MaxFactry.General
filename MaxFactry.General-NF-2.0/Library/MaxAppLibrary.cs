@@ -33,6 +33,7 @@
 // <change date="2/6/2020" author="Brian A. Lakstins" description="Adding properties and methods for system information">
 // <change date="5/6/2020" author="Brian A. Lakstins" description="Updating handing of application start time">
 // <change date="6/5/2020" author="Brian A. Lakstins" description="Change order of application start to be able to pass global configuration.">
+// <change date="7/20/2023" author="Brian A. Lakstins" description="Add some methods to check configuration.">
 // </changelog>
 #endregion
 
@@ -41,6 +42,7 @@ namespace MaxFactry.General
     using System;
     using MaxFactry.Core;
     using MaxFactry.Base.DataLayer;
+    using MaxFactry.General.BusinessLayer;
 
     /// <summary>
     /// Provider for conversion specifically for dates.
@@ -234,6 +236,45 @@ namespace MaxFactry.General
         public static void ApplicationShutdown()
         {
             Provider.ApplicationShutdown();
+        }
+
+        public static bool Test()
+        {
+            bool lbR = false;
+            MaxUserAuthEntity loEntity = MaxUserAuthEntity.Create();
+            loEntity.UserKey = "UserKey";
+            loEntity.Name = "Name";
+            loEntity.ClientId = "ClientId";
+            loEntity.ClientSecret = DateTime.UtcNow.ToString();
+            if (loEntity.Insert())
+            {
+                MaxUserAuthEntity loAuthTest = MaxUserAuthEntity.Create();
+                loAuthTest.LoadByIdCache(loEntity.Id);
+                if (loAuthTest.ClientSecret != loEntity.ClientSecret)
+                {
+                    MaxLogLibrary.Log(new MaxLogEntryStructure(typeof(MaxAppLibrary), "Test", MaxEnumGroup.LogCritical, "Encryption is not configured correctly"));
+                }
+                else
+                {
+                    lbR = true;
+                }
+            }
+            else
+            {
+                MaxLogLibrary.Log(new MaxLogEntryStructure(typeof(MaxAppLibrary), "Test", MaxEnumGroup.LogCritical, "Could not insert MaxUserAuthEntity into database"));
+            }
+
+            return lbR;
+        }
+
+        public static void CauseException()
+        {
+            string[] laTest = new string[] { "test" };
+            //// Cause a System.IndexOutOfRangeException
+            if (laTest[3] == "test")
+            {
+                laTest[0] = "test0";
+            }
         }
     }
 }
