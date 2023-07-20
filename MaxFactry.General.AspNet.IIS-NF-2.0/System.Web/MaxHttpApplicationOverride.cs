@@ -43,6 +43,7 @@
 // <change date="6/5/2020" author="Brian A. Lakstins" description="Add testing confiuration.">
 // <change date="9/4/2020" author="Brian A. Lakstins" description="Remove client tool registration.">
 // <change date="1/19/2021" author="Brian A. Lakstins" description="Update handling of site errors when HttpContext.Current is null.">
+// <change date="7/20/2023" author="Brian A. Lakstins" description="Use constant instead of string for configuration name">
 // </changelog>
 #endregion
 
@@ -59,6 +60,7 @@ namespace System.Web
     using MaxFactry.Core;
     using MaxFactry.General.BusinessLayer;
     using MaxFactry.General.AspNet.IIS;
+    using MaxFactry.Base.DataLayer.Provider;
 
     /// <summary>
     /// MaxFactry implementation of HttpApplication
@@ -124,7 +126,7 @@ namespace System.Web
             loConfig.Add("DataSetFolder", HttpContext.Current.Server.MapPath("~/App_Data/MaxDataSet/"));
 
             //// Set Default DataContextProvider
-            loConfig.Add(typeof(MaxFactry.Core.MaxProvider) + "-DefaultContextProviderName", "DefaultContextProviderTypeDataSet");
+            loConfig.Add(typeof(MaxFactry.Core.MaxProvider) + "-" + MaxDataContextDefaultProvider.DefaultContextProviderConfigName, "DefaultContextProviderTypeDataSet");
             #endregion
 
             return loConfig;
