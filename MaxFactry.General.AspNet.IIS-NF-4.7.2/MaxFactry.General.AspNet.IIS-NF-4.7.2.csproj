@@ -131,7 +131,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MaxFactry.General.AspNet">
-      <Version>1.0.20.2</Version>
+      <Version>1.0.22</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
