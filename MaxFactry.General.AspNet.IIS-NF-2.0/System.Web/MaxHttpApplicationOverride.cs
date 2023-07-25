@@ -44,6 +44,7 @@
 // <change date="9/4/2020" author="Brian A. Lakstins" description="Remove client tool registration.">
 // <change date="1/19/2021" author="Brian A. Lakstins" description="Update handling of site errors when HttpContext.Current is null.">
 // <change date="7/20/2023" author="Brian A. Lakstins" description="Use constant instead of string for configuration name">
+// <change date="7/25/2023" author="Brian A. Lakstins" description="Remove GetConfig.  Moved to MaxAppLibrary.">
 // </changelog>
 #endregion
 
@@ -117,29 +118,14 @@ namespace System.Web
             this.PostLogRequest += (new EventHandler(MaxApplicationEventLibrary.ApplicationPostLogRequest));
         }
 
-        protected virtual MaxIndex GetConfig()
-        {
-            #region Configuration
-            var loConfig = new MaxFactry.Core.MaxIndex();
-            //// DataSet Provider Configuration
-            loConfig.Add("DefaultContextProviderTypeDataSet", typeof(MaxFactry.Base.DataLayer.Provider.MaxDataContextDefaultProvider));
-            loConfig.Add("DataSetFolder", HttpContext.Current.Server.MapPath("~/App_Data/MaxDataSet/"));
-
-            //// Set Default DataContextProvider
-            loConfig.Add(typeof(MaxFactry.Core.MaxProvider) + "-" + MaxDataContextDefaultProvider.DefaultContextProviderConfigName, "DefaultContextProviderTypeDataSet");
-            #endregion
-
-            return loConfig;
-        }
-
         /// <summary>
         /// Runs once when the application is started
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        protected virtual void Application_Start_Handler(object sender, EventArgs e, Type loApplicationLibraryProviderType, MaxIndex loConfig)
+        protected virtual void Application_Start_Handler(object sender, EventArgs e, MaxIndex loConfig)
         {
-            MaxFactry.General.AspNet.IIS.MaxAppLibrary.Start(loApplicationLibraryProviderType, loConfig);
+            MaxFactry.General.AspNet.IIS.MaxAppLibrary.Initialize(loConfig);
             this.FixAppDomainRestartWhenTouchingFiles();
             string lsVersion = MaxConfigurationLibrary.GetValue(MaxEnumGroup.ScopeApplication, "MaxAssemblyFileVersion").ToString();
             //// Send an email about the application starting.
