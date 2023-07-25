@@ -37,7 +37,7 @@ namespace MaxFactry.General.AspNet
     using MaxFactry.Core;
 
     /// <summary>
-    /// Provider for conversion specifically for dates.
+    /// Inherits and adds to the base MaxAppLibrary for applications that just use AspNet
     /// </summary>
     public class MaxAppLibrary : MaxFactry.General.MaxAppLibrary
     {
