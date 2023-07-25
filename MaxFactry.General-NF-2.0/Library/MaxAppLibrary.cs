@@ -34,7 +34,7 @@
 // <change date="5/6/2020" author="Brian A. Lakstins" description="Updating handing of application start time">
 // <change date="6/5/2020" author="Brian A. Lakstins" description="Change order of application start to be able to pass global configuration.">
 // <change date="7/20/2023" author="Brian A. Lakstins" description="Add some methods to check configuration.">
-// <change date="7/25/2023" author="Brian A. Lakstins" description="Change order of methods so they match when they are run.  Add GetTempFolder.">
+// <change date="7/25/2023" author="Brian A. Lakstins" description="Change order of methods so they match when they are run.  Add GetTempFolder.  Add GetConfig.">
 // </changelog>
 #endregion
 
@@ -42,7 +42,6 @@ namespace MaxFactry.General
 {
     using System;
     using MaxFactry.Core;
-    using MaxFactry.Base.DataLayer;
     using MaxFactry.General.BusinessLayer;
 
     /// <summary>
@@ -168,9 +167,30 @@ namespace MaxFactry.General
             }
         }
 
-        public static void Start(Type loApplicationLibraryProviderType, MaxIndex loConfig)
+        /// <summary>
+        /// Gets the configuration to be used to initialize the application
+        /// </summary>
+        /// <returns></returns>
+        public static MaxIndex GetConfig()
+        {
+            return Provider.GetConfig();
+        }
+
+        /// <summary>
+        /// Starts the application by configuring the App library to use the provider
+        /// </summary>
+        /// <param name="loApplicationLibraryProviderType"></param>
+        public static void Start(Type loApplicationLibraryProviderType)
         {
             MaxAppLibrary.Instance.ProviderSet(loApplicationLibraryProviderType);
+        }
+
+        /// <summary>
+        /// Goes through the application initialization process
+        /// </summary>
+        /// <param name="loConfig"></param>
+        public static void Initialize(MaxIndex loConfig)
+        {
             MaxAppLibrary.SetProviderConfiguration(loConfig);
             MaxAppLibrary.RegisterProviders();
             MaxAppLibrary.ApplicationStartup();

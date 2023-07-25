@@ -30,14 +30,16 @@
 // <change date="6/7/2015" author="Brian A. Lakstins" description="Initial creation">
 // <change date="5/19/2020" author="Brian A. Lakstins" description="Add logging of external Http requests">
 // <change date="6/5/2020" author="Brian A. Lakstins" description="Remove setting configuration for providers because it's set globally for all.">
-// <change date="7/25/2023" author="Brian A. Lakstins" description="Change order of methods so they match when they are run.">
+// <change date="7/25/2023" author="Brian A. Lakstins" description="Change order of methods so they match when they are run.  Remove some config that has moved to the MaxAppLibrary.">
 // </changelog>
 #endregion
 
 namespace MaxFactry.General
 {
     using System;
+    using MaxFactry.Base.DataLayer.Provider;
     using MaxFactry.Core;
+    using MaxFactry.Core.Provider;
 
     public class MaxStartup : MaxFactry.Base.MaxStartup
     {
@@ -60,17 +62,19 @@ namespace MaxFactry.General
 
         public override void SetProviderConfiguration(MaxFactry.Core.MaxIndex loConfig)
         {
+            //// DataSet Provider Configuration
+            loConfig.Add(typeof(MaxDataContextDefaultProvider).Name, typeof(MaxDataContextDefaultProvider));
         }
 
         public override void RegisterProviders()
         {
             //// Configure provider for MaxFactryLibrary
             MaxSettingsStructure loSettingMaxFactry = new MaxSettingsStructure(
-                typeof(MaxFactry.Core.Provider.MaxFactryLibraryDefaultProvider).Name,
-                typeof(MaxFactry.Core.Provider.MaxFactryLibraryDefaultProvider));
-            MaxFactryLibrary.SetSetting(typeof(MaxFactry.Core.Provider.MaxFactryLibraryDefaultProvider).ToString(), loSettingMaxFactry);
+                typeof(MaxFactryLibraryDefaultProvider).Name,
+                typeof(MaxFactryLibraryDefaultProvider));
+            MaxFactryLibrary.SetSetting(typeof(MaxFactryLibraryDefaultProvider).ToString(), loSettingMaxFactry);
             //// Set provider for MaxConfigurationLibrary
-            MaxFactry.Core.MaxConfigurationLibrary.Instance.ProviderSet(typeof(MaxFactry.Core.Provider.MaxConfigurationLibraryGeneralProvider));
+            MaxConfigurationLibrary.Instance.ProviderSet(typeof(MaxConfigurationLibraryGeneralProvider));
         }
     
         public override void ApplicationStartup()

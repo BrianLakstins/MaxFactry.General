@@ -32,7 +32,7 @@
 // <change date="2/4/2020" author="Brian A. Lakstins" description="Add method to handle shutdown of app.">
 // <change date="2/6/2020" author="Brian A. Lakstins" description="Adding properties and methods for system information">
 // <change date="5/6/2020" author="Brian A. Lakstins" description="Updating handing of application start time">
-// <change date="7/25/2023" author="Brian A. Lakstins" description="Update order of methods. Add GetTempFolder.">
+// <change date="7/25/2023" author="Brian A. Lakstins" description="Update order of methods. Add GetTempFolder.  Add GetConfig method.">
 // </changelog>
 #endregion
 
@@ -46,7 +46,6 @@ namespace MaxFactry.General
     /// </summary>
 	public interface IMaxAppLibraryProvider
     {
-
         /// <summary>
         /// Gets the time passed in milliseconds since the application started
         /// </summary>
@@ -69,6 +68,12 @@ namespace MaxFactry.General
         /// Get the current instance of the application temporary folder
         /// </summary>
         string GetTempFolder();
+
+        /// <summary>
+        /// Gets the configuration to use to initialize providers
+        /// </summary>
+        /// <returns></returns>
+        MaxIndex GetConfig();
 
         void AddValidStorageKey(string lsStorageKey);
 

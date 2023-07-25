@@ -35,7 +35,7 @@
 // <change date="5/6/2020" author="Brian A. Lakstins" description="Updating handing of application start time">
 // <change date="6/5/2020" author="Brian A. Lakstins" description="Updated initialization so does not use global config. Only uses passed config.  Trying to use global config can cause objects to get created before they can be configured.  Move Reset of MaxFactryLibrary to SetProviderConfiguration.">
 // <change date="7/20/2023" author="Brian A. Lakstins" description="Add default configuration process.">
-// <change date="7/25/2023" author="Brian A. Lakstins" description="Change order of methods so they match when they are run.  Add GetTempFolder.">
+// <change date="7/25/2023" author="Brian A. Lakstins" description="Change order of methods so they match when they are run.  Add GetTempFolder.  Add GetConfig.">
 // </changelog>
 #endregion
 
@@ -43,6 +43,7 @@ namespace MaxFactry.General.Provider
 {
 	using System;
     using System.Diagnostics;
+    using MaxFactry.Base.DataLayer.Provider;
     using MaxFactry.Core;
     using MaxFactry.Core.Provider;
     using Microsoft.SqlServer.Server;
@@ -303,6 +304,19 @@ namespace MaxFactry.General.Provider
         public virtual void ClearValidStorageKey()
         {
             this._oValidStorageKeyIndex = new MaxIndex();
+        }
+
+        /// <summary>
+        /// Gets the configuration to initialize providers.
+        /// Base config sets the DataContext provider to the default
+        /// </summary>
+        /// <returns></returns>
+        public virtual MaxIndex GetConfig()
+        {
+            MaxIndex loR = new MaxIndex();
+            //// Set Default DataContextProvider
+            loR.Add(typeof(MaxFactry.Core.MaxProvider) + "-" + MaxDataContextDefaultProvider.DefaultContextProviderConfigName, typeof(MaxDataContextDefaultProvider).Name);
+            return loR;
         }
 
         /// <summary>
