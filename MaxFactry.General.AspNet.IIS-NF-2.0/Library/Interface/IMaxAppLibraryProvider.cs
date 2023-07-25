@@ -1,4 +1,4 @@
-﻿// <copyright file="MaxAppLibraryNet40Provider.cs" company="Lakstins Family, LLC">
+﻿// <copyright file="IMaxHttpApplicationLibrary.cs" company="Lakstins Family, LLC">
 // Copyright (c) Brian A. Lakstins (http://www.lakstins.com/brian/)
 // </copyright>
 
@@ -32,59 +32,28 @@
 // </changelog>
 #endregion
 
-namespace MaxFactry.General.AspNet.IIS.Provider
+namespace MaxFactry.General.AspNet.IIS
 {
-    using System;
+	using System;
     using System.Web;
-    using System.Web.Security;
-    using System.Diagnostics;
     using MaxFactry.Core;
     using MaxFactry.Base.BusinessLayer;
     using MaxFactry.Base.DataLayer;
 
     /// <summary>
-    /// Default provider for MaxAppLibrary
+    /// Inteface for MaxAppLibrary
     /// </summary>
-    public class MaxAppLibraryDefaultProvider : MaxFactry.General.AspNet.Provider.MaxAppLibraryDefaultProvider, IMaxAppLibraryProvider
-    {
-        public override void Initialize(string lsName, MaxIndex loConfig)
-        {
-            base.Initialize(lsName, loConfig);
-        }
-
-        public override void SetProviderConfiguration(MaxIndex loConfig)
-        {
-            base.SetProviderConfiguration(loConfig);
-            MaxFactry.General.AspNet.IIS.MaxStartup.Instance.SetProviderConfiguration(loConfig);
-        }
-
-        public override void RegisterProviders()
-        {
-            base.RegisterProviders();
-            MaxFactry.General.AspNet.IIS.MaxStartup.Instance.RegisterProviders();
-        }
-        
-        public override void ApplicationStartup()
-        {
-            base.ApplicationStartup();
-            MaxFactry.General.AspNet.IIS.MaxStartup.Instance.ApplicationStartup();
-        }
-
+    public interface IMaxAppLibraryProvider : MaxFactry.General.AspNet.IMaxAppLibraryProvider
+	{
         /// <summary>
         /// Signs the specified username in
         /// </summary>
         /// <param name="lsUsername">Username to sign in.</param>
-        public virtual void SignIn(string lsUsername)
-        {
-            FormsAuthentication.SetAuthCookie(lsUsername, false);
-        }
+        void SignIn(string lsUsername);
 
         /// <summary>
         /// Signs a user out.
         /// </summary>
-        public virtual void SignOut()
-        {
-            FormsAuthentication.SignOut();
-        }
+        void SignOut();
     }
 }

@@ -83,14 +83,21 @@ namespace MaxFactry.General.AspNet.IIS
 
         public override void RegisterProviders()
         {
+            //// Override provider for MaxOwnLibrary
             MaxFactry.General.AspNet.PresentationLayer.MaxOwinLibrary.Instance.ProviderSet(
                 typeof(MaxFactry.General.AspNet.PresentationLayer.Provider.MaxOwinLibraryIISProvider));
-            //// Configure provider for MaxConfigurationLibrary
+            //// Override provider for MaxConfigurationLibrary
             MaxConfigurationLibrary.Instance.ProviderSet(
                 typeof(MaxFactry.Core.Provider.MaxConfigurationLibraryAspNetIISProvider));
+            //// Add provider for MaxLogLibrary
             MaxLogLibrary.Instance.ProviderAdd(
                 typeof(MaxFactry.Core.Provider.MaxLogLibraryAspNetIISProvider));
+            //// Override provider for MaxDataLibrary
             MaxDataLibrary.Instance.ProviderSet(typeof(MaxFactry.Base.DataLayer.Provider.MaxDataLibraryGeneralAspNetProvider));
+            //// Override user entity with Membership specific entity
+            MaxBusinessLibrary.RegisterEntityProvider(
+                typeof(MaxFactry.General.BusinessLayer.MaxUserEntity),
+                typeof(MaxFactry.General.BusinessLayer.MaxUserMembershipEntity));
         }
 
         public override void ApplicationStartup()

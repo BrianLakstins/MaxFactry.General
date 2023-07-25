@@ -42,9 +42,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Library\Interface\IMaxApplicationEventLibraryProvider.cs" />
-    <Compile Include="Library\Interface\IMaxApplicationLibraryProvider.cs" />
+    <Compile Include="Library\Interface\IMaxAppLibraryProvider.cs" />
     <Compile Include="Library\MaxApplicationEventLibrary.cs" />
-    <Compile Include="Library\MaxApplicationLibrary.cs" />
+    <Compile Include="Library\MaxAppLibrary.cs" />
     <Compile Include="Library\Provider\MaxAppLibraryDefaultProvider.cs" />
     <Compile Include="Library\Provider\MaxApplicationEventLibraryDefaultProvider.cs" />
     <Compile Include="MaxFactry.Base\DataLayer\Library\Provider\MaxDataLibraryGeneralAspNetProvider.cs" />
@@ -71,9 +71,7 @@
     <Compile Include="System.Web\Security\MaxMembershipUser.cs" />
     <Compile Include="System.Web\Security\MaxRoleProviderOverride.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="MaxFactry.Core.Provider\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="app.config" />
     <None Include="MaxFactry.snk" />
@@ -87,7 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MaxFactry.General.AspNet">
-      <Version>1.0.22</Version>
+      <Version>1.0.22.1</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

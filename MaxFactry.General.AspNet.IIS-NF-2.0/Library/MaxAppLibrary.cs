@@ -1,4 +1,4 @@
-﻿// <copyright file="MaxAppLibraryNet40Provider.cs" company="Lakstins Family, LLC">
+﻿// <copyright file="MaxAppLibrary.cs" company="Lakstins Family, LLC">
 // Copyright (c) Brian A. Lakstins (http://www.lakstins.com/brian/)
 // </copyright>
 
@@ -27,64 +27,54 @@
 
 #region Change Log
 // <changelog>
-// <change date="6/21/2015" author="Brian A. Lakstins" description="Initial creation">
+// <change date="6/21/2015" author="Brian A. Lakstins" description="Initial Release">
+// <change date="5/22/2020" author="Brian A. Lakstins" description="Add cookie and querystring names">
 // <change date="11/17/2020" author="Brian A. Lakstins" description="Add sign in and sign out methods">
 // </changelog>
 #endregion
 
-namespace MaxFactry.General.AspNet.IIS.Provider
+namespace MaxFactry.General.AspNet.IIS
 {
     using System;
     using System.Web;
-    using System.Web.Security;
-    using System.Diagnostics;
     using MaxFactry.Core;
-    using MaxFactry.Base.BusinessLayer;
     using MaxFactry.Base.DataLayer;
 
     /// <summary>
-    /// Default provider for MaxAppLibrary
+    /// Provider for conversion specifically for dates.
     /// </summary>
-    public class MaxAppLibraryDefaultProvider : MaxFactry.General.AspNet.Provider.MaxAppLibraryDefaultProvider, IMaxAppLibraryProvider
+    public class MaxAppLibrary : MaxFactry.General.AspNet.MaxAppLibrary
     {
-        public override void Initialize(string lsName, MaxIndex loConfig)
-        {
-            base.Initialize(lsName, loConfig);
-        }
+        public const string MaxStorageKeyCookieName = "MaxKey20150622";
 
-        public override void SetProviderConfiguration(MaxIndex loConfig)
-        {
-            base.SetProviderConfiguration(loConfig);
-            MaxFactry.General.AspNet.IIS.MaxStartup.Instance.SetProviderConfiguration(loConfig);
-        }
+        public const string MaxStorageKeyQueryName = "msk";
 
-        public override void RegisterProviders()
+        /// <summary>
+        /// Gets the Provider used for most MaxFactory methods
+        /// </summary>
+        public new static IMaxAppLibraryProvider Provider
         {
-            base.RegisterProviders();
-            MaxFactry.General.AspNet.IIS.MaxStartup.Instance.RegisterProviders();
-        }
-        
-        public override void ApplicationStartup()
-        {
-            base.ApplicationStartup();
-            MaxFactry.General.AspNet.IIS.MaxStartup.Instance.ApplicationStartup();
+            get
+            {
+                return MaxFactry.General.AspNet.MaxAppLibrary.Provider as IMaxAppLibraryProvider;
+            }
         }
 
         /// <summary>
         /// Signs the specified username in
         /// </summary>
         /// <param name="lsUsername">Username to sign in.</param>
-        public virtual void SignIn(string lsUsername)
+        public static void SignIn(string lsUsername)
         {
-            FormsAuthentication.SetAuthCookie(lsUsername, false);
+            Provider.SignIn(lsUsername);
         }
 
         /// <summary>
         /// Signs a user out.
         /// </summary>
-        public virtual void SignOut()
+        public static void SignOut()
         {
-            FormsAuthentication.SignOut();
+            Provider.SignOut();
         }
     }
 }
