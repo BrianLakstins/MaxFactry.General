@@ -61,14 +61,14 @@
     <Reference Include="MaxFactry.Core-NF-4.7.2, Version=1.0.22.1, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
       <HintPath>..\..\_nuget\MaxFactry.Core.1.0.22.1\lib\net472\MaxFactry.Core-NF-4.7.2.dll</HintPath>
     </Reference>
-    <Reference Include="MaxFactry.General-NF-4.7.2, Version=1.0.22.1, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
-      <HintPath>..\..\_nuget\MaxFactry.General.1.0.22.1\lib\net472\MaxFactry.General-NF-4.7.2.dll</HintPath>
+    <Reference Include="MaxFactry.General-NF-4.7.2, Version=1.0.22.2, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\MaxFactry.General.1.0.22.2\lib\net472\MaxFactry.General-NF-4.7.2.dll</HintPath>
     </Reference>
-    <Reference Include="MaxFactry.General.AspNet-NF-4.7.2, Version=1.0.22.1, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
-      <HintPath>..\..\_nuget\MaxFactry.General.AspNet.1.0.22.1\lib\net472\MaxFactry.General.AspNet-NF-4.7.2.dll</HintPath>
+    <Reference Include="MaxFactry.General.AspNet-NF-4.7.2, Version=1.0.22.2, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\MaxFactry.General.AspNet.1.0.22.2\lib\net472\MaxFactry.General.AspNet-NF-4.7.2.dll</HintPath>
     </Reference>
-    <Reference Include="MaxFactry.General.AspNet.IIS-NF-4.7.2, Version=1.0.22.1, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
-      <HintPath>..\..\_nuget\MaxFactry.General.AspNet.IIS.1.0.22.1\lib\net472\MaxFactry.General.AspNet.IIS-NF-4.7.2.dll</HintPath>
+    <Reference Include="MaxFactry.General.AspNet.IIS-NF-4.7.2, Version=1.0.22.2, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\MaxFactry.General.AspNet.IIS.1.0.22.2\lib\net472\MaxFactry.General.AspNet.IIS-NF-4.7.2.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Owin, Version=4.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">

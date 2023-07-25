@@ -28,7 +28,7 @@
 #region Change Log
 // <changelog>
 // <change date="6/21/2015" author="Brian A. Lakstins" description="Initial creation">
-// <change date="7/25/2023" author="Brian A. Lakstins" description="Move code to MaxStartup">
+// <change date="7/25/2023" author="Brian A. Lakstins" description="Move code to MaxStartup.  Add GetConfig to configure the DataSetFolder.">
 // </changelog>
 #endregion
 
@@ -41,12 +41,20 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.Provider
     using System.Web.Routing;
     using MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer;
     using MaxFactry.Core;
+    using System.Web;
 
     /// <summary>
     /// Default provider for MaxApplicationLibrary
     /// </summary>
     public class MaxAppLibraryDefaultProvider : MaxFactry.General.AspNet.IIS.Provider.MaxAppLibraryDefaultProvider, IMaxAppLibraryProvider
 	{
+        public override MaxIndex GetConfig()
+        {
+            MaxIndex loR = base.GetConfig();
+            loR.Add("DataSetFolder", HttpContext.Current.Server.MapPath("~/App_Data/MaxDataSet/"));
+            return loR;
+        }
+
         public override void SetProviderConfiguration(MaxIndex loConfig)
         {
             base.SetProviderConfiguration(loConfig);
