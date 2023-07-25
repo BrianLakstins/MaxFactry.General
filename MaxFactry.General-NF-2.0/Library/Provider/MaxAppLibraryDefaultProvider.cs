@@ -35,6 +35,7 @@
 // <change date="5/6/2020" author="Brian A. Lakstins" description="Updating handing of application start time">
 // <change date="6/5/2020" author="Brian A. Lakstins" description="Updated initialization so does not use global config. Only uses passed config.  Trying to use global config can cause objects to get created before they can be configured.  Move Reset of MaxFactryLibrary to SetProviderConfiguration.">
 // <change date="7/20/2023" author="Brian A. Lakstins" description="Add default configuration process.">
+// <change date="7/25/2023" author="Brian A. Lakstins" description="Change order of methods so they match when they are run.  Add GetTempFolder.">
 // </changelog>
 #endregion
 
@@ -43,6 +44,7 @@ namespace MaxFactry.General.Provider
 	using System;
     using System.Diagnostics;
     using MaxFactry.Core;
+    using MaxFactry.Core.Provider;
     using Microsoft.SqlServer.Server;
 
     /// <summary>
@@ -304,51 +306,51 @@ namespace MaxFactry.General.Provider
         }
 
         /// <summary>
-        /// To be run first, before anything else in the application.
-        /// </summary>
-        public virtual void RegisterProviders()
-        {
-            //// Configure provider for MaxFactryLibrary
-            MaxSettingsStructure loSettingMaxFactry = new MaxSettingsStructure(
-                "MaxFactryLibraryProvider",
-                typeof(MaxFactry.Core.Provider.MaxFactryLibraryDefaultProvider));
-            MaxFactryLibrary.SetSetting(typeof(MaxFactry.Core.Provider.MaxFactryLibraryDefaultProvider).ToString(), loSettingMaxFactry);
-
-            //// Register providers for base and general
-            MaxFactry.Base.MaxStartup.Instance.RegisterProviders();
-            MaxFactry.General.MaxStartup.Instance.RegisterProviders();
-        }
-
-        /// <summary>
-        /// To be run after providers have been registered
+        /// To be run first to add configuration information
         /// </summary>
         /// <param name="loConfig">The configuration for the default repository provider.</param>
         public virtual void SetProviderConfiguration(MaxIndex loConfig)
         {
             //// Add initial values for the configuration provider used by the MaxConfigurationLibrary since it's not registered yet.
             //// Only set initial values for the process scope.  Other scopes may rely on external factors, and overwriting them here would break that reliance.
-            MaxIndex loConfigurationIndex = loConfig["MaxConfigurationLibraryDefaultProviderIndex"] as MaxIndex;
-            if (null == loConfigurationIndex)
+            MaxIndex loConfigurationLibraryInitialConfig = loConfig[MaxConfigurationLibraryDefaultProvider.InitialConfigName] as MaxIndex;
+            if (null == loConfigurationLibraryInitialConfig)
             {
-                loConfigurationIndex = new MaxIndex();
+                loConfigurationLibraryInitialConfig = new MaxIndex();
             }
 
-            loConfigurationIndex.Add(MaxEnumGroup.ScopeProcess.ToString() + "-" + MaxFactryLibrary.MaxStorageKeyName, this._sDefaultStorageKey);
-            loConfigurationIndex.Add(MaxEnumGroup.ScopeProcess.ToString() + "-" + MaxLogLibrary.LogSettingName, MaxEnumGroup.LogError);
-            loConfig.Add("MaxConfigurationLibraryDefaultProviderIndex", loConfigurationIndex);
+            loConfigurationLibraryInitialConfig.Add(MaxEnumGroup.ScopeProcess.ToString() + "-" + MaxFactryLibrary.MaxStorageKeyName, this._sDefaultStorageKey);
+            loConfigurationLibraryInitialConfig.Add(MaxEnumGroup.ScopeProcess.ToString() + "-" + MaxLogLibrary.LogSettingName, MaxEnumGroup.LogError);
+            loConfig.Add(MaxConfigurationLibraryDefaultProvider.InitialConfigName, loConfigurationLibraryInitialConfig);
 
             //// Reset the configuration before applying the new one
             MaxFactryLibrary.Reset();
             MaxFactry.Base.MaxStartup.Instance.SetProviderConfiguration(loConfig);
             MaxFactry.General.MaxStartup.Instance.SetProviderConfiguration(loConfig);
         }
+        
+        /// <summary>
+        /// To be run after configuration has been added.
+        /// </summary>
+        public virtual void RegisterProviders()
+        {
+            //// Register providers for base and general
+            MaxFactry.Base.MaxStartup.Instance.RegisterProviders();
+            MaxFactry.General.MaxStartup.Instance.RegisterProviders();
+        }
 
         /// <summary>
-        /// To be run after providers have been configured.
+        /// To be run after providers have been configured and registered.
         /// </summary>
         public virtual void ApplicationStartup()
         {
-            //// Get Storage Key from configuration if it exists in the configuration
+            //// Set a variable to indicate that this is the loading process of the application;
+            MaxConfigurationLibrary.SetValue(MaxEnumGroup.ScopeProcess, "__MaxIsApplicationStartup", true);
+            //// Set a configuration variable to indicate when the application started/
+            //// Can be used by MaxAppLibrary.GetApplicationStartDateTime() and MaxAppLibrary.GetTimeSinceApplicationStart()
+            MaxConfigurationLibrary.SetValue(MaxEnumGroup.ScopeApplication, "__MaxApplicationStartDateTime", DateTime.UtcNow);
+
+            //// Get Storage Key from configuration file if it exists
             string lsStorageKey = MaxConfigurationLibrary.GetValue(MaxEnumGroup.ScopeApplication, MaxFactryLibrary.MaxStorageKeyName) as string;
             if (string.IsNullOrEmpty(lsStorageKey))
             {
@@ -359,44 +361,34 @@ namespace MaxFactry.General.Provider
             MaxConfigurationLibrary.SetValue(MaxEnumGroup.ScopeApplication, MaxFactryLibrary.MaxStorageKeyName, lsStorageKey);
             MaxConfigurationLibrary.SetValue(MaxEnumGroup.ScopeProcess, MaxFactryLibrary.MaxStorageKeyName, lsStorageKey);
 
+            //// Get Log setting from configuration file if it exists
             string lsLogSetting = MaxConfigurationLibrary.GetValue(MaxEnumGroup.ScopeApplication, MaxLogLibrary.LogSettingName) as string;
             if (!string.IsNullOrEmpty(lsLogSetting))
             {
                 MaxConfigurationLibrary.SetValue(MaxEnumGroup.ScopeProcess, MaxLogLibrary.LogSettingName, lsLogSetting);
             }
 
+            //// Get Encryption pass phrase from configuration file if it exists
             string lsPassphrase = MaxConfigurationLibrary.GetValue(MaxEnumGroup.ScopeApplication, MaxEncryptionLibrary.PassphraseConfigName) as string;
             if (string.IsNullOrEmpty(lsPassphrase))
             {
                 lsPassphrase = this._sDefaultPassphrase;
             }
 
+            //// Get Encryption entropy from configuration file if it exists
             string lsEntropy = MaxConfigurationLibrary.GetValue(MaxEnumGroup.ScopeApplication, MaxEncryptionLibrary.EntropyConfigName) as string;
             if (string.IsNullOrEmpty(lsEntropy))
             {
                 lsEntropy = this._sDefaultEntropy;
             }
 
+            //// Set the information for encryption
             if (!string.IsNullOrEmpty(lsPassphrase) && !string.IsNullOrEmpty(lsEntropy))
             {
                 MaxEncryptionLibrary.SetDefault(typeof(object), lsPassphrase, lsEntropy);
             }
 
-            //// Set a variable to indicate that this is the loading process of the application;
-            MaxConfigurationLibrary.SetValue(MaxEnumGroup.ScopeProcess, "__MaxIsApplicationStartup", true);
-
-            //// Set application objects for diagnostics
-            DateTime ldStart = this.GetApplicationStartDateTime();
-
             MaxFactryLibrary.SetValue("CurrentAssemblyName",  MaxFactry.Core.MaxFactryLibrary.GetAssembly(this.GetType()).ManifestModule.Name);
-
-            string lsTempFolder = System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.IO.Path.GetRandomFileName());
-            if (!System.IO.Directory.Exists(lsTempFolder))
-            {
-                System.IO.Directory.CreateDirectory(lsTempFolder);
-            }
-
-            MaxConfigurationLibrary.SetValue(MaxEnumGroup.ScopeApplication, "__TempFolder", lsTempFolder); 
             MaxFactry.Base.MaxStartup.Instance.ApplicationStartup();
             MaxFactry.General.MaxStartup.Instance.ApplicationStartup();
         }
@@ -411,6 +403,23 @@ namespace MaxFactry.General.Provider
                     System.IO.Directory.Delete(lsTempFolder, true);
                 }
             }
+        }
+
+        public virtual string GetTempFolder()
+        {
+            string lsR = MaxConfigurationLibrary.GetValue(MaxEnumGroup.ScopeApplication, "__TempFolder") as string;
+            if (string.IsNullOrEmpty(lsR))
+            {
+                lsR = System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.IO.Path.GetRandomFileName());
+                if (!System.IO.Directory.Exists(lsR))
+                {
+                    System.IO.Directory.CreateDirectory(lsR);
+                }
+
+                MaxConfigurationLibrary.SetValue(MaxEnumGroup.ScopeApplication, "__TempFolder", lsR);
+            }
+
+            return lsR;
         }
     }
 }

@@ -43,6 +43,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4
     using System.Web.Http;
     using System.Web.Mvc;
     using System.Web.Routing;
+    using MaxFactry.Base.BusinessLayer;
     using MaxFactry.Core;
     using MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer;
 
@@ -65,15 +66,15 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4
             }
         }
 
+        public override void SetProviderConfiguration(MaxIndex loConfig)
+        {
+        }
+
         public override void RegisterProviders()
         {
             MaxFactry.General.PresentationLayer.MaxDesignLibrary.Instance.ProviderSet(typeof(MaxFactry.General.PresentationLayer.Provider.MaxDesignLibraryASPNetIISMvc4Provider));
             MaxFactry.General.PresentationLayer.MaxShortCodeLibrary.Instance.ProviderAdd(
                 typeof(MaxFactry.Module.Core.PresentationLayer.Provider.MaxShortCodeLibraryFileProvider));
-        }
-
-        public override void SetProviderConfiguration(MaxIndex loConfig)
-        {
         }
 
         public override void ApplicationStartup()

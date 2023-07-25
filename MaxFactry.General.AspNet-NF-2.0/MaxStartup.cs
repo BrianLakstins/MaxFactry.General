@@ -77,11 +77,11 @@ namespace MaxFactry.General.AspNet
             }
         }
 
-        public override void RegisterProviders()
+        public override void SetProviderConfiguration(MaxIndex loConfig)
         {
         }
-        
-        public override void SetProviderConfiguration(MaxIndex loConfig)
+
+        public override void RegisterProviders()
         {
         }
 

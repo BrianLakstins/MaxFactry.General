@@ -32,6 +32,7 @@
 // <change date="2/4/2020" author="Brian A. Lakstins" description="Add method to handle shutdown of app.">
 // <change date="2/6/2020" author="Brian A. Lakstins" description="Adding properties and methods for system information">
 // <change date="5/6/2020" author="Brian A. Lakstins" description="Updating handing of application start time">
+// <change date="7/25/2023" author="Brian A. Lakstins" description="Update order of methods. Add GetTempFolder.">
 // </changelog>
 #endregion
 
@@ -46,11 +47,28 @@ namespace MaxFactry.General
 	public interface IMaxAppLibraryProvider
     {
 
+        /// <summary>
+        /// Gets the time passed in milliseconds since the application started
+        /// </summary>
+        /// <returns></returns>
         double GetTimeSinceApplicationStart();
 
+        /// <summary>
+        /// Gets the time the application started
+        /// </summary>
+        /// <returns></returns>
         DateTime GetApplicationStartDateTime();
 
+        /// <summary>
+        /// Gets an ID unique to this instance of running this application
+        /// </summary>
+        /// <returns></returns>
         Guid GetApplicationRunId();
+
+        /// <summary>
+        /// Get the current instance of the application temporary folder
+        /// </summary>
+        string GetTempFolder();
 
         void AddValidStorageKey(string lsStorageKey);
 
@@ -59,15 +77,15 @@ namespace MaxFactry.General
         void ClearValidStorageKey();
 
         /// <summary>
-        /// To be run first, before anything else in the application.
-        /// </summary>
-        void RegisterProviders();
-
-        /// <summary>
-        /// To be run after providers have been registered
+        /// To be run first to set up configuration for providers.
         /// </summary>
         /// <param name="loConfig">The configuration for the default repository provider.</param>
         void SetProviderConfiguration(MaxIndex loConfig);
+        
+        /// <summary>
+        /// To be run after config has been set.
+        /// </summary>
+        void RegisterProviders();
 
         /// <summary>
         /// To be run after providers have been configured.

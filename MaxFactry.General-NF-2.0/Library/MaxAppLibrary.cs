@@ -34,6 +34,7 @@
 // <change date="5/6/2020" author="Brian A. Lakstins" description="Updating handing of application start time">
 // <change date="6/5/2020" author="Brian A. Lakstins" description="Change order of application start to be able to pass global configuration.">
 // <change date="7/20/2023" author="Brian A. Lakstins" description="Add some methods to check configuration.">
+// <change date="7/25/2023" author="Brian A. Lakstins" description="Change order of methods so they match when they are run.  Add GetTempFolder.">
 // </changelog>
 #endregion
 
@@ -190,6 +191,11 @@ namespace MaxFactry.General
             return Provider.GetApplicationRunId();
         }
 
+        public static string GetTempFolder()
+        {
+            return Provider.GetTempFolder();
+        }
+
         public static void AddValidStorageKey(string lsStorageKey)
         {
             Provider.AddValidStorageKey(lsStorageKey);
@@ -206,14 +212,6 @@ namespace MaxFactry.General
         }
 
         /// <summary>
-        /// To be run first, before anything else in the application.
-        /// </summary>
-        private static void RegisterProviders()
-        {
-            Provider.RegisterProviders();
-        }
-
-        /// <summary>
         /// Sets the global configuration for all providers.  To be run before registering any providers.
         /// </summary>
         /// <param name="loConfig">The configuration for the default repository provider.</param>
@@ -221,9 +219,17 @@ namespace MaxFactry.General
         {
             Provider.SetProviderConfiguration(loConfig);
         }
+        
+        /// <summary>
+        /// To be run second, after configuration has been provided
+        /// </summary>
+        private static void RegisterProviders()
+        {
+            Provider.RegisterProviders();
+        }
 
         /// <summary>
-        /// To be run after providers have been configured.
+        /// To be run after providers have been configured and registered
         /// </summary>
         private static void ApplicationStartup()
         {

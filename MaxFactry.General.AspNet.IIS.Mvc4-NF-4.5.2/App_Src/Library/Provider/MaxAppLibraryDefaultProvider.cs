@@ -46,24 +46,22 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.Provider
     /// </summary>
     public class MaxAppLibraryDefaultProvider : MaxFactry.General.AspNet.IIS.Provider.MaxAppLibraryDefaultProvider, IMaxAppLibraryProvider
 	{
-        public override void RegisterProviders()
-        {
-            base.RegisterProviders();
-            MaxFactry.General.AspNet.IIS.Mvc4.MaxStartup.Instance.RegisterProviders();
-            //MaxFactry.Module.Security.Mvc4.MaxStartup.Instance.RegisterProviders();
-        }
-
         public override void SetProviderConfiguration(MaxIndex loConfig)
         {
             base.SetProviderConfiguration(loConfig);
             MaxFactry.General.AspNet.IIS.Mvc4.MaxStartup.Instance.SetProviderConfiguration(loConfig);
         }
 
+        public override void RegisterProviders()
+        {
+            base.RegisterProviders();
+            MaxFactry.General.AspNet.IIS.Mvc4.MaxStartup.Instance.RegisterProviders();
+        }
+
         public override void ApplicationStartup()
         {
             base.ApplicationStartup();
             MaxFactry.General.AspNet.IIS.Mvc4.MaxStartup.Instance.ApplicationStartup();
-            //MaxFactry.Module.Security.Mvc4.MaxStartup.Instance.ApplicationStartup();
 
             AreaRegistration.RegisterAllAreas();
             RouteTable.Routes.IgnoreRoute("{resource}.axd/{*pathInfo}");

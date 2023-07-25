@@ -77,9 +77,8 @@ namespace MaxFactry.General.AspNet.IIS
             }
         }
 
-        public override void ApplicationStartup()
+        public override void SetProviderConfiguration(MaxIndex loConfig)
         {
-            System.Web.Hosting.MaxVirtualPathProviderOverride.Register();
         }
 
         public override void RegisterProviders()
@@ -94,8 +93,9 @@ namespace MaxFactry.General.AspNet.IIS
             MaxDataLibrary.Instance.ProviderSet(typeof(MaxFactry.Base.DataLayer.Provider.MaxDataLibraryGeneralAspNetProvider));
         }
 
-        public override void SetProviderConfiguration(MaxIndex loConfig)
+        public override void ApplicationStartup()
         {
+            System.Web.Hosting.MaxVirtualPathProviderOverride.Register();
         }
     }
 }

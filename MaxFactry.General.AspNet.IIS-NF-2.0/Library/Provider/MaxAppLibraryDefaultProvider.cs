@@ -52,6 +52,12 @@ namespace MaxFactry.General.AspNet.IIS.Provider
             base.Initialize(lsName, loConfig);
         }
 
+        public override void SetProviderConfiguration(MaxIndex loConfig)
+        {
+            base.SetProviderConfiguration(loConfig);
+            MaxFactry.General.AspNet.IIS.MaxStartup.Instance.SetProviderConfiguration(loConfig);
+        }
+
         public override void RegisterProviders()
         {
             base.RegisterProviders();
@@ -66,12 +72,6 @@ namespace MaxFactry.General.AspNet.IIS.Provider
                 typeof(MaxFactry.General.BusinessLayer.MaxUserMembershipEntity));
 
             MaxFactry.General.AspNet.IIS.MaxStartup.Instance.RegisterProviders();
-        }
-
-        public override void SetProviderConfiguration(MaxIndex loConfig)
-        {
-            base.SetProviderConfiguration(loConfig);
-            MaxFactry.General.AspNet.IIS.MaxStartup.Instance.SetProviderConfiguration(loConfig);
         }
         
         public override void ApplicationStartup()

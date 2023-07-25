@@ -30,12 +30,14 @@
 // <change date="6/7/2015" author="Brian A. Lakstins" description="Initial creation">
 // <change date="5/19/2020" author="Brian A. Lakstins" description="Add logging of external Http requests">
 // <change date="6/5/2020" author="Brian A. Lakstins" description="Remove setting configuration for providers because it's set globally for all.">
+// <change date="7/25/2023" author="Brian A. Lakstins" description="Change order of methods so they match when they are run.">
 // </changelog>
 #endregion
 
 namespace MaxFactry.General
 {
     using System;
+    using MaxFactry.Core;
 
     public class MaxStartup : MaxFactry.Base.MaxStartup
     {
@@ -56,13 +58,19 @@ namespace MaxFactry.General
             }
         }
 
-        public override void RegisterProviders()
-        {
-            MaxFactry.Core.MaxConfigurationLibrary.Instance.ProviderSet(typeof(MaxFactry.Core.Provider.MaxConfigurationLibraryGeneralProvider));
-        }
-
         public override void SetProviderConfiguration(MaxFactry.Core.MaxIndex loConfig)
         {
+        }
+
+        public override void RegisterProviders()
+        {
+            //// Configure provider for MaxFactryLibrary
+            MaxSettingsStructure loSettingMaxFactry = new MaxSettingsStructure(
+                typeof(MaxFactry.Core.Provider.MaxFactryLibraryDefaultProvider).Name,
+                typeof(MaxFactry.Core.Provider.MaxFactryLibraryDefaultProvider));
+            MaxFactryLibrary.SetSetting(typeof(MaxFactry.Core.Provider.MaxFactryLibraryDefaultProvider).ToString(), loSettingMaxFactry);
+            //// Set provider for MaxConfigurationLibrary
+            MaxFactry.Core.MaxConfigurationLibrary.Instance.ProviderSet(typeof(MaxFactry.Core.Provider.MaxConfigurationLibraryGeneralProvider));
         }
     
         public override void ApplicationStartup()

@@ -40,11 +40,10 @@ namespace MaxFactry.General.AspNet.Provider
     /// </summary>
     public class MaxAppLibraryDefaultProvider : MaxFactry.General.Provider.MaxAppLibraryDefaultProvider, IMaxAppLibraryProvider
 	{
-
-        public override void ApplicationStartup()
+        public override void SetProviderConfiguration(MaxIndex loConfig)
         {
-            base.ApplicationStartup();
-            MaxFactry.General.MaxStartup.Instance.ApplicationStartup();
+            base.SetProviderConfiguration(loConfig);
+            MaxFactry.General.MaxStartup.Instance.SetProviderConfiguration(loConfig);
         }
 
         public override void RegisterProviders()
@@ -53,12 +52,10 @@ namespace MaxFactry.General.AspNet.Provider
             MaxFactry.General.MaxStartup.Instance.RegisterProviders();
         }
 
-        public override void SetProviderConfiguration(MaxIndex loConfig)
+        public override void ApplicationStartup()
         {
-            base.SetProviderConfiguration(loConfig);
-            MaxFactry.General.MaxStartup.Instance.SetProviderConfiguration(loConfig);
+            base.ApplicationStartup();
+            MaxFactry.General.MaxStartup.Instance.ApplicationStartup();
         }
-
-
     }
 }
