@@ -32,12 +32,14 @@
 // <change date="6/23/2014" author="Brian A. Lakstins" description="Updates for testing.">
 // <change date="6/27/2014" author="Brian A. Lakstins" description="Remove dependency on AppId.">
 // <change date="12/1/2020" author="Brian A. Lakstins" description="Add filter to log any exceptions in web api">
+// <change date="7/25/2023" author="Brian A. Lakstins" description="Organize startup code">
 // </changelog>
 #endregion
 
 namespace MaxFactry.General.AspNet.IIS.Mvc4
 {
     using System;
+    using System.Collections.Generic;
     using System.Configuration;
     using System.Web;
     using System.Web.Http;
@@ -79,13 +81,88 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4
 
         public override void ApplicationStartup()
         {
+            AreaRegistration.RegisterAllAreas();
+            RouteTable.Routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+
+            ModelBinders.Binders[typeof(MaxIndex)] = new MaxModelBinderForMaxIndex();
+
+            for (int lnV = System.Web.Mvc.ViewEngines.Engines.Count - 1; lnV >= 0; lnV--)
+            {
+                IViewEngine loEngine = System.Web.Mvc.ViewEngines.Engines[lnV];
+                if (loEngine is System.Web.Mvc.RazorViewEngine)
+                {
+                    List<string> loList = new List<string>(((System.Web.Mvc.RazorViewEngine)loEngine).PartialViewLocationFormats);
+                    //// Remove all files that are not cshtml.
+                    for (int lnL = loList.Count - 1; lnL >= 0; lnL--)
+                    {
+                        if (!loList[lnL].ToLower().Contains(".cshtml"))
+                        {
+                            loList.RemoveAt(lnL);
+                        }
+                    }
+
+                    loList.Add("~/Views/MaxPartial/{0}.cshtml");
+                    //// Make sure the location formats in the "shared" folder are last
+                    List<string> loListSorted = new List<string>();
+                    foreach (string lsPath in loList)
+                    {
+                        if (!lsPath.ToLower().Contains("shared"))
+                        {
+                            loListSorted.Add(lsPath);
+                        }
+                    }
+
+                    foreach (string lsPath in loList)
+                    {
+                        if (lsPath.ToLower().Contains("shared"))
+                        {
+                            loListSorted.Add(lsPath);
+                        }
+                    }
+
+                    ((System.Web.Mvc.RazorViewEngine)loEngine).PartialViewLocationFormats = loListSorted.ToArray();
+
+                    loList = new List<string>(((System.Web.Mvc.RazorViewEngine)loEngine).ViewLocationFormats);
+                    //// Remove all files all that are not cshtml
+                    for (int lnL = loList.Count - 1; lnL >= 0; lnL--)
+                    {
+                        if (!loList[lnL].ToLower().Contains(".cshtml"))
+                        {
+                            loList.RemoveAt(lnL);
+                        }
+                    }
+
+                    ((System.Web.Mvc.RazorViewEngine)loEngine).ViewLocationFormats = loList.ToArray();
+                }
+                else
+                {
+                    //// Remove all viewengines that are not RazorViewEngine
+                    System.Web.Mvc.ViewEngines.Engines.RemoveAt(lnV);
+                }
+            }
+
+            for (int lnD = System.Web.WebPages.DisplayModeProvider.Instance.Modes.Count - 1; lnD >= 0; lnD--)
+            {
+                System.Web.WebPages.IDisplayMode loMode = System.Web.WebPages.DisplayModeProvider.Instance.Modes[lnD];
+                if (loMode.DisplayModeId.Length > 0)
+                {
+                    System.Web.WebPages.DisplayModeProvider.Instance.Modes.RemoveAt(lnD);
+                }
+            }
+
             GlobalConfiguration.Configuration.Filters.Add(new System.Web.Http.AuthorizeAttribute());
             GlobalConfiguration.Configuration.Filters.Add(new MaxExceptionFilterAttribute());
 
-            RouteTable.Routes.MapHttpRoute(
-                name: "MaxGeneralApiRoute",
-                routeTemplate: "MaxGeneralApi/{action}/{lsId}",
-                defaults: new { controller = "MaxGeneralApi", action = "index", lsId = UrlParameter.Optional }
+            RouteTable.Routes.MapRoute(
+                name: "MaxRobotsRoute",
+                url: "Robots/",
+                defaults: new { controller = "MaxSystem", action = "Robots" }
+            );
+            
+            RouteTable.Routes.MapRoute(
+                name: "MaxPartialRoute",
+                url: "MaxPartial/{action}",
+                defaults: new { controller = "MaxPartial", action = "Index" }
             );
 
             RouteTable.Routes.MapRoute(
@@ -122,6 +199,12 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4
                 name: "MaxFileManagePartialRoute",
                 url: "MaxFileManagePartial/{action}/{id}",
                 defaults: new { controller = "MaxFileManagePartial", action = "Index", id = UrlParameter.Optional }
+            );
+
+            RouteTable.Routes.MapHttpRoute(
+                name: "MaxGeneralApiRoute",
+                routeTemplate: "MaxGeneralApi/{action}/{lsId}",
+                defaults: new { controller = "MaxGeneralApi", action = "index", lsId = UrlParameter.Optional }
             );
 
             RouteTable.Routes.MapHttpRoute(
