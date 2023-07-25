@@ -12,7 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet", "NuGet", "{BA7EAE1B
 		.nuget\MaxFactry.General.AspNet.IIS.Mvc4.nuspec = .nuget\MaxFactry.General.AspNet.IIS.Mvc4.nuspec
 		.nuget\MaxFactry.General.AspNet.IIS.Mvc5.nuspec = .nuget\MaxFactry.General.AspNet.IIS.Mvc5.nuspec
 		.nuget\nuget.config = .nuget\nuget.config
-		.nuget\package.bat = .nuget\package.bat
+		.nuget\package.general.aspnet.iis.mvc.bat = .nuget\package.general.aspnet.iis.mvc.bat
 		.nuget\readme.md = .nuget\readme.md
 	EndProjectSection
 EndProject

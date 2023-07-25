@@ -55,20 +55,20 @@
     <Reference Include="HtmlAgilityPack, Version=1.11.46.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
       <HintPath>..\..\_nuget\HtmlAgilityPack.1.11.46\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
-    <Reference Include="MaxFactry.Base-NF-4.7.2, Version=1.0.22.0, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
-      <HintPath>..\..\_nuget\MaxFactry.Base.1.0.22\lib\net472\MaxFactry.Base-NF-4.7.2.dll</HintPath>
+    <Reference Include="MaxFactry.Base-NF-4.7.2, Version=1.0.22.1, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\MaxFactry.Base.1.0.22.1\lib\net472\MaxFactry.Base-NF-4.7.2.dll</HintPath>
     </Reference>
-    <Reference Include="MaxFactry.Core-NF-4.7.2, Version=1.0.22.0, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
-      <HintPath>..\..\_nuget\MaxFactry.Core.1.0.22\lib\net472\MaxFactry.Core-NF-4.7.2.dll</HintPath>
+    <Reference Include="MaxFactry.Core-NF-4.7.2, Version=1.0.22.1, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\MaxFactry.Core.1.0.22.1\lib\net472\MaxFactry.Core-NF-4.7.2.dll</HintPath>
     </Reference>
-    <Reference Include="MaxFactry.General-NF-4.7.2, Version=1.0.22.0, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
-      <HintPath>..\..\_nuget\MaxFactry.General.1.0.22\lib\net472\MaxFactry.General-NF-4.7.2.dll</HintPath>
+    <Reference Include="MaxFactry.General-NF-4.7.2, Version=1.0.22.1, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\MaxFactry.General.1.0.22.1\lib\net472\MaxFactry.General-NF-4.7.2.dll</HintPath>
     </Reference>
-    <Reference Include="MaxFactry.General.AspNet-NF-4.7.2, Version=1.0.22.0, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
-      <HintPath>..\..\_nuget\MaxFactry.General.AspNet.1.0.22\lib\net472\MaxFactry.General.AspNet-NF-4.7.2.dll</HintPath>
+    <Reference Include="MaxFactry.General.AspNet-NF-4.7.2, Version=1.0.22.1, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\MaxFactry.General.AspNet.1.0.22.1\lib\net472\MaxFactry.General.AspNet-NF-4.7.2.dll</HintPath>
     </Reference>
-    <Reference Include="MaxFactry.General.AspNet.IIS-NF-4.7.2, Version=1.0.22.0, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
-      <HintPath>..\..\_nuget\MaxFactry.General.AspNet.IIS.1.0.22\lib\net472\MaxFactry.General.AspNet.IIS-NF-4.7.2.dll</HintPath>
+    <Reference Include="MaxFactry.General.AspNet.IIS-NF-4.7.2, Version=1.0.22.1, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\MaxFactry.General.AspNet.IIS.1.0.22.1\lib\net472\MaxFactry.General.AspNet.IIS-NF-4.7.2.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Owin, Version=4.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
