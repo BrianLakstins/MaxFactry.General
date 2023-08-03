@@ -33,25 +33,26 @@
 
 namespace MaxFactry.General.BusinessLayer
 {
-	using System;
-	using MaxFactry.Core;
-	using MaxFactry.Base.BusinessLayer;
-	using MaxFactry.Base.DataLayer;
+    using System;
+    using System.IO;
+    using MaxFactry.Core;
+    using MaxFactry.Base.BusinessLayer;
+    using MaxFactry.Base.DataLayer;
     using MaxFactry.General.DataLayer;
 
-	/// <summary>
+    /// <summary>
     /// Entity used to manage information about UserAuthTokens for the MaxSecurityProvider.
-	/// </summary>
-	public class MaxUserAuthTokenEntity : MaxBaseIdEntity
-	{
-		/// <summary>
+    /// </summary>
+    public class MaxUserAuthTokenEntity : MaxBaseIdEntity
+    {
+        /// <summary>
         /// Initializes a new instance of the MaxUserAuthTokenEntity class
-		/// </summary>
+        /// </summary>
         /// <param name="loData">object to hold data</param>
-		public MaxUserAuthTokenEntity(MaxData loData)
-			: base(loData)
-		{
-		}
+        public MaxUserAuthTokenEntity(MaxData loData)
+            : base(loData)
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the MaxUserAuthTokenEntity class
@@ -115,16 +116,16 @@ namespace MaxFactry.General.BusinessLayer
         /// </summary>
 		public string TokenHash
         {
-			get
-			{
-				return this.GetString(this.DataModel.TokenHash);
-			}
+            get
+            {
+                return this.GetString(this.DataModel.TokenHash);
+            }
 
-			set
-			{
-				this.Set(this.DataModel.TokenHash, value);
-			}
-		}
+            set
+            {
+                this.Set(this.DataModel.TokenHash, value);
+            }
+        }
 
         /// <summary>
         /// Gets or sets the Token .
@@ -144,16 +145,16 @@ namespace MaxFactry.General.BusinessLayer
 
         public string TokenType
         {
-			get
-			{
-				return this.GetString(this.DataModel.TokenType);
-			}
+            get
+            {
+                return this.GetString(this.DataModel.TokenType);
+            }
 
-			set
-			{
-				this.Set(this.DataModel.TokenType, value);
-			}
-		}
+            set
+            {
+                this.Set(this.DataModel.TokenType, value);
+            }
+        }
 
         public int Expiration
         {
@@ -225,36 +226,6 @@ namespace MaxFactry.General.BusinessLayer
                 typeof(MaxUserAuthTokenDataModel)) as MaxUserAuthTokenEntity;
         }
 
-        public string GetClientToken(string lsToken)
-        {
-            string lsR = string.Empty;
-            string lsTokenText = MaxConvertLibrary.ConvertGuidToShortString(typeof(object), this.Id) + "|" + lsToken;
-            byte[] laR = System.Text.Encoding.UTF8.GetBytes(lsTokenText);
-            lsR = Convert.ToBase64String(laR).Replace("=", string.Empty);
-            return lsR;
-        }
-
-        public MaxEntityList LoadAllActiveByUserKeyCache(string lsUserKey)
-        {
-            string lsCacheDataKey = this.GetCacheKey() + "LoadAllActiveByUserKeyCache/" + this.DataModel.UserKey + "/" + lsUserKey;
-            MaxDataList loDataList = MaxCacheRepository.Get(this.GetType(), lsCacheDataKey, typeof(MaxDataList)) as MaxDataList;
-            if (null == loDataList)
-            {
-                MaxDataQuery loDataQuery = new MaxDataQuery();
-                loDataQuery.StartGroup();
-                loDataQuery.AddFilter(this.MaxBaseIdDataModel.IsActive, "=", true);
-                loDataQuery.AddCondition("AND");
-                loDataQuery.AddFilter(this.DataModel.UserKey, "=", lsUserKey);
-                loDataQuery.EndGroup();
-                int lnTotal = 0;
-                loDataList = MaxBaseIdRepository.Select(this.GetData(), loDataQuery, 0, 0, string.Empty, out lnTotal);
-                MaxCacheRepository.Set(this.GetType(), lsCacheDataKey, loDataList);
-            }
-
-            MaxEntityList loEntityList = MaxEntityList.Create(this.GetType(), loDataList);
-            return loEntityList;
-        }
-
         public static string GetTokenHash(string lsToken)
         {
             return MaxEncryptionLibrary.GetHash(typeof(object), MaxEncryptionLibrary.SHA256Hash, lsToken);
@@ -311,19 +282,24 @@ namespace MaxFactry.General.BusinessLayer
         }
 
         /// <summary>
-        /// Gets a current token for using the api
+        /// Gets a token from a remote system.  Stores it locally to reuse until it's expiration.
         /// </summary>
-        /// <returns>Context provider</returns>
-        public static string GetToken(string lsUrl, MaxIndex loCredentialIndex)
+        /// <param name="lsTokenUri">URI to use</param>
+        /// <param name="lsClientId">Client Id</param>
+        /// <param name="lsClientSecret">Client Secret</param>
+        /// <param name="lsScope">Scope</param>
+        /// <param name="loRequestContent">Extra content to send to remote source</param>
+        /// <returns></returns>
+        public static string GetRemoteToken(string lsTokenUri, string lsClientId, string lsClientSecret, string lsScope, MaxIndex loRequestContent)
         {
             string lsR = string.Empty;
-            string lsUserKey = MaxEncryptionLibrary.GetHash(typeof(object), MaxEncryptionLibrary.MD5Hash, lsUrl + MaxConvertLibrary.SerializeObjectToString(loCredentialIndex));
+            string lsUserKey = MaxEncryptionLibrary.GetHash(typeof(object), MaxEncryptionLibrary.MD5Hash, lsTokenUri + lsClientId + lsClientSecret + lsScope);
             MaxEntityList loList = MaxUserAuthTokenEntity.Create().LoadAllActiveByUserKeyCache(lsUserKey);
             for (int lnE = 0; lnE < loList.Count; lnE++)
             {
                 MaxUserAuthTokenEntity loEntity = loList[lnE] as MaxUserAuthTokenEntity;
-                //// Tokens need to still be good for at least a minute
-                if (DateTime.UtcNow.AddMinutes(1) < loEntity.CreatedDate.AddSeconds(loEntity.Expiration))
+                //// Tokens need to be valid for at least 30 more seconds to be used
+                if (DateTime.UtcNow.AddSeconds(30) < loEntity.CreatedDate.AddSeconds(loEntity.Expiration))
                 {
                     lsR = loEntity.Token;
                 }
@@ -336,29 +312,13 @@ namespace MaxFactry.General.BusinessLayer
 
             if (string.IsNullOrEmpty(lsR))
             {
-                string lsTokenJson = string.Empty;
-                if (loCredentialIndex.Contains("ClientId") && loCredentialIndex.Contains("Secret") && loCredentialIndex.Contains("Scopes"))
+                MaxUserAuthTokenEntity loEntity = MaxUserAuthTokenEntity.Create();
+                if (loEntity.LoadRemote(lsTokenUri, lsClientId, lsClientSecret, lsScope, loRequestContent))
                 {
-                    lsTokenJson = MaxSecurityLibrary.GetAccessToken(typeof(object), new Uri(lsUrl), loCredentialIndex.GetValueString("ClientId"), loCredentialIndex.GetValueString("Secret"), loCredentialIndex.GetValueString("Scopes"));
-                }
-                else
-                {
-                    lsTokenJson = MaxSecurityLibrary.GetAccessToken(typeof(object), new Uri(lsUrl), loCredentialIndex);
-                }
-
-                if (!string.IsNullOrEmpty(lsTokenJson))
-                {
-                    MaxUserAuthTokenEntity loTokenEntity = MaxUserAuthTokenEntity.Create();
-                    loTokenEntity.UserKey = lsUserKey;
-                    loTokenEntity.TokenResult = lsTokenJson;
-                    loTokenEntity.Insert();
-                    MaxIndex loTokenIndex = MaxConvertLibrary.DeserializeObject(lsTokenJson, typeof(MaxIndex)) as MaxIndex;
-                    loTokenEntity.Expiration = MaxConvertLibrary.ConvertToInt(typeof(object), loTokenIndex.GetValueString("expires_in"));
-                    loTokenEntity.TokenType = loTokenIndex.GetValueString("token_type");
-                    loTokenEntity.Token = loTokenIndex.GetValueString("access_token");
-                    loTokenEntity.IsActive = true;
-                    loTokenEntity.Update();
-                    lsR = loTokenEntity.Token;
+                    loEntity.UserKey = lsUserKey;
+                    loEntity.IsActive = true;
+                    loEntity.Insert();
+                    lsR = loEntity.Token;
                 }
             }
 
@@ -377,6 +337,89 @@ namespace MaxFactry.General.BusinessLayer
             loR.IsActive = true;
             loR.Insert();
             return loR;
+        }
+
+        public string GetClientToken(string lsToken)
+        {
+            string lsR = string.Empty;
+            string lsTokenText = MaxConvertLibrary.ConvertGuidToShortString(typeof(object), this.Id) + "|" + lsToken;
+            byte[] laR = System.Text.Encoding.UTF8.GetBytes(lsTokenText);
+            lsR = Convert.ToBase64String(laR).Replace("=", string.Empty);
+            return lsR;
+        }
+
+        public MaxEntityList LoadAllActiveByUserKeyCache(string lsUserKey)
+        {
+            string lsCacheDataKey = this.GetCacheKey() + "LoadAllActiveByUserKeyCache/" + this.DataModel.UserKey + "/" + lsUserKey;
+            MaxDataList loDataList = MaxCacheRepository.Get(this.GetType(), lsCacheDataKey, typeof(MaxDataList)) as MaxDataList;
+            if (null == loDataList)
+            {
+                MaxDataQuery loDataQuery = new MaxDataQuery();
+                loDataQuery.StartGroup();
+                loDataQuery.AddFilter(this.MaxBaseIdDataModel.IsActive, "=", true);
+                loDataQuery.AddCondition("AND");
+                loDataQuery.AddFilter(this.DataModel.UserKey, "=", lsUserKey);
+                loDataQuery.EndGroup();
+                int lnTotal = 0;
+                loDataList = MaxGeneralRepository.Select(this.GetData(), loDataQuery, 0, 0, string.Empty, out lnTotal);
+                MaxCacheRepository.Set(this.GetType(), lsCacheDataKey, loDataList);
+            }
+
+            MaxEntityList loEntityList = MaxEntityList.Create(this.GetType(), loDataList);
+            return loEntityList;
+        }
+
+        /// <summary>
+        /// Loads a token from a remote source
+        /// </summary>
+        /// <param name="lsTokenUri">URI to use</param>
+        /// <param name="lsClientId">Client Id</param>
+        /// <param name="lsClientSecret">Client Secret</param>
+        /// <param name="lsScope">Scope</param>
+        /// <param name="loRequestContent">Extra content to send to remote source</param>
+        /// <returns></returns>
+        public virtual bool LoadRemote(string lsTokenUri, string lsClientId, string lsClientSecret, string lsScope, MaxIndex loRequestContent)
+        {
+            bool lbR = false;
+            MaxHttpClientEntity loEntity = MaxHttpClientEntity.Create();
+            if (loEntity.LoadRemote(lsTokenUri, loRequestContent, lsClientId, lsClientSecret, lsScope))
+            {
+                lbR = this.MapResponse(loEntity.ResponseContent);
+            }
+
+            return lbR;
+        }
+
+        /// <summary>
+        /// Maps the response from a remote URL to this token
+        /// </summary>
+        /// <param name="loRemoteResponse">String or stream from remote server</param>
+        /// <returns></returns>
+        public bool MapResponse(object loRemoteResponse)
+        {
+            bool lbR = false;
+            string lsContent = string.Empty;
+            if (loRemoteResponse is string)
+            {
+                lsContent = loRemoteResponse as string;
+            }
+            else if (loRemoteResponse is Stream)
+            {
+                lsContent = new StreamReader((Stream)loRemoteResponse).ReadToEnd();
+            }
+
+            //// {"token_type":"Bearer","expires_in":3599,"ext_expires_in":3599,"access_token": ""}
+            MaxIndex loTokenIndex = MaxConvertLibrary.DeserializeObject(lsContent, typeof(MaxIndex)) as MaxIndex;
+            if (loTokenIndex.Contains("token_type") && loTokenIndex.Contains("expires_in") && loTokenIndex.Contains("access_token"))
+            {
+                this.TokenResult = lsContent;
+                this.TokenType = loTokenIndex.GetValueString("token_type");
+                this.Expiration = MaxConvertLibrary.ConvertToInt(typeof(object), loTokenIndex.GetValueString("expires_in"));
+                this.Token = loTokenIndex.GetValueString("access_token");
+                lbR = true;
+            }
+
+            return lbR;
         }
     }
 }

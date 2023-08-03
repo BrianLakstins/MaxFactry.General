@@ -36,7 +36,9 @@ namespace MaxFactry.General.BusinessLayer
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Text.RegularExpressions;
+#if net4_52
+    using System.Net.Http;
+#endif
     using MaxFactry.Core;
     using MaxFactry.Base.BusinessLayer ;
     using MaxFactry.Base.DataLayer;
@@ -223,6 +225,127 @@ namespace MaxFactry.General.BusinessLayer
             }
 
             return false;
+        }
+
+        public virtual MaxEntityList LoadAllRemote(string lsToken, string lsUrl)
+        {
+            MaxEntityList loR = new MaxEntityList(this.GetType());
+            MaxHttpClientEntity loEntity = MaxHttpClientEntity.Create();
+            if (loEntity.LoadRemote(lsUrl, null, lsToken))
+            {
+                loR = this.MapResponse(loEntity.ResponseContent);
+            }
+
+            return loR;
+        }
+
+        protected virtual MaxEntityList MapResponse(object loRemoteResponse)
+        {
+            MaxEntityList loR = new MaxEntityList(this.GetType());
+            string lsContent = string.Empty;
+            if (loRemoteResponse is string)
+            {
+                lsContent = loRemoteResponse as string;
+            }
+            else if (loRemoteResponse is Stream)
+            {
+                lsContent = new StreamReader((Stream)loRemoteResponse).ReadToEnd();
+            }
+
+            /*
+            {
+                "Message": {
+                    "Success": "",
+                    "Warning": "",
+                    "Log": "",
+                    "Error": "User does not have permission for this item type.",
+                    "LogList": []
+                  },
+                  "Item": { },
+                  "ItemList": [],
+                  "Page": { },
+                  "Status": 401
+                }
+
+
+                {
+                  "Message": {
+                    "Success": "",
+                    "Warning": "",
+                    "Log": "",
+                    "Error": "",
+                    "LogList": []
+                  },
+                  "Item": {},
+                  "ItemList": [
+                    {
+                      "ContentDate": "7/31/2023 12:22 PM",
+                      "ContentName": "AgentConsole.zip",
+                      "CreatedDate": "7/31/2023 12:22 PM",
+                      "FileType": 2023102,
+                      "Format": "",
+                      "Id": "4c57a5cc-1131-4391-92f6-61ab8b891e8a",
+                      "RelatedList": []
+                    },
+                    {
+                      "ContentDate": "7/31/2023 12:21 PM",
+                      "ContentName": "Agent.WindowsService.zip",
+                      "CreatedDate": "7/31/2023 12:22 PM",
+                      "FileType": 2023101,
+                      "Format": "",
+                      "Id": "f0e49d3f-ee94-4992-ac57-621f56c26555",
+                      "RelatedList": []
+                    }
+                  ],
+                  "Page": {},
+                  "Status": 200
+                }
+            */
+
+            if (!string.IsNullOrEmpty(lsContent))
+            {
+                if (lsContent.Contains("\"Status\": 200"))
+                {
+                    MaxIndex loIndex = MaxConvertLibrary.DeserializeObject(typeof(object), lsContent, typeof(MaxIndex)) as MaxIndex;
+                    object[] loItemList = loIndex["ItemList"] as object[];
+                    if (null != loItemList)
+                    {
+                        for (int lnD = 0; lnD < loItemList.Length; lnD++)
+                        {
+                            MaxIndex loItem = loItemList[lnD] as MaxIndex;
+                            if (null != loItem)
+                            {
+                                MaxFileDownloadEntity loEntity = MaxFileDownloadEntity.Create();
+                                loEntity.ContentDate = MaxConvertLibrary.ConvertToDateTime(typeof(object), loItem.GetValueString("ContentDate"));
+                                loEntity.ContentName = loItem.GetValueString("ContentName");
+                                loEntity.SetId(new Guid(loItem.GetValueString("Id")));
+                                loR.Add(loEntity);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return loR;
+        }
+
+        public virtual bool LoadContentRemote(string lsToken, string lsUrl)
+        {
+            bool lbR = false;
+            MaxHttpClientEntity loEntity = MaxHttpClientEntity.Create();
+            if (loEntity.LoadRemote(lsUrl, null, lsToken))
+            {
+                this.Content = loEntity.ResponseContent as Stream;
+#if net4_52
+                if (loEntity.Response is HttpResponseMessage)
+                {
+                    this.ContentLength = MaxConvertLibrary.ConvertToLong(typeof(object), ((HttpResponseMessage)loEntity.Response).Content.Headers.ContentLength);
+                    lbR = true;
+                }
+#endif
+            }
+
+            return lbR;
         }
     }
 }

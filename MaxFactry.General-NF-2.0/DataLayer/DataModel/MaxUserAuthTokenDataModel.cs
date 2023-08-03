@@ -99,8 +99,8 @@ namespace MaxFactry.General.DataLayer
 			this.AddNullable(this.TokenResult, typeof(MaxLongString));
 			this.AddPropertyAttribute(this.TokenResult, "IsEncrypted", "true");
 
-			this.RepositoryProviderType = typeof(MaxFactry.General.DataLayer.Provider.MaxSecurityRepositoryDefaultProvider);
-            this.RepositoryType = typeof(MaxSecurityRepository);
+			this.RepositoryProviderType = typeof(MaxFactry.General.DataLayer.Provider.MaxGeneralRepositoryDefaultProvider);
+            this.RepositoryType = typeof(MaxGeneralRepository);
 		}
 	}
 }
