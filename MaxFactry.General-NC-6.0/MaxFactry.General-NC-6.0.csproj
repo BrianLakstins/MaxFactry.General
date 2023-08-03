@@ -5,9 +5,9 @@
     <RootNamespace>MaxFactry.General</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	  <Version>1.0.22.2</Version>
-	  <AssemblyVersion>1.0.22.2</AssemblyVersion>
-	  <FileVersion>2023.07.25.02</FileVersion>
+	  <Version>1.0.22.3</Version>
+	  <AssemblyVersion>1.0.22.3</AssemblyVersion>
+	  <FileVersion>2023.08.03.01</FileVersion>
 	  <SignAssembly>True</SignAssembly>
 	  <AssemblyOriginatorKeyFile>MaxFactry.snk</AssemblyOriginatorKeyFile>  
   </PropertyGroup>
@@ -16,6 +16,7 @@
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxEmailEntity.cs" Link="BusinessLayer\Entity\MaxEmailEntity.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxFileDownloadEntity.cs" Link="BusinessLayer\Entity\MaxFileDownloadEntity.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxFileEntity.cs" Link="BusinessLayer\Entity\MaxFileEntity.cs" />
+		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxHttpClientEntity.cs" Link="BusinessLayer\Entity\MaxHttpClientEntity.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxPaymentCardEntity.cs" Link="BusinessLayer\Entity\MaxPaymentCardEntity.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxProfileIndexEntity.cs" Link="BusinessLayer\Entity\MaxProfileIndexEntity.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxRoleEntity.cs" Link="BusinessLayer\Entity\MaxRoleEntity.cs" />
@@ -33,6 +34,7 @@
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxEmailDataModel.cs" Link="DataLayer\DataModel\MaxEmailDataModel.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxFileDataModel.cs" Link="DataLayer\DataModel\MaxFileDataModel.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxFileDownloadDataModel.cs" Link="DataLayer\DataModel\MaxFileDownloadDataModel.cs" />
+		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxHttpClientDataModel.cs" Link="DataLayer\DataModel\MaxHttpClientDataModel.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxPaymentCardDataModel.cs" Link="DataLayer\DataModel\MaxPaymentCardDataModel.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxProfileIndexDataModel.cs" Link="DataLayer\DataModel\MaxProfileIndexDataModel.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxRoleDataModel.cs" Link="DataLayer\DataModel\MaxRoleDataModel.cs" />

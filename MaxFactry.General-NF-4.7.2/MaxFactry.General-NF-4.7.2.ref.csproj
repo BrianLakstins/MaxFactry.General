@@ -4,12 +4,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{5000A43B-95CD-4D65-AA38-09CA664639E4}</ProjectGuid>
+    <ProjectGuid>{CA606A5F-79AE-4D65-8E5B-67B944EEDECF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MaxFactry.General</RootNamespace>
-    <AssemblyName>MaxFactry.General-NF-4.8</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <AssemblyName>MaxFactry.General-NF-4.7.2</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;net2;net4_52;net_4_72;net_4_8</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;net2;net4_52;net_4_72</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -26,7 +26,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;net2;net4_52;net_4_72;net_4_8</DefineConstants>
+    <DefineConstants>TRACE;net2;net4_52;net_4_72</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -57,9 +57,6 @@
     </Compile>
     <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxFileEntity.cs">
       <Link>BusinessLayer\Entity\MaxFileEntity.cs</Link>
-    </Compile>
-    <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxHttpClientEntity.cs">
-      <Link>BusinessLayer\Entity\MaxHttpClientEntity.cs</Link>
     </Compile>
     <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxPaymentCardEntity.cs">
       <Link>BusinessLayer\Entity\MaxPaymentCardEntity.cs</Link>
@@ -120,6 +117,9 @@
     </Compile>
     <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxProfileIndexDataModel.cs">
       <Link>DataLayer\DataModel\MaxProfileIndexDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxRemoteDataModel.cs">
+      <Link>DataLayer\DataModel\MaxRemoteDataModel.cs</Link>
     </Compile>
     <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxRoleDataModel.cs">
       <Link>DataLayer\DataModel\MaxRoleDataModel.cs</Link>

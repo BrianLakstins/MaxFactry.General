@@ -42,10 +42,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BusinessLayer\Entity\MaxHttpClientEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxEmailEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxFileEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxFileDownloadEntity.cs" />
-    <Compile Include="BusinessLayer\Entity\MaxHttpClientEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxPaymentCardEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxProfileIndexEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxRoleEntity.cs" />
