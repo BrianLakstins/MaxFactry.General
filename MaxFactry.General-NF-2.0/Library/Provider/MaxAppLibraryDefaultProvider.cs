@@ -409,6 +409,7 @@ namespace MaxFactry.General.Provider
 
         public virtual void ApplicationShutdown()
         {
+            MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "ApplicationShutdown", MaxEnumGroup.LogInfo, "Application Shutdown"));
             string lsTempFolder = MaxConfigurationLibrary.GetValue(MaxEnumGroup.ScopeApplication, "__TempFolder") as string;
             if (null != lsTempFolder && lsTempFolder.Length > 0)
             {
