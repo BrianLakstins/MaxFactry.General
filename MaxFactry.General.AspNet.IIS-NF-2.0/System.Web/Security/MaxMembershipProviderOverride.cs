@@ -654,19 +654,18 @@ namespace System.Web.Security
 		/// </summary>
 		/// <param name="email">The e-mail address to search for.</param>
 		/// <returns>The user name where the e-mail address for the user matches the specified e-mail address. If no match is found, a null reference (Nothing in Visual Basic) is returned.</returns>
-		public override string GetUserNameByEmail(string email)
+		public override string GetUserNameByEmail(string lsEmail)
 		{
 			if (this.RequiresUniqueEmail)
 			{
 				try
 				{
-					int lnTotalRecords = 0;
-					MaxEntityList loList = MaxUserEntity.Create().LoadAllByEmailCache(email, 0, 0, string.Empty, out lnTotalRecords);
+					MaxEntityList loList = MaxUserEntity.Create().LoadAllByEmailCache(lsEmail);
                     int lnMatchCount = 0;
                     string lsUserName = null;
 					for (int lnL = 0; lnL < loList.Count; lnL++)
 					{
-						if (((MaxUserEntity)loList[lnL]).Email.Equals(email, StringComparison.InvariantCultureIgnoreCase))
+						if (((MaxUserEntity)loList[lnL]).Email.Equals(lsEmail, StringComparison.InvariantCultureIgnoreCase))
 						{
                             lsUserName = ((MaxUserEntity)loList[lnL]).UserName;
                             lnMatchCount++;
@@ -679,7 +678,7 @@ namespace System.Web.Security
                     }
                     else
                     {
-                        MaxLogLibrary.Log(new MaxLogEntryStructure("GetUserNameByEmail", MaxEnumGroup.LogError, "Error getting user name by email.  There were {lnMatchCount} users with this email {email}", lnMatchCount, email));
+                        MaxLogLibrary.Log(new MaxLogEntryStructure("GetUserNameByEmail", MaxEnumGroup.LogError, "Error getting user name by email.  There were {lnMatchCount} users with this email {email}", lnMatchCount, lsEmail));
                     }
 				}
 				catch (Exception loE)
@@ -828,9 +827,8 @@ namespace System.Web.Security
         /// <returns>true if there is a user with a different id and this username, false otherwise.</returns>
         protected bool IsDuplicateUserName(Guid loId, string lsUserName)
         {
-            int lnTotal = 0;
-            MaxEntityList loUserEntityList = MaxUserEntity.Create().LoadAllByUsernameCache(lsUserName, 0, 0, string.Empty, out lnTotal);
-            if (lnTotal > 0 || loUserEntityList.Count > 0)
+            MaxEntityList loUserEntityList = MaxUserEntity.Create().LoadAllByUsernameCache(lsUserName);
+            if (loUserEntityList.Count > 0)
             {
                 for (int lnU = 0; lnU < loUserEntityList.Count; lnU++)
                 {
@@ -853,9 +851,8 @@ namespace System.Web.Security
         /// <returns>true if there is a user with a different id and this email, false otherwise.</returns>
         protected bool IsDuplicateEmail(Guid loId, string lsEmail)
         {
-            int lnTotal = 0;
-            MaxEntityList loUserEntityList = MaxUserEntity.Create().LoadAllByEmailCache(lsEmail, 0, 0, string.Empty, out lnTotal);
-            if (lnTotal > 0 || loUserEntityList.Count > 0)
+            MaxEntityList loUserEntityList = MaxUserEntity.Create().LoadAllByEmailCache(lsEmail);
+            if (loUserEntityList.Count > 0)
             {
                 for (int lnU = 0; lnU < loUserEntityList.Count; lnU++)
                 {
@@ -1071,8 +1068,7 @@ namespace System.Web.Security
                 return null;
             }
 
-            int lnTotal = 0;
-            MaxEntityList loMaxUserList = MaxUserEntity.Create().LoadAllByUsernameCache(lsUserName, 0, 0, string.Empty, out lnTotal);
+            MaxEntityList loMaxUserList = MaxUserEntity.Create().LoadAllByUsernameCache(lsUserName);
             if (loMaxUserList.Count.Equals(1))
             {
                 return (MaxUserEntity)loMaxUserList[0];
