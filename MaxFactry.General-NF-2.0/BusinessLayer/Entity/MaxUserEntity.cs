@@ -220,46 +220,9 @@ namespace MaxFactry.General.BusinessLayer
         /// <param name="lsSort">Sort information.</param>
         /// <param name="lnTotal">Total matching records.</param>
         /// <returns>List of users.</returns>
-		public MaxEntityList LoadAllByUsernameCache(string lsUserName, int lnPageIndex, int lnPageSize, string lsSort, out int lnTotal)
+		public MaxEntityList LoadAllByUsernameCache(string lsUserName)
 		{
             MaxEntityList loR = this.LoadAllByPropertyCache(this.DataModel.UserName, lsUserName);
-            /*
-            MaxEntityList loR = MaxEntityList.Create(this.GetType());
-            if (string.IsNullOrEmpty(lsUserName))
-            {
-                loR = this.LoadAllCache();
-            }
-            else
-            {
-                string lsCacheAllDataKey = this.GetCacheKey() + "LoadAll";
-                MaxDataList loDataAllList = MaxCacheRepository.Get(this.GetType(), lsCacheAllDataKey, typeof(MaxDataList)) as MaxDataList;
-                if (null != loDataAllList)
-                {
-                    for (int lnD = 0; lnD < loDataAllList.Count; lnD++)
-                    {
-                        if (MaxConvertLibrary.ConvertToString(typeof(object), loDataAllList[lnD].Get(this.DataModel.UserName)).Equals(lsUserName, StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            MaxEntity loEntity = MaxBusinessLibrary.GetEntity(this.GetType(), loDataAllList[lnD].Clone());
-                            loR.Add(loEntity);
-                        }
-                    }
-                }
-                else
-                {
-                    string lsCacheDataKey = this.GetCacheKey() + "LoadAllByUsername/" + MaxConvertLibrary.ConvertToString(typeof(object), lsUserName.ToLower());
-                    MaxDataList loDataList = MaxCacheRepository.Get(this.GetType(), lsCacheDataKey, typeof(MaxDataList)) as MaxDataList;
-                    if (null == loDataList)
-                    {
-                        loDataList = MaxSecurityRepository.SelectAllByUserName(MaxUserEntity.Create().Data, lsUserName, lnPageIndex, lnPageSize, lsSort, out lnTotal);
-                        MaxCacheRepository.Set(this.GetType(), lsCacheDataKey, loDataList);
-                    }
-
-                    loR = MaxEntityList.Create(this.GetType(), loDataList);
-                }
-            }
-            */
-
-            lnTotal = loR.Count;
             return loR;
 		}
 
@@ -272,45 +235,9 @@ namespace MaxFactry.General.BusinessLayer
         /// <param name="lsSort">Sort information.</param>
         /// <param name="lnTotal">Total matching records.</param>
         /// <returns>List of users.</returns>
-		public MaxEntityList LoadAllByEmailCache(string lsEmail, int lnPageIndex, int lnPageSize, string lsSort, out int lnTotal)
+		public MaxEntityList LoadAllByEmailCache(string lsEmail)
 		{
             MaxEntityList loR = this.LoadAllByPropertyCache(this.DataModel.Email, lsEmail);
-            /*
-            MaxEntityList loR = MaxEntityList.Create(this.GetType());
-            if (string.IsNullOrEmpty(lsEmail))
-            {
-                loR = this.LoadAllCache();
-            }
-            else
-            {
-                string lsCacheAllDataKey = this.GetCacheKey() + "LoadAll";
-                MaxDataList loDataAllList = MaxCacheRepository.Get(this.GetType(), lsCacheAllDataKey, typeof(MaxDataList)) as MaxDataList;
-                if (null != loDataAllList)
-                {
-                    for (int lnD = 0; lnD < loDataAllList.Count; lnD++)
-                    {
-                        if (MaxConvertLibrary.ConvertToString(typeof(object), loDataAllList[lnD].Get(this.DataModel.Email)).Equals(lsEmail, StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            MaxEntity loEntity = MaxBusinessLibrary.GetEntity(this.GetType(), loDataAllList[lnD].Clone());
-                            loR.Add(loEntity);
-                        }
-                    }
-                }
-                else
-                {
-                    string lsCacheDataKey = this.GetCacheKey() + "LoadAllByEmail/" + MaxConvertLibrary.ConvertToString(typeof(object), lsEmail.ToLower());
-                    MaxDataList loDataList = MaxCacheRepository.Get(this.GetType(), lsCacheDataKey, typeof(MaxDataList)) as MaxDataList;
-                    if (null == loDataList)
-                    {
-                        loDataList = MaxSecurityRepository.SelectAllByEmail(MaxUserEntity.Create().Data, lsEmail, lnPageIndex, lnPageSize, lsSort, out lnTotal);
-                        MaxCacheRepository.Set(this.GetType(), lsCacheDataKey, loDataList);
-                    }
-
-                    loR = MaxEntityList.Create(this.GetType(), loDataList);
-                }
-            }
-            */
-            lnTotal = loR.Count;
             return loR;
 		}
 
