@@ -34,6 +34,7 @@
 // <change date="11/18/2020" author="Brian A. Lakstins" description="Update for changes to references.">
 // <change date="11/17/2020" author="Brian A. Lakstins" description="Add reset password.">
 // <change date="12/10/2020" author="Brian A. Lakstins" description="Generate email content in Model">
+// <change date="10/10/2023" author="Brian A. Lakstins" description="Added OAuth2 Login integration">
 // </changelog>
 #endregion
 
@@ -48,6 +49,8 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
     using System.Web.Mvc;
     using System.Web.Routing;
     using System.Web.Security;
+    using JWT;
+    using JWT.Serializers;
     using MaxFactry.Base.BusinessLayer;
     using MaxFactry.Core;
     using MaxFactry.General.BusinessLayer;
@@ -365,6 +368,8 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         }
 
         /// <summary>
+        /// Handles a request from another site for OAuth2 authentication with this site.  Makes the user log in first to this site before redirecting back to original request site.
+        /// TODO: Test this and make sure it works
         /// Request
         /// From: https://gist.github.com/mziwisky/10079157
         /// PrettyMail responds REDIRECT gmail.com/oauth2/auth?client_id=ABC&redirect_uri=prettymail.com/oauth_response -- note: also common to include ‘scopes’ in query -- i.e., the scope of the information that PrettyMail is asking to access
@@ -531,6 +536,8 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         }
 
         /// <summary>
+        /// Handles a valid login and redirects the user back to their site.
+        /// TODO: Test this and make sure it works
         /// From: https://gist.github.com/mziwisky/10079157
         /// generates a one-time-use code that it associates with PrettyMail and the specified user and the requested scope (so it persists it until the next step) and REDIRECTs to the ‘redirect_uri’ it got in the first place, passing along that code: prettymail.com/oauth_response?code=big_long_thing
         /// From: https://alexbilbie.com/guide-to-oauth-2-grants/  - Authorisation Code Grant (section 4.1) = The Flow (Part One)
@@ -571,6 +578,195 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 {
                     return this.RedirectToAction("Error");
                 }
+            }
+
+            return View(loModel);
+        }
+
+        /// <summary>
+        /// Uses the query string to redirect a user to an Microsoft OpenID Connect authorizatio url
+        /// https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-protocols-oidc
+        /// </summary>
+        /// <param name="tenant">You can use the {tenant} value in the path of the request to control who can sign in to the application. The allowed values are common, organizations, consumers, and tenant identifiers. For more information, see protocol basics. Critically, for guest scenarios where you sign a user from one tenant into another tenant, you must provide the tenant identifier to correctly sign them into the resource tenant.</param>
+        /// <param name="client_id">The Application (client) ID that the Microsoft Entra admin center – App registrations experience assigned to your app.</param>
+        /// <param name="response_type">Must include id_token for OpenID Connect sign-in.</param>
+        /// <param name="scope">A space-separated list of scopes. For OpenID Connect, it must include the scope openid, which translates to the Sign you in permission in the consent UI. You might also include other scopes in this request for requesting consent.</param>
+        /// <param name="domain_hint">	The realm of the user in a federated directory. This skips the email-based discovery process that the user goes through on the sign-in page, for a slightly more streamlined user experience. For tenants that are federated through an on-premises directory like AD FS, this often results in a seamless sign-in because of the existing login session.</param>
+        /// <param name="ReturnUrl">The Url that should be shown on the current site after the login process is complete</param>
+        /// <returns></returns>
+        [HttpGet]
+        [AllowAnonymous]
+        [OutputCache(NoStore = true, Duration = 0)]
+        public virtual ActionResult OAuth2OIDC(string tenant, string client_id, string response_type, string scope, string domain_hint, string ReturnUrl)
+        {
+            try
+            {
+                MaxUserAuthGrantEntity loEntity = MaxUserAuthGrantEntity.Create();
+                loEntity.SetId(Guid.NewGuid());
+                loEntity.IsActive = true;
+                loEntity.State = loEntity.Id.ToString();
+                loEntity.Nonce = Guid.NewGuid().ToString();
+                loEntity.ClientId = client_id;
+                loEntity.Scope = scope;
+                loEntity.ResponseType = response_type;
+                loEntity.ResponseMode = "form_post";
+                loEntity.FullUri = "https://" + this.Request.Headers["X-Forwarded-Host"] + "/MaxSecurity/OAuth2OIDC";
+                loEntity.RedirectUri = ReturnUrl;
+                
+
+                string lsUrl = string.Format("https://login.microsoftonline.com/{0}/oauth2/v2.0/authorize", tenant);
+                lsUrl += "?client_id=" + HttpUtility.UrlEncode(loEntity.ClientId);
+                lsUrl += "&response_type=" + HttpUtility.UrlEncode(loEntity.ResponseType);
+                lsUrl += "&scope=" + HttpUtility.UrlEncode(loEntity.Scope);
+                lsUrl += "&domain_hint=" + HttpUtility.UrlEncode(domain_hint);
+                lsUrl += "&redirect_uri=" + HttpUtility.UrlEncode(loEntity.FullUri);
+                lsUrl += "&state=" + HttpUtility.UrlEncode(loEntity.State);
+                lsUrl += "&nonce=" + HttpUtility.UrlEncode(loEntity.Nonce);
+                lsUrl += "&response_mode=form_post";
+
+                loEntity.FullUri = lsUrl;
+                if (loEntity.Insert())
+                {
+                    return this.Redirect(lsUrl);
+                }
+
+                return this.RedirectToAction("Error");
+            }
+            catch (Exception loE)
+            {
+                return this.RedirectToAction("Error", loE);
+            }
+        }
+
+        /// <summary>
+        /// https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-protocols-oidc
+        /// </summary>
+        /// <param name="loModel"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [AllowAnonymous]
+        [OutputCache(NoStore = true, Duration = 0)]
+        public virtual ActionResult OAuth2OIDC(MaxUserAuthGrantViewModel loModel)
+        {
+            if (null == loModel)
+            {
+                loModel = new MaxUserAuthGrantViewModel();
+            }
+
+            try
+            {
+                string lsIdToken = this.Request.Form["id_token"];
+                string lsState = this.Request.Form["state"];
+                string lsSessionState = this.Request.Form["session_state"];
+                string lsTokenType = this.Request.Form["token_type"];
+                string lsExpiresIn = this.Request.Form["expires_in"];
+                string lsScope = this.Request.Form["scope"];
+                string lsAccessToken = this.Request.Form["access_token"];
+
+                Guid loId = MaxConvertLibrary.ConvertToGuid(typeof(object), lsState);
+                MaxUserAuthGrantEntity loEntity = MaxUserAuthGrantEntity.Create();
+                if (loEntity.LoadByIdCache(loId) && loEntity.IsActive)
+                {
+                    loEntity.IsActive = false;
+                    loEntity.Update();
+                    //// Parse the Id Token
+                    IJsonSerializer loSerializer = new JsonNetSerializer();
+                    IBase64UrlEncoder loUrlEncoder = new JwtBase64UrlEncoder();
+                    IJwtDecoder loDecoder = new JwtDecoder(loSerializer, loUrlEncoder);
+                    IDictionary<string, object> loIdToken = loDecoder.DecodeToObject<IDictionary<string, object>>(lsIdToken, string.Empty, false);
+                    //// https://learn.microsoft.com/en-us/azure/active-directory/develop/id-token-claims-reference
+                    string lsNonce = loIdToken["nonce"] as string;
+                    if (loEntity.Nonce == lsNonce)
+                    {
+                        if (loIdToken.ContainsKey("oid"))
+                        {
+                            Guid loObjectId = new Guid(loIdToken["oid"] as string);
+                            //// The immutable identifier for an object, in this case, a user account. 
+                            ////  This ID uniquely identifies the user across applications - two different applications signing in the same user receives the same value in the oid claim. 
+                            ////  Microsoft Graph returns this ID as the id property for a user account. 
+                            ////  Because the oid allows multiple apps to correlate users, the profile scope is required to receive this claim. 
+                            ////  If a single user exists in multiple tenants, the user contains a different object ID in each tenant - they're considered different accounts, even though the user logs into each account with the same credentials.
+                            ////  The oid claim is a GUID and can't be reused.
+                            string lsUserName = "OAuth2" + MaxConvertLibrary.ConvertGuidToAlphabet64(typeof(object), loObjectId);
+                            string lsEmail = string.Empty;
+                            if (loIdToken.ContainsKey("email"))
+                            {
+                                lsEmail = loIdToken["email"] as string;
+                            }
+
+                            if (loIdToken.ContainsKey("preferred_username"))
+                            {
+                                if (MaxEmailEntity.IsValidEmail(loIdToken["preferred_username"] as string))
+                                {
+                                    lsEmail = loIdToken["preferred_username"] as string;
+                                }
+                            }
+
+                            MaxUserEntity loUser = MaxUserEntity.Create();
+                            MaxEntityList loList = loUser.LoadAllByUsernameCache(lsUserName);
+                            if (loList.Count == 0)
+                            {
+                                loList = loUser.LoadAllByEmailCache(lsEmail);
+                                if (loList.Count == 1)
+                                {
+                                    loUser = loList[0] as MaxUserEntity;
+                                    bool lbIsOAuth2User = false;
+                                    if (loUser.UserName != loUser.Email)
+                                    {
+                                        if (loUser.UserName.Length == lsUserName.Length &&
+                                            loUser.UserName.StartsWith("OAuth2"))
+                                        {
+                                            lbIsOAuth2User = true;
+                                        }
+                                    }
+
+                                    if (!lbIsOAuth2User)
+                                    {
+                                        loUser.UserName = lsUserName;
+                                        loUser.Update();
+                                    }
+                                    else
+                                    {
+                                        throw new Exception("User with this email is already taken by another OAuth2 user.");
+                                    }
+                                }
+                                else if (loList.Count == 0)
+                                {
+                                    string lsRandomPassword = MaxFactry.Core.MaxConvertLibrary.ConvertGuidToAlphabet64(typeof(object), Guid.NewGuid());
+                                    //// Create the user
+                                    MembershipUser loMembershipUser = Membership.CreateUser(lsUserName, lsRandomPassword, lsEmail);
+                                }
+                                else
+                                {
+                                    throw new Exception("More than one user with the same email");
+                                }
+
+                                //// Log the user on
+                                MaxFactry.General.AspNet.IIS.MaxAppLibrary.SignIn(lsUserName);
+                            }
+                            else if (loList.Count == 1)
+                            {
+                                //// Log the user on
+                                MaxFactry.General.AspNet.IIS.MaxAppLibrary.SignIn(lsUserName);
+                            }
+                            else
+                            {
+                                throw new Exception("More than one user with the same username");
+                            }
+
+                            loEntity.UserKey = lsUserName + "|" + lsEmail;
+                            loEntity.Update();
+                            if (!string.IsNullOrEmpty(loEntity.RedirectUri))
+                            {
+                                return this.Redirect(loEntity.RedirectUri);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception loE)
+            {
+                return this.RedirectToAction("Error", loE);
             }
 
             return View(loModel);

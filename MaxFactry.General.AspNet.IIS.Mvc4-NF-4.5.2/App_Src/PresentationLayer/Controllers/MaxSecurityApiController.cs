@@ -697,93 +697,101 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 MaxApiRequestViewModel loRequest = await this.GetRequest();
                 try
                 {
-                    string lsUserName = loRequest.Item.GetValueString(loRequestItem.UserName);
-                    string lsEmail = loRequest.Item.GetValueString(loRequestItem.Email);
-                    string lsPassword = loRequest.Item.GetValueString(loRequestItem.Password);
-                    if ((!string.IsNullOrEmpty(lsUserName) || !string.IsNullOrEmpty(lsEmail)) && !string.IsNullOrEmpty(lsPassword))
+                    MembershipUser loUser = Membership.GetUser();
+                    if (this.Request.Method == HttpMethod.Post)
                     {
-                        if (string.IsNullOrEmpty(lsEmail) && MaxBaseEmailEntity.IsValidEmail(lsUserName))
+                        string lsUserName = loRequest.Item.GetValueString(loRequestItem.UserName);
+                        string lsEmail = loRequest.Item.GetValueString(loRequestItem.Email);
+                        string lsPassword = loRequest.Item.GetValueString(loRequestItem.Password);
+                        if ((!string.IsNullOrEmpty(lsUserName) || !string.IsNullOrEmpty(lsEmail)) && !string.IsNullOrEmpty(lsPassword))
                         {
-                            lsEmail = lsUserName;
-                        }
+                            if (string.IsNullOrEmpty(lsEmail) && MaxBaseEmailEntity.IsValidEmail(lsUserName))
+                            {
+                                lsEmail = lsUserName;
+                            }
 
-                        string lsUserCheck = lsUserName;
-                        bool lbIsValid = Membership.ValidateUser(lsUserCheck, lsPassword);
-                        if (!lbIsValid && !string.IsNullOrEmpty(lsEmail) && MaxBaseEmailEntity.IsValidEmail(lsEmail))
-                        {
-                            lsUserCheck = Membership.GetUserNameByEmail(lsEmail);
+                            string lsUserCheck = lsUserName;
+                            bool lbIsValid = Membership.ValidateUser(lsUserCheck, lsPassword);
+                            if (!lbIsValid && !string.IsNullOrEmpty(lsEmail) && MaxBaseEmailEntity.IsValidEmail(lsEmail))
+                            {
+                                lsUserCheck = Membership.GetUserNameByEmail(lsEmail);
+                                if (!string.IsNullOrEmpty(lsUserCheck))
+                                {
+                                    lbIsValid = Membership.ValidateUser(lsUserCheck, lsPassword);
+                                }
+                                else
+                                {
+                                    lsUserCheck = lsUserName;
+                                }
+                            }
+
                             if (!string.IsNullOrEmpty(lsUserCheck))
                             {
-                                lbIsValid = Membership.ValidateUser(lsUserCheck, lsPassword);
+                                loUser = Membership.GetUser(lsUserCheck);
+                                if (lbIsValid)
+                                {
+                                    MaxFactry.General.AspNet.IIS.MaxAppLibrary.SignIn(lsUserCheck);
+
+                                }
+                                else
+                                {
+                                    loR.Message.Error = "A matching username or password was not found.";
+                                    if (null != loUser)
+                                    {
+                                        try
+                                        {
+                                            string lsPasswordCurrent = loUser.GetPassword();
+                                            if (string.IsNullOrEmpty(lsPasswordCurrent))
+                                            {
+                                                loR.Message.Error = "Password needs to be reset.";
+                                            }
+                                        }
+                                        catch (Exception loE)
+                                        {
+                                            if (loE.Message != "Password retrieval is disabled")
+                                            {
+                                                loR.Message.Error = "Exception logging in a user: " + loE.Message;
+                                                MaxLogLibrary.Log(new MaxLogEntryStructure("MaxSecurityApi", MaxEnumGroup.LogError, "Exception logging in a user", loE));
+                                            }
+                                        }
+                                    }
+
+                                    loUser = null;
+                                }
                             }
                             else
                             {
-                                lsUserCheck = lsUserName;
+                                loR.Message.Error = "A matching username or password cannot be found.";
                             }
                         }
-
-                        if (!string.IsNullOrEmpty(lsUserCheck))
+                        else if (string.IsNullOrEmpty(lsPassword))
                         {
-                            MembershipUser loUser = Membership.GetUser(lsUserCheck);
-                            if (lbIsValid)
-                            {
-                                MaxFactry.General.AspNet.IIS.MaxAppLibrary.SignIn(lsUserCheck);
-                                if (null != loUser && !string.IsNullOrEmpty(loUser.UserName))
-                                {
-                                    //// Return newly logged in user
-                                    loR.Item.Add(loResponseItem.Id, MaxConvertLibrary.ConvertToString(typeof(object), loUser.ProviderUserKey).ToLower());
-                                    loR.Item.Add(loResponseItem.Email, loUser.Email);
-                                    loR.Item.Add(loResponseItem.UserName, loUser.UserName);
-                                    loR.Item.Add(loResponseItem.LastPasswordChangedDate, loUser.LastPasswordChangedDate);
-                                    loR.Item.Add(loResponseItem.Comment, loUser.Comment);
-                                    loR.Item.Add(loResponseItem.LastActivityDate, loUser.LastActivityDate);
-                                    loR.Item.Add(loResponseItem.LastLoginDate, loUser.LastLoginDate);
-                                    loR.Item.Add(loResponseItem.PasswordQuestion, loUser.PasswordQuestion);
-                                    if (loUser is MaxMembershipUser)
-                                    {
-                                        loR.Item.Add(loResponseItem.IsPasswordResetNeeded, ((MaxMembershipUser)loUser).IsPasswordResetNeeded);
-                                    }
-
-                                    string[] laRole = Roles.GetRolesForUser(loUser.UserName);
-                                    loR.Item.Add(loResponseItem.RoleList, laRole);
-                                }
-                            }
-                            else
-                            {
-                                loR.Message.Error = "A matching username or password was not found.";
-                                if (null != loUser)
-                                {
-                                    try
-                                    {
-                                        string lsPasswordCurrent = loUser.GetPassword();
-                                        if (string.IsNullOrEmpty(lsPasswordCurrent))
-                                        {
-                                            loR.Message.Error = "Password needs to be reset.";
-                                        }
-                                    }
-                                    catch (Exception loE)
-                                    {
-                                        if (loE.Message != "Password retrieval is disabled")
-                                        {
-                                            loR.Message.Error = "Exception logging in a user: " + loE.Message;
-                                            MaxLogLibrary.Log(new MaxLogEntryStructure("MaxSecurityApi", MaxEnumGroup.LogError, "Exception logging in a user", loE));
-                                        }
-                                    }
-                                }
-                            }
+                            loR.Message.Error = "Password is required.";
                         }
                         else
                         {
-                            loR.Message.Error = "A matching username or password cannot be found.";
+                            loR.Message.Error = "Username or email is required.";
                         }
                     }
-                    else if (string.IsNullOrEmpty(lsPassword))
+
+                    if (null != loUser && !string.IsNullOrEmpty(loUser.UserName))
                     {
-                        loR.Message.Error = "Password is required.";
-                    }
-                    else
-                    {
-                        loR.Message.Error = "Username or email is required.";
+                        //// Return logged in user
+                        loR.Item.Add(loResponseItem.Id, MaxConvertLibrary.ConvertToString(typeof(object), loUser.ProviderUserKey).ToLower());
+                        loR.Item.Add(loResponseItem.Email, loUser.Email);
+                        loR.Item.Add(loResponseItem.UserName, loUser.UserName);
+                        loR.Item.Add(loResponseItem.LastPasswordChangedDate, loUser.LastPasswordChangedDate);
+                        loR.Item.Add(loResponseItem.Comment, loUser.Comment);
+                        loR.Item.Add(loResponseItem.LastActivityDate, loUser.LastActivityDate);
+                        loR.Item.Add(loResponseItem.LastLoginDate, loUser.LastLoginDate);
+                        loR.Item.Add(loResponseItem.PasswordQuestion, loUser.PasswordQuestion);
+                        if (loUser is MaxMembershipUser)
+                        {
+                            loR.Item.Add(loResponseItem.IsPasswordResetNeeded, ((MaxMembershipUser)loUser).IsPasswordResetNeeded);
+                        }
+
+                        string[] laRole = Roles.GetRolesForUser(loUser.UserName);
+                        loR.Item.Add(loResponseItem.RoleList, laRole);
                     }
                 }
                 catch (Exception loE)
