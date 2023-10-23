@@ -610,9 +610,20 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 loEntity.Scope = scope;
                 loEntity.ResponseType = response_type;
                 loEntity.ResponseMode = "form_post";
-                loEntity.FullUri = "https://" + this.Request.Headers["X-Forwarded-Host"] + "/MaxSecurity/OAuth2OIDC";
                 loEntity.RedirectUri = ReturnUrl;
-                
+
+                string lsCurrentHost = this.Request.Headers["X-Forwarded-Host"];
+                if (string.IsNullOrEmpty(lsCurrentHost))
+                {
+                    lsCurrentHost = this.Request.Url.DnsSafeHost;
+                    if (string.IsNullOrEmpty(lsCurrentHost))
+                    {
+                        Uri loReturnUrl = new Uri(ReturnUrl);
+                        lsCurrentHost = loReturnUrl.DnsSafeHost;
+                    }
+                }
+
+                loEntity.FullUri = string.Format("https://{0}/MaxSecurity/OAuth2OIDC", lsCurrentHost);
 
                 string lsUrl = string.Format("https://login.microsoftonline.com/{0}/oauth2/v2.0/authorize", tenant);
                 lsUrl += "?client_id=" + HttpUtility.UrlEncode(loEntity.ClientId);
