@@ -405,6 +405,7 @@ namespace MaxFactry.General.Provider
             MaxFactryLibrary.SetValue("CurrentAssemblyName",  MaxFactry.Core.MaxFactryLibrary.GetAssembly(this.GetType()).ManifestModule.Name);
             MaxFactry.Base.MaxStartup.Instance.ApplicationStartup();
             MaxFactry.General.MaxStartup.Instance.ApplicationStartup();
+            MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "ApplicationStartup", MaxEnumGroup.LogInfo, "Application Startup"));
         }
 
         public virtual void ApplicationShutdown()
