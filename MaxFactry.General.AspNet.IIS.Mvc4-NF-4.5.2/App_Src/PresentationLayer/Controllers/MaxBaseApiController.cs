@@ -562,17 +562,6 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         }
 
         /// <summary>
-        /// Maps an entity and request to a response
-        /// </summary>
-        /// <param name="loEntity">Entity to use for response</param>
-        /// <param name="loRequest">Requet to use for response</param>
-        /// <returns></returns>
-        protected virtual MaxIndex MapResponse(MaxBaseIdEntity loEntity, MaxApiRequestViewModel loRequest)
-        {
-            return loEntity.MapIndex(loRequest.ResponseFieldList);
-        }
-
-        /// <summary>
         /// Checks the permission
         /// </summary>
         /// <param name="loRequest">Current request</param>
@@ -623,6 +612,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             {
                 loEntity = this.MapRequest(loEntity, loRequest);
                 loEntity.Update();
+                loR.Item = loEntity.MapIndex(loRequest.ResponseFieldList);
                 loR.Message.Success = "Item Updated";
             }
 
@@ -643,6 +633,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 loEntity = this.MapRequest(loEntity, loRequest);
                 if (loEntity.Insert())
                 {
+                    loR.Item = loEntity.MapIndex(loRequest.ResponseFieldList);
                     loR.Message.Success = "Item Added";
                 }
                 else
@@ -694,7 +685,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             }
             else
             {
-                loR.Item = loEntity.MapIndex(loRequest.RequestFieldList);
+                loR.Item = loEntity.MapIndex(loRequest.ResponseFieldList);
                 if (string.IsNullOrEmpty(loR.Message.Success))
                 {
                     loR.Message.Success = "Got Item";
