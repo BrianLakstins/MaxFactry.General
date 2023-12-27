@@ -549,7 +549,6 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
                             if (null != loValue && loProperty.CanWrite)
                             {
-                                lbFound = true;
                                 if (loProperty.PropertyType == typeof(double))
                                 {
                                     loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToDouble(typeof(object), loValue));
