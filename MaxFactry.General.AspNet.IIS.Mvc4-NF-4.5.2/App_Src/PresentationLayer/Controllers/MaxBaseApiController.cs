@@ -531,46 +531,53 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         if (loRequestFieldIndex.ContainsKey(loProperty.Name.ToLowerInvariant()))
                         {
                             string lsRequestName = loRequestFieldIndex[loProperty.Name.ToLowerInvariant()];
+                            object loValueCommon = loRequest.Item[lsRequestName];
                             if (lnEntityNum >= 0)
                             {
                                 lsRequestName += "[" + lnEntityNum.ToString() + "]";
                             }
 
-                            if (loRequest.Item.Contains(lsRequestName))
+                            object loValue = loRequest.Item[lsRequestName];
+                            if (null != loValue)
                             {
-                                object loValue = loRequest.Item[lsRequestName];
-                                if (null != loValue && loProperty.CanWrite)
+                                lbFound = true;
+                            } 
+                            else
+                            {
+                                loValue = loValueCommon;
+                            }
+
+                            if (null != loValue && loProperty.CanWrite)
+                            {
+                                lbFound = true;
+                                if (loProperty.PropertyType == typeof(double))
                                 {
-                                    lbFound = true;
-                                    if (loProperty.PropertyType == typeof(double))
-                                    {
-                                        loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToDouble(typeof(object), loValue));
-                                    }
-                                    else if (loProperty.PropertyType == typeof(int))
-                                    {
-                                        loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToInt(typeof(object), loValue));
-                                    }
-                                    else if (loProperty.PropertyType == typeof(bool))
-                                    {
-                                        loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToBoolean(typeof(object), loValue));
-                                    }
-                                    else if (loProperty.PropertyType == typeof(string))
-                                    {
-                                        loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToString(typeof(object), loValue));
-                                    }
-                                    else if (loProperty.PropertyType == typeof(Guid))
-                                    {
-                                        loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToGuid(typeof(object), loValue));
-                                    }
-                                    else if (loProperty.PropertyType == typeof(DateTime))
-                                    {
-                                        DateTime loDateTime = MaxConvertLibrary.ConvertToDateTimeUtc(typeof(object), loValue);
-                                        loProperty.SetValue(loEntityCopy, loDateTime);
-                                    }
-                                    else
-                                    {
-                                        loProperty.SetValue(loEntityCopy, loValue);
-                                    }
+                                    loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToDouble(typeof(object), loValue));
+                                }
+                                else if (loProperty.PropertyType == typeof(int))
+                                {
+                                    loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToInt(typeof(object), loValue));
+                                }
+                                else if (loProperty.PropertyType == typeof(bool))
+                                {
+                                    loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToBoolean(typeof(object), loValue));
+                                }
+                                else if (loProperty.PropertyType == typeof(string))
+                                {
+                                    loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToString(typeof(object), loValue));
+                                }
+                                else if (loProperty.PropertyType == typeof(Guid))
+                                {
+                                    loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToGuid(typeof(object), loValue));
+                                }
+                                else if (loProperty.PropertyType == typeof(DateTime))
+                                {
+                                    DateTime loDateTime = MaxConvertLibrary.ConvertToDateTimeUtc(typeof(object), loValue);
+                                    loProperty.SetValue(loEntityCopy, loDateTime);
+                                }
+                                else
+                                {
+                                    loProperty.SetValue(loEntityCopy, loValue);
                                 }
                             }
                         }
