@@ -584,6 +584,11 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
                     if (lbFound)
                     {
+                        if (lnEntityNum == 0)
+                        {
+                            loR = new MaxEntityList(loEntity.GetType());
+                        }
+
                         loR.Add(loEntityCopy);
                     }
 
