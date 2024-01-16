@@ -518,74 +518,101 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 {
                     loRequestFieldIndex.Add(lsField.ToLowerInvariant(), lsField);
                 }
-                
+
                 PropertyInfo[] laProperty = loEntity.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
-                bool lbFound = false;
+                bool lbValueFound = false;
                 int lnEntityNum = -1;
-                while (lbFound || lnEntityNum <= 0)
+                string lsRequestIdFieldKey = "id";
+                while (lbValueFound || lnEntityNum <= 0)
                 {
-                    lbFound = false;
                     MaxBaseIdEntity loEntityCopy = loEntity.GetType().GetMethod("Create").Invoke(null, null) as MaxBaseIdEntity;
-                    foreach (PropertyInfo loProperty in laProperty)
+                    bool lbMapProperties = true;
+                    if (loRequestFieldIndex.ContainsKey(lsRequestIdFieldKey))
                     {
-                        if (loRequestFieldIndex.ContainsKey(loProperty.Name.ToLowerInvariant()))
+                        lbMapProperties = false;
+                        string lsIdFieldKey = loRequestFieldIndex[lsRequestIdFieldKey];
+                        Guid loId = MaxConvertLibrary.ConvertToGuid(typeof(object), loRequest.Item.GetValueString(lsIdFieldKey));
+                        if (lnEntityNum >= 0)
                         {
-                            string lsRequestName = loRequestFieldIndex[loProperty.Name.ToLowerInvariant()];
-                            object loValueCommon = loRequest.Item[lsRequestName];
-                            if (lnEntityNum >= 0)
-                            {
-                                lsRequestName += "[" + lnEntityNum.ToString() + "]";
-                            }
+                            loId = MaxConvertLibrary.ConvertToGuid(typeof(object), loRequest.Item.GetValueString(lsIdFieldKey + "[" + lnEntityNum.ToString() + "]"));
+                        }
 
-                            object loValue = loRequest.Item[lsRequestName];
-                            if (null != loValue)
-                            {
-                                lbFound = true;
-                            } 
-                            else
-                            {
-                                loValue = loValueCommon;
-                            }
+                        if (Guid.Empty != loId)
+                        {
+                            lbMapProperties = loEntityCopy.LoadByIdCache(loId);
+                        }
+                    }
 
-                            if (null != loValue && loProperty.CanWrite)
+                    lbValueFound = false;
+                    if (lbMapProperties)
+                    {
+                        foreach (PropertyInfo loProperty in laProperty)
+                        {
+                            string lsPropertyNameKey = loProperty.Name.ToLowerInvariant();
+                            if (loRequestFieldIndex.ContainsKey(lsPropertyNameKey))
                             {
-                                if (loProperty.PropertyType == typeof(double))
+                                string lsRequestFieldName = loRequestFieldIndex[lsPropertyNameKey];
+                                bool lbHasValueCommon = null != loRequest.Item[lsRequestFieldName];
+
+                                string lsValueCommon = loRequest.Item.GetValueString(lsRequestFieldName);
+                                if (lnEntityNum >= 0)
                                 {
-                                    loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToDouble(typeof(object), loValue));
+                                    lsRequestFieldName += "[" + lnEntityNum.ToString() + "]";
                                 }
-                                else if (loProperty.PropertyType == typeof(int))
+
+                                bool lbHasValue = null != loRequest.Item[lsRequestFieldName];
+
+                                string lsValue = loRequest.Item.GetValueString(lsRequestFieldName);
+                                if (lbHasValue)
                                 {
-                                    loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToInt(typeof(object), loValue));
+                                    lbValueFound = true;
                                 }
-                                else if (loProperty.PropertyType == typeof(bool))
+                                else if (lbHasValueCommon)
                                 {
-                                    loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToBoolean(typeof(object), loValue));
+                                    lsValue = lsValueCommon;
                                 }
-                                else if (loProperty.PropertyType == typeof(string))
+
+                                if ((lbHasValueCommon || lbHasValue) && loProperty.CanWrite)
                                 {
-                                    loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToString(typeof(object), loValue));
-                                }
-                                else if (loProperty.PropertyType == typeof(Guid))
-                                {
-                                    loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToGuid(typeof(object), loValue));
-                                }
-                                else if (loProperty.PropertyType == typeof(DateTime))
-                                {
-                                    DateTime loDateTime = MaxConvertLibrary.ConvertToDateTimeUtc(typeof(object), loValue);
-                                    loProperty.SetValue(loEntityCopy, loDateTime);
-                                }
-                                else
-                                {
-                                    loProperty.SetValue(loEntityCopy, loValue);
+                                    if (loProperty.PropertyType == typeof(double))
+                                    {
+                                        loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToDouble(typeof(object), lsValue));
+                                    }
+                                    else if (loProperty.PropertyType == typeof(int))
+                                    {
+                                        loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToInt(typeof(object), lsValue));
+                                    }
+                                    else if (loProperty.PropertyType == typeof(bool))
+                                    {
+                                        loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToBoolean(typeof(object), lsValue));
+                                    }
+                                    else if (loProperty.PropertyType == typeof(string))
+                                    {
+                                        loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToString(typeof(object), lsValue));
+                                    }
+                                    else if (loProperty.PropertyType == typeof(Guid))
+                                    {
+                                        loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToGuid(typeof(object), lsValue));
+                                    }
+                                    else if (loProperty.PropertyType == typeof(DateTime))
+                                    {
+                                        DateTime loDateTime = MaxConvertLibrary.ConvertToDateTimeUtc(typeof(object), lsValue);
+                                        loProperty.SetValue(loEntityCopy, loDateTime);
+                                    }
+                                    else
+                                    {
+                                        loProperty.SetValue(loEntityCopy, lsValue);
+                                    }
                                 }
                             }
                         }
                     }
 
-                    if (lbFound)
+                    if (lbValueFound || lbMapProperties)
                     {
                         if (lnEntityNum == 0)
                         {
+                            //// Reset to just include the list
                             loR = new MaxEntityList(loEntity.GetType());
                         }
 
@@ -652,10 +679,19 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 for (int lnE = 0; lnE < loList.Count; lnE++)
                 {
                     loEntity = loList[lnE] as MaxBaseIdEntity;
-                    loEntity.Update();
+                    if (loEntity.Update())
+                    {
+                        if (loList.Count == 1)
+                        {
+                            loR.Item = loEntity.MapIndex(loRequest.ResponseFieldList);
+                        }
+                        else
+                        {
+                            loR.ItemList.Add(loEntity.MapIndex(loRequest.ResponseFieldList));
+                        }
+                    }
                 }
 
-                loR.Item = loEntity.MapIndex(loRequest.ResponseFieldList);
                 loR.Message.Success = "Item Updated";
             }
 
@@ -732,7 +768,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 loR.Message.Error = "User does not have permission for this item.";
                 loR.Status = HttpStatusCode.Forbidden;
             }
-            else if (loEntity.Id == Guid.Empty && !loEntity.LoadByIdCache(loRequest.Id))
+            else if (loEntity.Id != Guid.Empty && !loEntity.LoadByIdCache(loRequest.Id))
             {
                 loR.Message.Error = "Item with the provided Id cannot be loaded.";
             }
