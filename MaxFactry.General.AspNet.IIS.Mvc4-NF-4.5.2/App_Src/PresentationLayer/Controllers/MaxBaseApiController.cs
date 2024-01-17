@@ -527,9 +527,9 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 {
                     MaxBaseIdEntity loEntityCopy = loEntity.GetType().GetMethod("Create").Invoke(null, null) as MaxBaseIdEntity;
                     bool lbMapProperties = true;
+                    lbValueFound = false;
                     if (loRequestFieldIndex.ContainsKey(lsRequestIdFieldKey))
                     {
-                        lbMapProperties = false;
                         string lsIdFieldKey = loRequestFieldIndex[lsRequestIdFieldKey];
                         Guid loId = MaxConvertLibrary.ConvertToGuid(typeof(object), loRequest.Item.GetValueString(lsIdFieldKey));
                         if (lnEntityNum >= 0)
@@ -539,11 +539,15 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
                         if (Guid.Empty != loId)
                         {
-                            lbMapProperties = loEntityCopy.LoadByIdCache(loId);
+                            lbMapProperties = false;
+                            if (loEntityCopy.LoadByIdCache(loId))
+                            {
+                                lbMapProperties = true;
+                                lbValueFound = true;
+                            }
                         }
                     }
 
-                    lbValueFound = false;
                     if (lbMapProperties)
                     {
                         foreach (PropertyInfo loProperty in laProperty)
@@ -608,7 +612,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         }
                     }
 
-                    if (lbValueFound || lbMapProperties)
+                    if (lbValueFound)
                     {
                         if (lnEntityNum == 0)
                         {
