@@ -616,8 +616,15 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     {
                         if (lnEntityNum == 0)
                         {
-                            //// Reset to just include the list
-                            loR = new MaxEntityList(loEntity.GetType());
+                            if (loR.Count == 1)
+                            {
+                                MaxBaseIdEntity loEntityBase = loR[0] as MaxBaseIdEntity;
+                                if (null == loEntityBase || loEntityBase.Id == Guid.Empty)
+                                {
+                                    //// Reset to just include the list
+                                    loR = new MaxEntityList(loEntity.GetType());
+                                }
+                            }
                         }
 
                         loR.Add(loEntityCopy);
@@ -664,27 +671,35 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             return loR;
         }
 
-        protected virtual MaxApiResponseViewModel ProcessPost(MaxApiRequestViewModel loRequest, MaxBaseIdEntity loEntity)
+        protected virtual MaxApiResponseViewModel ProcessPost(MaxApiRequestViewModel loRequest, MaxBaseIdEntity loEntity, MaxApiResponseViewModel loResponse)
         {
-            MaxApiResponseViewModel loR = new MaxApiResponseViewModel();
+            MaxApiResponseViewModel loR = loResponse;
             //// Update
             if (!this.HasPermission(loRequest, loEntity, loRequest.Id, (int)MaxEnumGroup.PermissionUpdate))
             {
                 loR.Message.Error = "User does not have permission to update item.";
                 loR.Status = HttpStatusCode.Forbidden;
             }
-            else if (!loEntity.LoadByIdCache(loRequest.Id))
-            {
-                loR.Message.Error = "Item with the provided Id cannot be loaded.";
-            }
             else
             {
                 MaxEntityList loList = this.MapRequest(loEntity, loRequest);
+                int lnUpdatedCount = 0;
                 for (int lnE = 0; lnE < loList.Count; lnE++)
                 {
                     loEntity = loList[lnE] as MaxBaseIdEntity;
-                    if (loEntity.Update())
+                    bool lbSaved = false;
+                    if (Guid.Empty == loEntity.Id)
                     {
+                        lbSaved = loEntity.Insert();
+                    }
+                    else
+                    {
+                        lbSaved = loEntity.Update();
+                    }
+
+                    if (lbSaved)
+                    {
+                        lnUpdatedCount++;
                         if (loList.Count == 1)
                         {
                             loR.Item = loEntity.MapIndex(loRequest.ResponseFieldList);
@@ -702,9 +717,9 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             return loR;
         }
 
-        protected virtual MaxApiResponseViewModel ProcessPut(MaxApiRequestViewModel loRequest, MaxBaseIdEntity loEntity)
+        protected virtual MaxApiResponseViewModel ProcessPut(MaxApiRequestViewModel loRequest, MaxBaseIdEntity loEntity, MaxApiResponseViewModel loResponse)
         {
-            MaxApiResponseViewModel loR = new MaxApiResponseViewModel();
+            MaxApiResponseViewModel loR = loResponse;
             //// Insert
             if (!this.HasPermission(loRequest, loEntity, loRequest.Id, (int)MaxEnumGroup.PermissionInsert))
             {
@@ -738,9 +753,9 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             return loR;
         }
 
-        protected virtual MaxApiResponseViewModel ProcessDelete(MaxApiRequestViewModel loRequest, MaxBaseIdEntity loEntity)
+        protected virtual MaxApiResponseViewModel ProcessDelete(MaxApiRequestViewModel loRequest, MaxBaseIdEntity loEntity, MaxApiResponseViewModel loResponse)
         {
-            MaxApiResponseViewModel loR = new MaxApiResponseViewModel();
+            MaxApiResponseViewModel loR = loResponse;
             //// Delete
             if (!this.HasPermission(loRequest, loEntity, loRequest.Id, (int)MaxEnumGroup.PermissionDelete))
             {
@@ -762,9 +777,9 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             return loR;
         }
 
-        protected virtual MaxApiResponseViewModel ProcessLoad(MaxApiRequestViewModel loRequest, MaxBaseIdEntity loEntity)
+        protected virtual MaxApiResponseViewModel ProcessLoad(MaxApiRequestViewModel loRequest, MaxBaseIdEntity loEntity, MaxApiResponseViewModel loResponse)
         {
-            MaxApiResponseViewModel loR = new MaxApiResponseViewModel();
+            MaxApiResponseViewModel loR = loResponse;
             //// Loads up and entity for the response.  Could be from a post, put, or get.
 
             if (!this.HasPermission(loRequest, loEntity, loRequest.Id, (int)MaxEnumGroup.PermissionSelect))
@@ -772,7 +787,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 loR.Message.Error = "User does not have permission for this item.";
                 loR.Status = HttpStatusCode.Forbidden;
             }
-            else if (loEntity.Id != Guid.Empty && !loEntity.LoadByIdCache(loRequest.Id))
+            else if (loRequest.Id != Guid.Empty && !loEntity.LoadByIdCache(loRequest.Id))
             {
                 loR.Message.Error = "Item with the provided Id cannot be loaded.";
             }
@@ -863,25 +878,25 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     loR = this.ProcessRequest(loRequest, loEntity);
                     if (string.IsNullOrEmpty(loR.Message.Error))
                     {
-                        if (Request.Method == HttpMethod.Post && Guid.Empty != loRequest.Id)
+                        if (Request.Method == HttpMethod.Post)
                         {
-                            loR = this.ProcessPost(loRequest, loEntity);
+                            loR = this.ProcessPost(loRequest, loEntity, loR);
                         }
                         else if (Request.Method == HttpMethod.Put)
                         {
-                            loR = this.ProcessPut(loRequest, loEntity);
+                            loR = this.ProcessPut(loRequest, loEntity, loR);
                         }
 
                         if (Request.Method == HttpMethod.Delete && Guid.Empty != loRequest.Id)
                         {
-                            loR = this.ProcessDelete(loRequest, loEntity);
+                            loR = this.ProcessDelete(loRequest, loEntity, loR);
                         }
-                        else if (Guid.Empty != loRequest.Id || Guid.Empty != loEntity.Id)
+                        else if (Guid.Empty != loRequest.Id && loR.ItemList.Count == 0)
                         {
-                            loR = this.ProcessLoad(loRequest, loEntity);
+                            loR = this.ProcessLoad(loRequest, loEntity, loR);
                         }
 
-                        if (Guid.Empty == loRequest.Id || this.Request.Method == HttpMethod.Delete || this.Request.Method == HttpMethod.Put)
+                        if ((Guid.Empty == loRequest.Id || this.Request.Method == HttpMethod.Delete || this.Request.Method == HttpMethod.Put) && loR.ItemList.Count == 0)
                         {
                             //// Load list
                             if (!this.HasPermission(loRequest, loEntity, loRequest.Id, (int)MaxEnumGroup.PermissionSelect))
