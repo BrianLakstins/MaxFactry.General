@@ -87,18 +87,6 @@ namespace MaxFactry.General.BusinessLayer
                 typeof(MaxProfileIndexDataModel)) as MaxProfileIndexEntity;
         }
 
-        /// <summary>
-        /// Loads all entities of this type for this storage key
-        /// </summary>
-        /// <returns>List of entities</returns>
-        public override MaxEntityList LoadAll(params string[] laFields)
-        {
-            int lnTotal = -1;
-            MaxDataList loDataList = MaxBaseIdRepository.Select(this.Data, new MaxDataQuery(), 0, 0, string.Empty, out lnTotal, laFields);
-            MaxEntityList loEntityList = MaxEntityList.Create(this.GetType(), loDataList);
-            return loEntityList;
-        }
-
         public virtual int ArchiveLastUpdatedOver90()
         {
             int lnR = 0;

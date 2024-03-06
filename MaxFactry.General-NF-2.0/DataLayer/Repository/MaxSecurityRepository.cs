@@ -51,10 +51,10 @@ namespace MaxFactry.General.DataLayer
         /// <param name="lsUserName">The username of the user.</param>
         /// <param name="lnPageIndex">Page of data to select.</param>
         /// <param name="lnPageSize">Size of the page to select.</param>
-        /// <param name="lsSort">Sort information.</param>
+        /// <param name="lsOrderBy">Sort information.</param>
         /// <param name="lnTotal">Total matching records.</param>
         /// <returns>List of users.</returns>
-        public static MaxDataList SelectAllByUserName(MaxData loData, string lsUserName, int lnPageIndex, int lnPageSize, string lsSort, out int lnTotal)
+        public static MaxDataList SelectAllByUserName(MaxData loData, string lsUserName, int lnPageIndex, int lnPageSize, string lsOrderBy, out int lnTotal)
 		{
             MaxUserDataModel loDataModel = loData.DataModel as MaxUserDataModel;
             if (null == loDataModel)
@@ -72,7 +72,7 @@ namespace MaxFactry.General.DataLayer
                 throw new MaxException("Error casting [" + loRepositoryProvider.GetType() + "] for Provider");
             }
 
-            MaxDataList loDataList = loProvider.SelectAllUserByUserName(loDataFilter, lsUserName, lnPageIndex, lnPageSize, lsSort, out lnTotal);
+            MaxDataList loDataList = loProvider.SelectAllUserByUserName(loDataFilter, lsUserName, lnPageIndex, lnPageSize, lsOrderBy, out lnTotal);
             return loDataList;
         }
 
@@ -83,10 +83,10 @@ namespace MaxFactry.General.DataLayer
         /// <param name="lsEmail">The email of the user.</param>
         /// <param name="lnPageIndex">Page of data to select.</param>
         /// <param name="lnPageSize">Size of the page to select.</param>
-        /// <param name="lsSort">Sort information.</param>
+        /// <param name="lsOrderBy">Sort information.</param>
         /// <param name="lnTotal">Total matching records.</param>
         /// <returns>List of users.</returns>
-        public static MaxDataList SelectAllByEmail(MaxData loData, string lsEmail, int lnPageIndex, int lnPageSize, string lsSort, out int lnTotal)
+        public static MaxDataList SelectAllByEmail(MaxData loData, string lsEmail, int lnPageIndex, int lnPageSize, string lsOrderBy, out int lnTotal)
 		{
             MaxUserDataModel loDataModel = loData.DataModel as MaxUserDataModel;
             if (null == loDataModel)
@@ -104,7 +104,7 @@ namespace MaxFactry.General.DataLayer
                 throw new MaxException("Error casting [" + loRepositoryProvider.GetType() + "] for Provider");
             }
 
-            MaxDataList loDataList = loProvider.SelectAllUserByEmail(loDataFilter, lsEmail, lnPageIndex, lnPageSize, lsSort, out lnTotal);
+            MaxDataList loDataList = loProvider.SelectAllUserByEmail(loDataFilter, lsEmail, lnPageIndex, lnPageSize, lsOrderBy, out lnTotal);
             return loDataList;
         }
 
@@ -115,10 +115,10 @@ namespace MaxFactry.General.DataLayer
         /// <param name="lsUserName">The username of the user.</param>
         /// <param name="lnPageIndex">Page of data to select.</param>
         /// <param name="lnPageSize">Size of the page to select.</param>
-        /// <param name="lsSort">Sort information.</param>
+        /// <param name="lsOrderBy">Sort information.</param>
         /// <param name="lnTotal">Total matching records.</param>
         /// <returns>List of users.</returns>
-        public static MaxDataList SelectAllByUserNamePartial(MaxData loData, string lsUserName, int lnPageIndex, int lnPageSize, string lsSort, out int lnTotal)
+        public static MaxDataList SelectAllByUserNamePartial(MaxData loData, string lsUserName, int lnPageIndex, int lnPageSize, string lsOrderBy, out int lnTotal)
         {
             MaxData loDataFilter = new MaxData(loData);
             IMaxStorageReadRepositoryProvider loRepositoryProvider = Instance.GetStorageReadRepositoryProvider(loDataFilter);
@@ -128,7 +128,7 @@ namespace MaxFactry.General.DataLayer
                 throw new MaxException("Error casting [" + loRepositoryProvider.GetType() + "] for Provider");
             }
 
-            MaxDataList loDataList = loProvider.SelectAllUserByUserNamePartial(loDataFilter, lsUserName, lnPageIndex, lnPageSize, lsSort, out lnTotal);
+            MaxDataList loDataList = loProvider.SelectAllUserByUserNamePartial(loDataFilter, lsUserName, lnPageIndex, lnPageSize, lsOrderBy, out lnTotal);
             return loDataList;
         }
 
@@ -139,10 +139,10 @@ namespace MaxFactry.General.DataLayer
         /// <param name="lsEmail">The email of the user.</param>
         /// <param name="lnPageIndex">Page of data to select.</param>
         /// <param name="lnPageSize">Size of the page to select.</param>
-        /// <param name="lsSort">Sort information.</param>
+        /// <param name="lsOrderBy">Sort information.</param>
         /// <param name="lnTotal">Total matching records.</param>
         /// <returns>List of users.</returns>
-        public static MaxDataList SelectAllByEmailPartial(MaxData loData, string lsEmail, int lnPageIndex, int lnPageSize, string lsSort, out int lnTotal)
+        public static MaxDataList SelectAllByEmailPartial(MaxData loData, string lsEmail, int lnPageIndex, int lnPageSize, string lsOrderBy, out int lnTotal)
         {
             MaxData loDataFilter = new MaxData(loData);
             IMaxStorageReadRepositoryProvider loRepositoryProvider = Instance.GetStorageReadRepositoryProvider(loDataFilter);
@@ -152,7 +152,7 @@ namespace MaxFactry.General.DataLayer
                 throw new MaxException("Error casting [" + loRepositoryProvider.GetType() + "] for Provider");
             }
 
-            MaxDataList loDataList = loProvider.SelectAllUserByEmailPartial(loDataFilter, lsEmail, lnPageIndex, lnPageSize, lsSort, out lnTotal);
+            MaxDataList loDataList = loProvider.SelectAllUserByEmailPartial(loDataFilter, lsEmail, lnPageIndex, lnPageSize, lsOrderBy, out lnTotal);
             return loDataList;
         }
 

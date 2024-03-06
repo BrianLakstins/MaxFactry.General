@@ -52,10 +52,10 @@ namespace MaxFactry.General.DataLayer.Provider
         /// <param name="lsUserName">The username of the user.</param>
         /// <param name="lnPageIndex">Page of data to select.</param>
         /// <param name="lnPageSize">Size of the page to select.</param>
-        /// <param name="lsSort">Sort information.</param>
+        /// <param name="lsOrderBy">Sort information.</param>
         /// <param name="lnTotal">Total matching records.</param>
         /// <returns>List of users.</returns>
-        public virtual MaxDataList SelectAllUserByUserName(MaxData loData, string lsUserName, int lnPageIndex, int lnPageSize, string lsSort, out int lnTotal)
+        public virtual MaxDataList SelectAllUserByUserName(MaxData loData, string lsUserName, int lnPageIndex, int lnPageSize, string lsOrderBy, out int lnTotal)
         {
             MaxUserDataModel loDataModel = loData.DataModel as MaxUserDataModel;
             if (null == loDataModel)
@@ -75,7 +75,7 @@ namespace MaxFactry.General.DataLayer.Provider
             loDataQuery.EndGroup();
 
             lnTotal = 0;
-            MaxDataList loDataList = this.Select(loData, loDataQuery, lnPageIndex, lnPageSize, lsSort, out lnTotal);
+            MaxDataList loDataList = this.Select(loData, loDataQuery, lnPageIndex, lnPageSize, lsOrderBy, out lnTotal);
             return loDataList;
         }
 
@@ -86,10 +86,10 @@ namespace MaxFactry.General.DataLayer.Provider
         /// <param name="lsEmail">The email of the user.</param>
         /// <param name="lnPageIndex">Page of data to select.</param>
         /// <param name="lnPageSize">Size of the page to select.</param>
-        /// <param name="lsSort">Sort information</param>
+        /// <param name="lsOrderBy">Sort information</param>
         /// <param name="lnTotal">Total matching records.</param>
         /// <returns>List of users.</returns>
-        public virtual MaxDataList SelectAllUserByEmail(MaxData loData, string lsEmail, int lnPageIndex, int lnPageSize, string lsSort, out int lnTotal)
+        public virtual MaxDataList SelectAllUserByEmail(MaxData loData, string lsEmail, int lnPageIndex, int lnPageSize, string lsOrderBy, out int lnTotal)
         {
             MaxUserDataModel loDataModel = loData.DataModel as MaxUserDataModel;
             if (null == loDataModel)
@@ -109,7 +109,7 @@ namespace MaxFactry.General.DataLayer.Provider
             loDataQuery.EndGroup();
 
             lnTotal = 0;
-            MaxDataList loDataList = this.Select(loData, loDataQuery, lnPageIndex, lnPageSize, lsSort, out lnTotal);
+            MaxDataList loDataList = this.Select(loData, loDataQuery, lnPageIndex, lnPageSize, lsOrderBy, out lnTotal);
             return loDataList;
         }
 
@@ -120,10 +120,10 @@ namespace MaxFactry.General.DataLayer.Provider
         /// <param name="lsUserName">The username of the user.</param>
         /// <param name="lnPageIndex">Page of data to select.</param>
         /// <param name="lnPageSize">Size of the page to select.</param>
-        /// <param name="lsSort">Sort information</param>
+        /// <param name="lsOrderBy">Sort information</param>
         /// <param name="lnTotal">Total matching records.</param>
         /// <returns>List of users.</returns>
-        public virtual MaxDataList SelectAllUserByUserNamePartial(MaxData loData, string lsUserName, int lnPageIndex, int lnPageSize, string lsSort, out int lnTotal)
+        public virtual MaxDataList SelectAllUserByUserNamePartial(MaxData loData, string lsUserName, int lnPageIndex, int lnPageSize, string lsOrderBy, out int lnTotal)
         {
             MaxUserDataModel loDataModel = loData.DataModel as MaxUserDataModel;
             if (null == loDataModel)
@@ -142,7 +142,7 @@ namespace MaxFactry.General.DataLayer.Provider
 
             loDataQuery.EndGroup();            
             lnTotal = 0;
-            MaxDataList loDataList = this.Select(loData, loDataQuery, lnPageIndex, lnPageSize, lsSort, out lnTotal);
+            MaxDataList loDataList = this.Select(loData, loDataQuery, lnPageIndex, lnPageSize, lsOrderBy, out lnTotal);
             return loDataList;
         }
 
@@ -153,10 +153,10 @@ namespace MaxFactry.General.DataLayer.Provider
         /// <param name="lsEmail">The email of the user.</param>
         /// <param name="lnPageIndex">Page of data to select.</param>
         /// <param name="lnPageSize">Size of the page to select.</param>
-        /// <param name="lsSort">Sort information</param>
+        /// <param name="lsOrderBy">Sort information</param>
         /// <param name="lnTotal">Total matching records.</param>
         /// <returns>List of users.</returns>
-        public virtual MaxDataList SelectAllUserByEmailPartial(MaxData loData, string lsEmail, int lnPageIndex, int lnPageSize, string lsSort, out int lnTotal)
+        public virtual MaxDataList SelectAllUserByEmailPartial(MaxData loData, string lsEmail, int lnPageIndex, int lnPageSize, string lsOrderBy, out int lnTotal)
         {
             MaxUserDataModel loDataModel = loData.DataModel as MaxUserDataModel;
             if (null == loDataModel)
@@ -174,7 +174,7 @@ namespace MaxFactry.General.DataLayer.Provider
             }
 
             loDataQuery.EndGroup(); 
-            MaxDataList loDataList = this.Select(loData, loDataQuery, lnPageIndex, lnPageSize, lsSort, out lnTotal);
+            MaxDataList loDataList = this.Select(loData, loDataQuery, lnPageIndex, lnPageSize, lsOrderBy, out lnTotal);
             return loDataList;
         }
 

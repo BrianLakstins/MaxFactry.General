@@ -247,14 +247,18 @@ namespace MaxFactry.General.BusinessLayer
         /// <param name="lsUserName">The username of the user.</param>
         /// <param name="lnPageIndex">Page of data to select.</param>
         /// <param name="lnPageSize">Size of the page to select.</param>
-        /// <param name="lsSort">Sort information.</param>
+        /// <param name="lsPropertySort">Sort information.</param>
         /// <param name="lnTotal">Total matching records.</param>
         /// <returns>List of users.</returns>
-        public MaxEntityList LoadAllByUsernamePartial(string lsUserName, int lnPageIndex, int lnPageSize, string lsSort, out int lnTotal)
+        public MaxEntityList LoadAllByUsernamePartial(string lsUserName, int lnPageIndex, int lnPageSize, string lsPropertySort, out int lnTotal)
         {
-            MaxDataList loDataList = MaxSecurityRepository.SelectAllByUserNamePartial(MaxUserEntity.Create().Data, lsUserName, lnPageIndex, lnPageSize, lsSort, out lnTotal);
-            MaxEntityList loEntityList = MaxEntityList.Create(this.GetType(), loDataList);
-            return loEntityList;
+            MaxEntityList loR = new MaxEntityList(this.GetType());
+            MaxData loData = MaxUserEntity.Create().Data;
+            string lsOrderBy = this.GetOrderBy(loData.DataModel, lsPropertySort);
+            MaxDataList loDataList = MaxSecurityRepository.SelectAllByUserNamePartial(MaxUserEntity.Create().Data, lsUserName, lnPageIndex, lnPageSize, lsOrderBy, out lnTotal);
+            loR = MaxEntityList.Create(this.GetType(), loDataList);
+            loR = this.GetSorted(loR, lsPropertySort, lsOrderBy);
+            return loR;
         }
 
         /// <summary>
@@ -263,15 +267,19 @@ namespace MaxFactry.General.BusinessLayer
         /// <param name="lsEmail">The email of the user.</param>
         /// <param name="lnPageIndex">Page of data to select.</param>
         /// <param name="lnPageSize">Size of the page to select.</param>
-        /// <param name="lsSort">Sort information.</param>
+        /// <param name="lsPropertySort">Sort information.</param>
         /// <param name="lnTotal">Total matching records.</param>
         /// <returns>List of users.</returns>
-        public MaxEntityList LoadAllByEmailPartial(string lsEmail, int lnPageIndex, int lnPageSize, string lsSort, out int lnTotal)
+        public MaxEntityList LoadAllByEmailPartial(string lsEmail, int lnPageIndex, int lnPageSize, string lsPropertySort, out int lnTotal)
         {
             lnTotal = 0;
-            MaxDataList loDataList = MaxSecurityRepository.SelectAllByEmailPartial(MaxUserEntity.Create().Data, lsEmail, lnPageIndex, lnPageSize, lsSort, out lnTotal);
-            MaxEntityList loEntityList = MaxEntityList.Create(this.GetType(), loDataList);
-            return loEntityList;
+            MaxEntityList loR = new MaxEntityList(this.GetType());
+            MaxData loData = MaxUserEntity.Create().Data;
+            string lsOrderBy = this.GetOrderBy(loData.DataModel, lsPropertySort);
+            MaxDataList loDataList = MaxSecurityRepository.SelectAllByEmailPartial(loData, lsEmail, lnPageIndex, lnPageSize, lsOrderBy, out lnTotal);
+            loR = MaxEntityList.Create(this.GetType(), loDataList);
+            loR = this.GetSorted(loR, lsPropertySort, lsOrderBy);
+            return loR;
         }
 
         /// <summary>

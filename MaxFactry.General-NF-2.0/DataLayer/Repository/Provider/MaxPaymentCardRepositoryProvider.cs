@@ -144,11 +144,11 @@ namespace MaxFactry.General.DataLayer.Provider
         /// <param name="loDataQuery">Query to use.</param>
         /// <param name="lnPageIndex">First page.</param>
         /// <param name="lnPageSize">Size of page.</param>
-        /// <param name="lsSort">Sort information</param>
+        /// <param name="lsOrderBy">Sort information</param>
         /// <param name="lnTotal">Total count.</param>
-        /// <param name="laFields">Fields to include.</param>
+        /// <param name="laDataNameList">Fields to include.</param>
         /// <returns>Data list representing list of states.</returns>
-        public override MaxDataList Select(MaxData loData, MaxDataQuery loDataQuery, int lnPageIndex, int lnPageSize, string lsSort, out int lnTotal, params string[] laFields)
+        public override MaxDataList Select(MaxData loData, MaxDataQuery loDataQuery, int lnPageIndex, int lnPageSize, string lsOrderBy, out int lnTotal, params string[] laDataNameList)
         {
             lnTotal = this._oDataList.Count;
             return this._oDataList;
@@ -169,9 +169,9 @@ namespace MaxFactry.General.DataLayer.Provider
         /// Selects all data from the data storage name for the specified type.
         /// </summary>
         /// <param name="lsDataStorageName">Name of the data storage (table name).</param>
-        /// <param name="laFields">list of fields to return from select</param>
+        /// <param name="laDataNameList">list of fields to return from select</param>
         /// <returns>List of data elements with a base data model.</returns>
-        public override MaxDataList SelectAll(string lsDataStorageName, params string[] laFields)
+        public override MaxDataList SelectAll(string lsDataStorageName, params string[] laDataNameList)
         {
             int lnTotal = 0;
             return this.Select(null, null, 0, 0, string.Empty, out lnTotal);

@@ -55,7 +55,7 @@ namespace MaxFactry.General.DataLayer.Provider
     {
         private static object _oLock = new object();
 
-        public override MaxDataList Select(MaxData loData, MaxDataQuery loDataQuery, int lnPageIndex, int lnPageSize, string lsSort, out int lnTotal, params string[] laFields)
+        public override MaxDataList Select(MaxData loData, MaxDataQuery loDataQuery, int lnPageIndex, int lnPageSize, string lsOrderBy, out int lnTotal, params string[] laDataNameList)
         {
             if (loData.DataModel is MaxHttpClientDataModel)
             {
@@ -63,7 +63,7 @@ namespace MaxFactry.General.DataLayer.Provider
                 string lsAlternateId = this.GetValue(loDataQuery, loDataModel.AlternateId) as string;
                 if (!string.IsNullOrEmpty(lsAlternateId) && lsAlternateId == "Remote")
                 {
-                    return this.SelectRemoteHttp(loData, loDataQuery, lnPageIndex, lnPageSize, out lnTotal, laFields);
+                    return this.SelectRemoteHttp(loData, loDataQuery, lnPageIndex, lnPageSize, out lnTotal, laDataNameList);
                 }
             }
             else
@@ -71,11 +71,11 @@ namespace MaxFactry.General.DataLayer.Provider
                 MaxData loRemoteData = loData.Get("RemoteData") as MaxData;
                 if (loRemoteData != null && loRemoteData.DataModel is MaxHttpClientDataModel)
                 {
-                    return this.SelectRemoteHttp(loRemoteData, loDataQuery, lnPageIndex, lnPageSize, out lnTotal, laFields);                    
+                    return this.SelectRemoteHttp(loRemoteData, loDataQuery, lnPageIndex, lnPageSize, out lnTotal, laDataNameList);                    
                 }
             }
 
-            return base.Select(loData, loDataQuery, lnPageIndex, lnPageSize, lsSort, out lnTotal, laFields);
+            return base.Select(loData, loDataQuery, lnPageIndex, lnPageSize, lsOrderBy, out lnTotal, laDataNameList);
         }
 
         /// <summary>
@@ -89,9 +89,9 @@ namespace MaxFactry.General.DataLayer.Provider
             return this.DownloadConditional(loDataModel, lsUrl);
         }
 
-        public virtual MaxDataList SelectRemoteHttp(MaxData loData, MaxDataQuery loDataQuery, int lnPageIndex, int lnPageSize, out int lnTotal, params string[] laFields)
+        public virtual MaxDataList SelectRemoteHttp(MaxData loData, MaxDataQuery loDataQuery, int lnPageIndex, int lnPageSize, out int lnTotal, params string[] laDataNameList)
         {
-            return this.SelectRemoteHttpConditional(loData, loDataQuery, lnPageIndex, lnPageSize, out lnTotal, laFields);
+            return this.SelectRemoteHttpConditional(loData, loDataQuery, lnPageIndex, lnPageSize, out lnTotal, laDataNameList);
         }
 
 #if net2 || netcore2 || netstandard1_2
@@ -207,9 +207,9 @@ namespace MaxFactry.General.DataLayer.Provider
         /// <param name="lnPageIndex">Page to return.</param>
         /// <param name="lnPageSize">Items per page.</param>
         /// <param name="lnTotal">Total items found.</param>
-        /// <param name="laFields">list of fields to return from select.</param>
+        /// <param name="laDataNameList">list of fields to return from select.</param>
         /// <returns>List of data from select.</returns>
-        public virtual MaxDataList SelectRemoteHttpConditional(MaxData loData, MaxDataQuery loDataQuery, int lnPageIndex, int lnPageSize, out int lnTotal, params string[] laFields)
+        public virtual MaxDataList SelectRemoteHttpConditional(MaxData loData, MaxDataQuery loDataQuery, int lnPageIndex, int lnPageSize, out int lnTotal, params string[] laDataNameList)
         {
             MaxLogLibrary.Log(MaxEnumGroup.LogDebug, "Select [" + loData.DataModel.DataStorageName + "] start", "MaxDataContextHttpClientProvider");
             MaxHttpClientDataModel loDataModel = loData.DataModel as MaxHttpClientDataModel;
@@ -426,7 +426,7 @@ namespace MaxFactry.General.DataLayer.Provider
 
 #else
 
-        public virtual MaxDataList SelectRemoteHttpConditional(MaxData loData, MaxDataQuery loDataQuery, int lnPageIndex, int lnPageSize, out int lnTotal, params string[] laFields)
+        public virtual MaxDataList SelectRemoteHttpConditional(MaxData loData, MaxDataQuery loDataQuery, int lnPageIndex, int lnPageSize, out int lnTotal, params string[] laDataNameList)
         {
             throw new NotImplementedException();
         }
