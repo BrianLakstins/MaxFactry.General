@@ -48,6 +48,8 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
     {
         private Guid _oId = Guid.Empty;
 
+        private string _sEntityPropertyKey = string.Empty;
+
         private HttpRequestMessage _oRequest = null;
 
         private MembershipUser _oUser = null;
@@ -75,9 +77,28 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             }
         }
 
-        public string[] RequestFieldList { get; set; }
+        public string EntityPropertyKey
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(this._sEntityPropertyKey))
+                {
+                    string lsEntityKeyName = "EntityPropertyKey";
+                    if (null != this.Item && this.Item.Contains(lsEntityKeyName))
+                    {
+                        this._sEntityPropertyKey = this.Item.GetValueString(lsEntityKeyName);
+                    }
+                }
 
-        public string[] ResponseFieldList { get; set; }
+                return this._sEntityPropertyKey;
+            }
+        }
+
+        public string[] RequestPropertyList { get; set; }
+
+        public string[] ResponseFilterList { get; set; }
+
+        public string[] ResponsePropertyList { get; set; }
 
         public string Content { get; set; }
 
