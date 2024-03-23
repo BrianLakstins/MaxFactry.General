@@ -31,6 +31,8 @@
 // <change date="12/2/2014" author="Brian A. Lakstins" description="Update to match interface.  Add laFields.">
 // <change date="7/4/2016" author="Brian A. Lakstins" description="Updated to access provider configuration using base provider methods.">
 // <change date="6/5/2020" author="Brian A. Lakstins" description="Updated for change to base.">
+// <change date="3/20/2024" author="Brian A. Lakstins" description="Happy birthday to my mom.  Sara Jean Lakstins (Cartwright) - 3/20/1944 to 3/14/2019.">
+// <change date="3/23/2024" author="Brian A. Lakstins" description="Change parent classs.  Update for changes to parent class.">
 // </changelog>
 #endregion
 
@@ -44,7 +46,7 @@ namespace MaxFactry.General.DataLayer.Provider
     /// <summary>
     /// Default Provider for MaxUSStateRepository
     /// </summary>
-    public class MaxUSStateRepositoryProvider : MaxStorageWriteRepositoryDefaultProvider, IMaxUSStateRepositoryProvider
+    public class MaxUSStateRepositoryProvider : MaxBaseReadRepositoryDefaultProvider, IMaxUSStateRepositoryProvider
     {
         /// <summary>
         /// Private list of states
@@ -177,26 +179,6 @@ namespace MaxFactry.General.DataLayer.Provider
         }
 
         /// <summary>
-        /// States cannot be deleted.
-        /// </summary>
-        /// <param name="loData">Data to delete</param>
-        /// <returns>Always returns false.</returns>
-        public override bool Delete(MaxData loData)
-        {
-            return false;
-        }
-
-        /// <summary>
-        /// States cannot be added.
-        /// </summary>
-        /// <param name="loData">Data to add.</param>
-        /// <returns>Always returns null.</returns>
-        public override bool Insert(MaxData loData)
-        {
-            return false;
-        }
-
-        /// <summary>
         /// Selects all states.  All variables are ignored.
         /// </summary>
         /// <param name="loData">Data to use.</param>
@@ -209,7 +191,7 @@ namespace MaxFactry.General.DataLayer.Provider
         /// <returns>Data list representing list of states.</returns>
         public override MaxDataList Select(MaxData loData, MaxDataQuery loDataQuery, int lnPageIndex, int lnPageSize, string lsOrderBy, out int lnTotal, params string[] laDataNameList)
         {
-            MaxDataList loR = this.SelectAll(string.Empty);
+            MaxDataList loR = this.SelectAll(loData);
             lnTotal = loR.Count;
             return loR;
         }
@@ -217,17 +199,16 @@ namespace MaxFactry.General.DataLayer.Provider
         /// <summary>
         /// Selects all states.
         /// </summary>
-        /// <param name="lsDataStorageName">storage name</param>
+        /// <param name="loData">storage name</param>
         /// <param name="laDataNameList">list of fields to return from select</param>
         /// <returns>List of all states</returns>
-        public override MaxDataList SelectAll(string lsDataStorageName, params string[] laDataNameList)
+        public override MaxDataList SelectAll(MaxData loData, params string[] laDataNameList)
         {
-            MaxUSStateDataModel loDataModel = (MaxUSStateDataModel)MaxDataLibrary.GetDataModel(typeof(MaxUSStateDataModel));
-            MaxDataList loR = new MaxDataList(loDataModel);
+            MaxDataList loR = new MaxDataList(loData.DataModel);
             for (int lnD = 0; lnD < this._oUSStateDataList.Count; lnD++)
             {
-                MaxData loData = this._oUSStateDataList[lnD];
-                loR.Add(loData);
+                MaxData loDataReturn = this._oUSStateDataList[lnD];
+                loR.Add(loDataReturn);
             }
 
             return loR;

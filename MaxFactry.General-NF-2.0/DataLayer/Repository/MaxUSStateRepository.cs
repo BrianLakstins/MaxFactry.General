@@ -29,6 +29,8 @@
 // <changelog>
 // <change date="8/1/2014" author="Brian A. Lakstins" description="Initial Release">
 // <change date="12/18/2014" author="Brian A. Lakstins" description="Updated Provider and DataModel access pattern.">
+// <change date="3/20/2024" author="Brian A. Lakstins" description="Happy birthday to my mom.  Sara Jean Lakstins (Cartwright) - 3/20/1944 to 3/14/2019.">
+// <change date="3/23/2024" author="Brian A. Lakstins" description="Change parent classs.  Update for changes to parent class.">
 // </changelog>
 #endregion
 
@@ -41,7 +43,7 @@ namespace MaxFactry.General.DataLayer
     /// <summary>
     /// Repository for managing US State data storage.
     /// </summary>
-    public class MaxUSStateRepository : MaxStorageWriteRepository
+    public class MaxUSStateRepository : MaxBaseReadRepository
     {
         /// <summary>
         /// Selects data using a provider
@@ -57,7 +59,7 @@ namespace MaxFactry.General.DataLayer
                 throw new MaxException("Error casting [" + loData.DataModel.GetType() + "] for DataModel");
             }
 
-            IMaxStorageReadRepositoryProvider loRepositoryProvider = Instance.GetStorageReadRepositoryProvider(loData);
+            IMaxBaseReadRepositoryProvider loRepositoryProvider = Instance.GetRepositoryProvider(loData);
             IMaxUSStateRepositoryProvider loProvider = loRepositoryProvider as IMaxUSStateRepositoryProvider;
             if (null == loProvider)
             {

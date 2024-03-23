@@ -28,6 +28,8 @@
 #region Change Log
 // <changelog>
 // <change date="3/23/2015" author="Brian A. Lakstins" description="Initial Release">
+// <change date="3/20/2024" author="Brian A. Lakstins" description="Happy birthday to my mom.  Sara Jean Lakstins (Cartwright) - 3/20/1944 to 3/14/2019.">
+// <change date="3/23/2024" author="Brian A. Lakstins" description="Change parent classs.  Update for changes to parent class.">
 // </changelog>
 #endregion
 
@@ -40,7 +42,7 @@ namespace MaxFactry.General.DataLayer
     /// <summary>
     /// Repository for accessing Payment Card information.
     /// </summary>
-    public class MaxPaymentCardRepository : MaxBaseIdRepository
+    public class MaxPaymentCardRepository : MaxBaseReadRepository
     {
     }
 }

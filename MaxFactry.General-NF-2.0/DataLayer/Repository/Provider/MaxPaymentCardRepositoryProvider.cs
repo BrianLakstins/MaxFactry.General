@@ -30,6 +30,8 @@
 // <change date="3/23/2015" author="Brian A. Lakstins" description="Initial Release">
 // <change date="7/4/2016" author="Brian A. Lakstins" description="Updated to access provider configuration using base provider methods.">
 // <change date="6/5/2020" author="Brian A. Lakstins" description="Updated for change to base.">
+// <change date="3/20/2024" author="Brian A. Lakstins" description="Happy birthday to my mom.  Sara Jean Lakstins (Cartwright) - 3/20/1944 to 3/14/2019.">
+// <change date="3/23/2024" author="Brian A. Lakstins" description="Change parent classs.  Update for changes to parent class.">
 // </changelog>
 #endregion
 
@@ -38,11 +40,12 @@ namespace MaxFactry.General.DataLayer.Provider
     using System;
     using MaxFactry.Core;
     using MaxFactry.Base.DataLayer;
+    using MaxFactry.Base.DataLayer.Provider;
 
     /// <summary>
     /// Default Provider for MaxPaymentCardRepository
     /// </summary>
-    public class MaxPaymentCardRepositoryProvider : MaxFactry.Base.DataLayer.Provider.MaxBaseIdRepositoryDefaultProvider, IMaxPaymentCardRepositoryProvider
+    public class MaxPaymentCardRepositoryProvider : MaxBaseReadRepositoryDefaultProvider, IMaxPaymentCardRepositoryProvider
     {
         /// <summary>
         /// Private list of data
@@ -108,36 +111,6 @@ namespace MaxFactry.General.DataLayer.Provider
         }
 
         /// <summary>
-        /// Data cannot be deleted.
-        /// </summary>
-        /// <param name="loData">Data to delete</param>
-        /// <returns>Always returns false.</returns>
-        public override bool Delete(MaxData loData)
-        {
-            return false;
-        }
-
-        /// <summary>
-        /// Data cannot be added.
-        /// </summary>
-        /// <param name="loData">Data to add.</param>
-        /// <returns>Always returns null.</returns>
-        public override bool Insert(MaxData loData)
-        {
-            return false;
-        }
-
-        /// <summary>
-        /// Data cannot be updated.
-        /// </summary>
-        /// <param name="loData">the data for the element.</param>
-        /// <returns>The data that was updated.</returns>
-        public override bool Update(MaxData loData)
-        {
-            return false;
-        }
-
-        /// <summary>
         /// Selects all.  Variables are ignored.
         /// </summary>
         /// <param name="loData">Data to use.</param>
@@ -163,18 +136,6 @@ namespace MaxFactry.General.DataLayer.Provider
         public override int SelectCount(MaxData loData, MaxDataQuery loDataQuery)
         {
             return this._oDataList.Count;
-        }
-
-        /// <summary>
-        /// Selects all data from the data storage name for the specified type.
-        /// </summary>
-        /// <param name="lsDataStorageName">Name of the data storage (table name).</param>
-        /// <param name="laDataNameList">list of fields to return from select</param>
-        /// <returns>List of data elements with a base data model.</returns>
-        public override MaxDataList SelectAll(string lsDataStorageName, params string[] laDataNameList)
-        {
-            int lnTotal = 0;
-            return this.Select(null, null, 0, 0, string.Empty, out lnTotal);
         }
     }
 }
