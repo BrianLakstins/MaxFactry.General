@@ -36,17 +36,18 @@
 // <change date="6/5/2020" author="Brian A. Lakstins" description="Updated initialization so does not use global config. Only uses passed config.  Trying to use global config can cause objects to get created before they can be configured.  Move Reset of MaxFactryLibrary to SetProviderConfiguration.">
 // <change date="7/20/2023" author="Brian A. Lakstins" description="Add default configuration process.">
 // <change date="7/25/2023" author="Brian A. Lakstins" description="Change order of methods so they match when they are run.  Add GetTempFolder.  Add GetConfig.">
+// <change date="3/20/2024" author="Brian A. Lakstins" description="Happy birthday to my mom.  Sara Jean Lakstins (Cartwright) - 3/20/1944 to 3/14/2019.">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class">
 // </changelog>
 #endregion
 
 namespace MaxFactry.General.Provider
 {
 	using System;
-    using System.Diagnostics;
-    using MaxFactry.Base.DataLayer.Provider;
+    using MaxFactry.Base.DataLayer.Library;
+    using MaxFactry.Base.DataLayer.Library.Provider;
     using MaxFactry.Core;
     using MaxFactry.Core.Provider;
-    using Microsoft.SqlServer.Server;
 
     /// <summary>
     /// Default provider for MaxApplicationLibrary
@@ -315,7 +316,7 @@ namespace MaxFactry.General.Provider
         {
             MaxIndex loR = new MaxIndex();
             //// Set Default DataContextProvider
-            loR.Add(typeof(MaxFactry.Core.MaxProvider) + "-" + MaxDataContextDefaultProvider.DefaultContextProviderConfigName, typeof(MaxDataContextDefaultProvider).Name);
+            loR.Add(typeof(MaxFactry.Core.MaxProvider) + "-" + MaxDataContextLibrary.DefaultContextProviderConfigName, typeof(MaxDataContextLibraryDefaultProvider).Name);
             return loR;
         }
 

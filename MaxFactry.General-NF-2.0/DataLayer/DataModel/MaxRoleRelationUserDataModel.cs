@@ -1,4 +1,4 @@
-﻿// <copyright file="MaxWebFileRepositoryDefaultProvider.cs" company="Lakstins Family, LLC">
+﻿// <copyright file="MaxRoleRelationUserDataModel.cs" company="Lakstins Family, LLC">
 // Copyright (c) Brian A. Lakstins (http://www.lakstins.com/brian/)
 // </copyright>
 
@@ -27,23 +27,36 @@
 
 #region Change Log
 // <changelog>
-// <change date="6/4/2015" author="Brian A. Lakstins" description="Initial creation">
-// <change date="6/19/2019" author="Brian A. Lakstins" description="Remove handling of configuration and exception logging information.">
-// <change date="8/1/2023" author="Brian A. Lakstins" description="Added selecting remote HTTP process">
 // <change date="3/20/2024" author="Brian A. Lakstins" description="Happy birthday to my mom.  Sara Jean Lakstins (Cartwright) - 3/20/1944 to 3/14/2019.">
-// <change date="3/30/2024" author="Brian A. Lakstins" description="Change parent class.  Remove Download method because it can be handled with MaxHttpLibrary.">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Initial creation.">
 // </changelog>
 #endregion
 
-namespace MaxFactry.General.DataLayer.Provider
+namespace MaxFactry.General.DataLayer
 {
-    using MaxFactry.Base.DataLayer.Provider;
-    using MaxFactry.General.DataLayer;
+	using System;
+	using MaxFactry.Core;
+	using MaxFactry.Base.DataLayer;
 
-    /// <summary>
-    /// Provider for MaxApplicationInternetRepository
-    /// </summary>
-    public class MaxGeneralRepositoryDefaultProvider : MaxBaseRepositoryDefaultProvider, IMaxGeneralRepositoryProvider
+	/// <summary>
+	/// Data model for the users related to roles
+	/// </summary>
+    public class MaxRoleRelationUserDataModel : MaxBaseRelationGuidKeyDataModel
     {
+		/// <summary>
+        /// Initializes a new instance of the MaxRoleUserRelationDataModel class.
+		/// </summary>
+        public MaxRoleRelationUserDataModel()
+            : base()
+		{
+            this.SetDataStorageName("MaxSecurityRoleRelationUser");
+            this.RepositoryProviderType = typeof(MaxFactry.General.DataLayer.Provider.MaxSecurityRepositoryDefaultProvider);
+            this.RepositoryType = typeof(MaxSecurityRepository);
+			this.RemoveType(this.AttributeIndexText);
+			this.RemoveType(this.Name);
+			this.RemoveType(this.RelationType);
+			this.RemoveType(this.RelativeOrder);
+            this.RemoveType(this.OptionFlagList);
+        }
     }
 }

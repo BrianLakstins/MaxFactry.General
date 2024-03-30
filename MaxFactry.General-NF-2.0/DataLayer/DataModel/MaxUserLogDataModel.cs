@@ -30,6 +30,8 @@
 // <change date="6/4/2015" author="Brian A. Lakstins" description="Initial creation">
 // <change date="11/30/2018" author="Brian A. Lakstins" description="Updated for changes to base.">
 // <change date="12/2/2019" author="Brian A. Lakstins" description="Added new initialization method so logs can be archived.">
+// <change date="3/20/2024" author="Brian A. Lakstins" description="Happy birthday to my mom.  Sara Jean Lakstins (Cartwright) - 3/20/1944 to 3/14/2019.">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Change parent class.">
 // </changelog>
 #endregion
 
@@ -42,7 +44,7 @@ namespace MaxFactry.General.DataLayer
 	/// <summary>
     /// Data model for the user log information associated with the MaxSecurityProvider.
 	/// </summary>
-    public class MaxUserLogDataModel : MaxBaseIdDataModel
+    public class MaxUserLogDataModel : MaxBaseDataModel
 	{
 		/// <summary>
         /// Id of the user associated with the log entry.
@@ -65,21 +67,18 @@ namespace MaxFactry.General.DataLayer
 		public MaxUserLogDataModel() : base()
 		{
             this.SetDataStorageName("MaxSecurityUserLog");
-            this.AddPropertyAttribute(this.CreatedDate, "IsPrimaryKey", "true");
-            this.AddType(this.UserId, typeof(Guid));
+            this.AddAttribute(this.CreatedDate, "IsPrimaryKey", "true");
+            this.AddKey(this.UserId, typeof(Guid));
 			this.AddType(this.LogEntryType, typeof(int));
 			this.AddType(this.Comment, typeof(string));
             this.RepositoryProviderType = typeof(MaxFactry.General.DataLayer.Provider.MaxSecurityRepositoryDefaultProvider);
             this.RepositoryType = typeof(MaxSecurityRepository);
-		}
 
-        /// <summary>
-        /// Initializes a new instance of the MaxUserLogDataModel class.
-        /// </summary>
-        /// <param name="lsDataStorageName">Name to user for storage</param>
-        public MaxUserLogDataModel(string lsDataStorageName): this()
-        {
-            this.SetDataStorageName(lsDataStorageName);
-        }
+            this.RemoveType(this.IsActive);
+            this.RemoveType(this.IsDeleted);
+            this.RemoveType(this.OptionFlagList);
+			this.RemoveType(this.AttributeIndexText);
+			this.RemoveType(this.LastUpdateDate);
+		}
     }
 }

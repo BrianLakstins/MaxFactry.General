@@ -28,6 +28,8 @@
 #region Change Log
 // <changelog>
 // <change date="6/4/2015" author="Brian A. Lakstins" description="Initial creation">
+// <change date="3/20/2024" author="Brian A. Lakstins" description="Happy birthday to my mom.  Sara Jean Lakstins (Cartwright) - 3/20/1944 to 3/14/2019.">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Change parent class.  Add storage for salt id instead of using id">
 // </changelog>
 #endregion
 
@@ -36,15 +38,21 @@ namespace MaxFactry.General.DataLayer
 	using System;
 	using MaxFactry.Core;
 	using MaxFactry.Base.DataLayer;
+    using System.Data;
 
-	/// <summary>
+    /// <summary>
     /// Data model for the password information associated with the MaxSecurityProvider.
-	/// </summary>
-    public class MaxUserPasswordDataModel : MaxBaseIdDataModel
+    /// </summary>
+    public class MaxUserPasswordDataModel : MaxBaseDataModel
 	{
-		/// <summary>
-		/// Id of the user associated with the password.
-		/// </summary>
+        /// <summary>
+        /// Random salt value used to encrypt password
+        /// </summary>
+        public readonly string EncryptionSaltId = "EncryptionSaltId";
+
+        /// <summary>
+        /// Id of the user associated with the password.
+        /// </summary>
         public readonly string UserId = "UserId";
 
         /// <summary>
@@ -73,13 +81,19 @@ namespace MaxFactry.General.DataLayer
 		public MaxUserPasswordDataModel() : base()
 		{
             this.SetDataStorageName("MaxSecurityUserPassword");
-			this.AddType(this.UserId, typeof(Guid));
+            this.RemoveType(this.CreatedDate);
+            this.AddKey(this.CreatedDate, typeof(DateTime));
+            this.AddKey(this.EncryptionSaltId, typeof(Guid));
+			this.AddKey(this.UserId, typeof(Guid));
 			this.AddType(this.Password, typeof(string));
 			this.AddType(this.PasswordFormat, typeof(int));
 			this.AddNullable(this.PasswordQuestion, typeof(string));
             this.AddNullable(this.PasswordAnswer, typeof(string));
             this.RepositoryProviderType = typeof(MaxFactry.General.DataLayer.Provider.MaxSecurityRepositoryDefaultProvider);
             this.RepositoryType = typeof(MaxSecurityRepository);
+
+			this.RemoveType(this.AttributeIndexText);
+			this.RemoveType(this.OptionFlagList);
 		}
 	}
 }

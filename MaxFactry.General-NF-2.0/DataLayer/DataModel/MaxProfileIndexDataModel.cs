@@ -28,6 +28,8 @@
 #region Change Log
 // <changelog>
 // <change date="6/4/2015" author="Brian A. Lakstins" description="Initial creation">
+// <change date="3/20/2024" author="Brian A. Lakstins" description="Happy birthday to my mom.  Sara Jean Lakstins (Cartwright) - 3/20/1944 to 3/14/2019.">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to parent class.">
 // </changelog>
 #endregion
 
@@ -48,7 +50,7 @@ namespace MaxFactry.General.DataLayer
         public MaxProfileIndexDataModel()
             : base()
 		{
-            this.RemoveKey(this.StorageKey);
+            this.RemoveType(this.StorageKey);
             this.SetDataStorageName("MaxCoreProfileIndex");
         }
 

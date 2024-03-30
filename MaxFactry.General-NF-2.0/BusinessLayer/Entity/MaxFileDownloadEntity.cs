@@ -28,6 +28,7 @@
 #region Change Log
 // <changelog>
 // <change date="6/4/2015" author="Brian A. Lakstins" description="Initial creation">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class. Use parent methods instead of repository.  Use HttpLibrary instead of respository for remote data.">
 // </changelog>
 #endregion
 
@@ -42,6 +43,7 @@ namespace MaxFactry.General.BusinessLayer
     using MaxFactry.Core;
     using MaxFactry.Base.BusinessLayer ;
     using MaxFactry.Base.DataLayer;
+    using MaxFactry.Base.DataLayer.Library;
     using MaxFactry.General.DataLayer;
 
     /// <summary>
@@ -202,40 +204,46 @@ namespace MaxFactry.General.BusinessLayer
             return this.Name.ToLowerInvariant().PadRight(500, ' ') + base.GetDefaultSortString();
         }
 
-        public void Download(string lsUrl)
+        public bool Download(string lsUrl, string lsToken)
         {
-            MaxData loData = MaxGeneralRepository.Download(this.Data, lsUrl);
-            this.Load(loData);
+            MaxIndex loRequest = new MaxIndex();
+            loRequest.Add(MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.RequestContentName.RequestUrl, new Uri(lsUrl));
+            loRequest.Add(MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.RequestContentName.Token, lsToken);
+            MaxIndex loResponse = MaxHttpLibrary.GetResponse(loRequest);
+            MaxData loData = new MaxData(this.Data);
+            if (null != loResponse && loResponse.Contains(MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.ResponseName.Content))
+            {
+                loData.Set(this.DataModel.Name, loResponse[MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.ResponseName.ContentFileName]);
+                loData.Set(this.DataModel.Content, loResponse[MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.ResponseName.Content]);
+                loData.Set(this.DataModel.ContentLength, loResponse[MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.ResponseName.ContentLength]);
+                loData.Set(this.DataModel.ContentType, loResponse[MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.ResponseName.ContentType]);
+                loData.Set(this.DataModel.ResponseUrl, loResponse[MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.ResponseName.ContentLocation]);
+            }
+
+            return this.Load(loData);
         }
 
         public MaxEntityList LoadAllByResponseHost(string lsResponseHost)
         {
-            MaxDataList loDataList = MaxGeneralRepository.SelectAllActiveByProperty(this.Data, this.DataModel.ResponseHost, lsResponseHost);
-            MaxEntityList loEntityList = MaxEntityList.Create(this.GetType(), loDataList);
-            return loEntityList;
+            return this.LoadAllActiveByProperty(this.DataModel.ResponseHost, lsResponseHost);
         }
 
         public virtual bool LoadByName(string lsName)
         {
-            MaxDataList loDataList = MaxGeneralRepository.SelectAllActiveByProperty(this.Data, this.DataModel.Name, lsName);
-            if (loDataList.Count > 0)
+            MaxEntityList loList = this.LoadAllActiveByProperty(this.DataModel.Name, lsName);
+            if (loList.Count == 1)
             {
-                this.Load(loDataList[0]);
-                return true;
+                return this.Load(loList[0].GetData());
             }
 
             return false;
         }
 
-        public virtual MaxEntityList LoadAllRemote(string lsToken, string lsUrl)
+        public virtual MaxEntityList LoadAllRemote(string lsUrl, string lsToken)
         {
-            MaxEntityList loR = new MaxEntityList(this.GetType());
-            MaxHttpClientEntity loEntity = MaxHttpClientEntity.Create();
-            if (loEntity.LoadRemote(lsUrl, null, lsToken))
-            {
-                loR = this.MapResponse(loEntity.ResponseContent);
-            }
-
+            MaxIndex loRequest = new MaxIndex();
+            object loContent = MaxHttpLibrary.GetContent(lsUrl, lsToken);
+            MaxEntityList loR = this.MapResponse(loContent);
             return loR;
         }
 
@@ -332,17 +340,15 @@ namespace MaxFactry.General.BusinessLayer
         public virtual bool LoadContentRemote(string lsToken, string lsUrl)
         {
             bool lbR = false;
-            MaxHttpClientEntity loEntity = MaxHttpClientEntity.Create();
-            if (loEntity.LoadRemote(lsUrl, null, lsToken))
+            MaxIndex loRequest = new MaxIndex();
+            loRequest.Add(MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.RequestContentName.RequestUrl, lsUrl);
+            loRequest.Add(MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.RequestContentName.Token, lsToken);
+            MaxIndex loResponse = MaxHttpLibrary.GetResponse(loRequest);
+            if (null != loResponse)
             {
-                this.Content = loEntity.ResponseContent as Stream;
-#if net4_52
-                if (loEntity.Response is HttpResponseMessage)
-                {
-                    this.ContentLength = MaxConvertLibrary.ConvertToLong(typeof(object), ((HttpResponseMessage)loEntity.Response).Content.Headers.ContentLength);
-                    lbR = true;
-                }
-#endif
+                this.Content = loResponse[MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.ResponseName.Content] as Stream;
+                this.ContentLength = MaxConvertLibrary.ConvertToLong(typeof(object), loResponse[MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.ResponseName.ContentLength]);
+                lbR = true;
             }
 
             return lbR;

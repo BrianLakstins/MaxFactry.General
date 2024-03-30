@@ -28,6 +28,7 @@
 #region Change Log
 // <changelog>
 // <change date="11/3/2020" author="Brian A. Lakstins" description="Initial creation">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class. Use parent methods instead of repository.">
 // </changelog>
 #endregion
 
@@ -38,11 +39,12 @@ namespace MaxFactry.General.BusinessLayer
 	using MaxFactry.Base.BusinessLayer;
 	using MaxFactry.Base.DataLayer;
     using MaxFactry.General.DataLayer;
+    using MaxFactry.Base.DataLayer.Library;
 
-	/// <summary>
+    /// <summary>
     /// Entity used to manage information about UserAuthGrants for the MaxSecurityProvider.
-	/// </summary>
-	public class MaxUserAuthGrantEntity : MaxBaseIdEntity
+    /// </summary>
+    public class MaxUserAuthGrantEntity : MaxBaseGuidKeyEntity
 	{
 		/// <summary>
         /// Initializes a new instance of the MaxUserAuthGrantEntity class

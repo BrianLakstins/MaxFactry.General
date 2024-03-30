@@ -28,6 +28,7 @@
 #region Change Log
 // <changelog>
 // <change date="11/3/2020" author="Brian A. Lakstins" description="Initial creation">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class. Use parent methods instead of repository.">
 // </changelog>
 #endregion
 
@@ -38,12 +39,15 @@ namespace MaxFactry.General.BusinessLayer
     using MaxFactry.Core;
     using MaxFactry.Base.BusinessLayer;
     using MaxFactry.Base.DataLayer;
+    using MaxFactry.Base.DataLayer.Library;
+    using MaxFactry.Base.DataLayer.Library.Provider;
     using MaxFactry.General.DataLayer;
+    using MaxFactry.General.DataLayer.Provider;
 
     /// <summary>
     /// Entity used to manage information about UserAuthTokens for the MaxSecurityProvider.
     /// </summary>
-    public class MaxUserAuthTokenEntity : MaxBaseIdEntity
+    public class MaxUserAuthTokenEntity : MaxBaseGuidKeyEntity
     {
         /// <summary>
         /// Initializes a new instance of the MaxUserAuthTokenEntity class
@@ -275,7 +279,6 @@ namespace MaxFactry.General.BusinessLayer
                 {
                     lsR += loChar;
                 }
-
             }
 
             return lsR;
@@ -350,23 +353,7 @@ namespace MaxFactry.General.BusinessLayer
 
         public MaxEntityList LoadAllActiveByUserKeyCache(string lsUserKey)
         {
-            string lsCacheDataKey = this.GetCacheKey() + "LoadAllActiveByUserKeyCache/" + this.DataModel.UserKey + "/" + lsUserKey;
-            MaxDataList loDataList = MaxCacheRepository.Get(this.GetType(), lsCacheDataKey, typeof(MaxDataList)) as MaxDataList;
-            if (null == loDataList)
-            {
-                MaxDataQuery loDataQuery = new MaxDataQuery();
-                loDataQuery.StartGroup();
-                loDataQuery.AddFilter(this.MaxBaseIdDataModel.IsActive, "=", true);
-                loDataQuery.AddCondition("AND");
-                loDataQuery.AddFilter(this.DataModel.UserKey, "=", lsUserKey);
-                loDataQuery.EndGroup();
-                int lnTotal = 0;
-                loDataList = MaxGeneralRepository.Select(this.GetData(), loDataQuery, 0, 0, string.Empty, out lnTotal);
-                MaxCacheRepository.Set(this.GetType(), lsCacheDataKey, loDataList);
-            }
-
-            MaxEntityList loEntityList = MaxEntityList.Create(this.GetType(), loDataList);
-            return loEntityList;
+            return this.LoadAllActiveByProperty(this.DataModel.UserKey, lsUserKey);
         }
 
         /// <summary>
@@ -380,13 +367,8 @@ namespace MaxFactry.General.BusinessLayer
         /// <returns></returns>
         public virtual bool LoadRemote(string lsTokenUri, string lsClientId, string lsClientSecret, string lsScope, MaxIndex loRequestContent)
         {
-            bool lbR = false;
-            MaxHttpClientEntity loEntity = MaxHttpClientEntity.Create();
-            if (loEntity.LoadRemote(lsTokenUri, loRequestContent, lsClientId, lsClientSecret, lsScope))
-            {
-                lbR = this.MapResponse(loEntity.ResponseContent);
-            }
-
+            string lsToken = MaxHttpLibrary.GetAccessToken(new Uri(lsTokenUri), lsClientId, lsClientSecret, lsScope);
+            bool lbR = this.MapResponse(lsToken);
             return lbR;
         }
 

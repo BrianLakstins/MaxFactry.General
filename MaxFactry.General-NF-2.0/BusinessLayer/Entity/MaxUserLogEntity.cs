@@ -29,6 +29,7 @@
 // <changelog>
 // <change date="6/4/2015" author="Brian A. Lakstins" description="Initial creation">
 // <change date="12/2/2019" author="Brian A. Lakstins" description="Added process to archive logs after 30 days">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class. Use parent methods instead of repository.">
 // </changelog>
 #endregion
 
@@ -38,18 +39,14 @@ namespace MaxFactry.General.BusinessLayer
 	using MaxFactry.Core;
 	using MaxFactry.Base.BusinessLayer;
 	using MaxFactry.Base.DataLayer;
+    using MaxFactry.Base.DataLayer.Library;
     using MaxFactry.General.DataLayer;
 
 	/// <summary>
     /// Entity used to manage log information about users for the MaxSecurityProvider.
 	/// </summary>
-	public class MaxUserLogEntity : MaxBaseIdEntity
+	public class MaxUserLogEntity : MaxBaseEntity
 	{
-        /// <summary>
-        /// Stores last archive date so it only runs once a day
-        /// </summary>
-        private static DateTime _dLastArchiveDate = DateTime.MinValue;
-
         /// <summary>
         /// Value for other log entry type
         /// </summary>
@@ -183,11 +180,12 @@ namespace MaxFactry.General.BusinessLayer
         /// </summary>
         /// <param name="loUserId">The Id of the user.</param>
         /// <returns>List of user logs.</returns>
-		public MaxEntityList LoadAllByUserId(Guid loUserId)
+		public MaxEntityList LoadAllByUserIdCache(Guid loUserId)
 		{
-            MaxDataList loDataList = MaxSecurityRepository.SelectAllByProperty(this.Data, this.DataModel.UserId, loUserId);
-            MaxEntityList loEntityList = MaxEntityList.Create(this.GetType(), loDataList);
-            return loEntityList;
+            MaxDataQuery loDataQuery = new MaxDataQuery();
+            loDataQuery.AddFilter(this.DataModel.UserId, "=", loUserId);
+            MaxData loData = new MaxData(this.Data);
+            return this.LoadAllByPageCache(loData, 0, 0, this.DataModel.CreatedDate + " desc", loDataQuery);
 		}
 
         /// <summary>
@@ -197,22 +195,12 @@ namespace MaxFactry.General.BusinessLayer
         /// <returns>List of user logs.</returns>
         public MaxEntityList LoadAllByUserIdCreatedDate(Guid loUserId, DateTime ldCreatedDate)
         {
-            MaxDataList loDataList = MaxSecurityRepository.SelectAllByUserIdCreatedDate(this.Data, loUserId, ldCreatedDate);
-            MaxEntityList loEntityList = MaxEntityList.Create(this.GetType(), loDataList);
-            return loEntityList;
-        }
-
-        /// <summary>
-        /// Loads a list of all user logs of the specified type created since a certain date.
-        /// </summary>
-        /// <param name="lnLogEntryType">Type of log entry.</param>
-        /// <param name="ldCreatedDate">Date the log entry was created.</param>
-        /// <returns>List of user logs.</returns>
-        public MaxEntityList LoadAllByLogEntryTypeCreatedDate(int lnLogEntryType, DateTime ldCreatedDate)
-        {
-            MaxDataList loDataList = MaxSecurityRepository.SelectAllByLogEntryTypeCreatedDate(this.Data, lnLogEntryType, ldCreatedDate);
-            MaxEntityList loEntityList = MaxEntityList.Create(this.GetType(), loDataList);
-            return loEntityList;
+            MaxDataQuery loDataQuery = new MaxDataQuery();
+            loDataQuery.AddFilter(this.DataModel.UserId, "=", loUserId);
+            loDataQuery.AddAnd();
+            loDataQuery.AddFilter(this.DataModel.CreatedDate, ">=", ldCreatedDate);
+            MaxData loData = new MaxData(this.Data);
+            return this.LoadAllByPageCache(loData, 0, 0, this.DataModel.CreatedDate + " desc", loDataQuery);
         }
 
         /// <summary>
@@ -222,12 +210,15 @@ namespace MaxFactry.General.BusinessLayer
         /// <returns>List of user logs.</returns>
         public int GetCountActivityByCreatedDate(DateTime ldCreatedDate)
         {
-            MaxDataList loDataList = MaxSecurityRepository.SelectAllByLogEntryTypeCreatedDate(this.Data, LogEntryTypeActivity, ldCreatedDate);
-            return loDataList.Count;
+            MaxDataQuery loDataQuery = new MaxDataQuery();
+            loDataQuery.AddFilter(this.DataModel.CreatedDate, ">=", ldCreatedDate);
+            MaxData loData = new MaxData(this.Data);
+            MaxEntityList loList = LoadAllByPageCache(loData, 1, 1, this.DataModel.CreatedDate + " desc", loDataQuery);
+            return loList.Total;
         }
 
         /// <summary>
-        /// Adds a new password element for the supplied user id, log entry type, and comment.
+        /// Adds a new log entry for the supplied user id, log entry type, and comment.
         /// Needed because UserId, log entry type, and comment are readonly.
         /// </summary>
         /// <param name="loId">The new Id.</param>
@@ -235,24 +226,12 @@ namespace MaxFactry.General.BusinessLayer
         /// <param name="lnLogEntryType">Type of log entry.</param>
         /// <param name="lsComment">Comment related to log entry.</param>
         /// <returns>true if inserted.  False if not.</returns>
-        public bool Insert(Guid loId, Guid loUserId, int lnLogEntryType, string lsComment)
+        public bool Insert(Guid loUserId, int lnLogEntryType, string lsComment)
         {
             this.Set(this.DataModel.UserId, loUserId);
             this.Set(this.DataModel.LogEntryType, lnLogEntryType);
             this.Set(this.DataModel.Comment, lsComment);
-            return this.Insert(loId);
-        }
-
-        /// <summary>
-        /// Runs archive process and then inserts a new record
-        /// </summary>
-        /// <param name="loId">Id for the new record</param>
-        /// <returns>true if inserted.  False if cannot be inserted.</returns>
-        public override bool Insert(Guid loId)
-        {
-            this.ArchiveCreatedOver30();
-            bool lbR = base.Insert(loId);
-            return lbR;
+            return this.Insert();
         }
 
         /// <summary>
@@ -261,19 +240,13 @@ namespace MaxFactry.General.BusinessLayer
         /// <returns>Throws an exception to prevent using this method.</returns>
         public override bool Update()
         {
-            throw new MaxException("Log entities cannot be updated.");
+            throw new MaxException("Log entries cannot be updated.");
         }
 
-        public int ArchiveCreatedOver30()
+        public override bool Delete() 
         {
-            int lnR = 0;
-            //// Prevent running archive process more than once per 24 hours
-            if (this.CanProcessArchive(new TimeSpan(24, 0, 0)))
-            {
-                lnR = this.Archive(DateTime.UtcNow.Date.AddDays(-30), DateTime.MinValue, false);
-            }
-
-            return lnR;
+            throw new MaxException("Log entries cannot be deleted.");
+                
         }
 	}
 }

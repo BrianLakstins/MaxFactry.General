@@ -42,12 +42,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BusinessLayer\Entity\MaxHttpClientEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxEmailEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxFileEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxFileDownloadEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxPaymentCardEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxProfileIndexEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxRoleRelationUserEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxRoleEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxUserAuthTokenEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxUserAuthGrantEntity.cs" />
@@ -60,14 +60,13 @@
     <Compile Include="BusinessLayer\Entity\MaxUSStateEntity.cs" />
     <Compile Include="BusinessLayer\Structure\MaxCSSStyleStructure.cs" />
     <Compile Include="BusinessLayer\Structure\MaxHtmlTagStructure.cs" />
-    <Compile Include="DataLayer\DataModel\MaxHttpClientDataModel.cs" />
     <Compile Include="DataLayer\DataModel\MaxEmailDataModel.cs" />
     <Compile Include="DataLayer\DataModel\MaxFileDataModel.cs" />
     <Compile Include="DataLayer\DataModel\MaxFileDownloadDataModel.cs" />
     <Compile Include="DataLayer\DataModel\MaxPaymentCardDataModel.cs" />
     <Compile Include="DataLayer\DataModel\MaxProfileIndexDataModel.cs" />
     <Compile Include="DataLayer\DataModel\MaxRoleDataModel.cs" />
-    <Compile Include="DataLayer\DataModel\MaxRoleUserRelationDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxRoleRelationUserDataModel.cs" />
     <Compile Include="DataLayer\DataModel\MaxUserAuthTokenDataModel.cs" />
     <Compile Include="DataLayer\DataModel\MaxUserAuthGrantDataModel.cs" />
     <Compile Include="DataLayer\DataModel\MaxUserConfigurationDataModel.cs" />
@@ -84,7 +83,6 @@
     <Compile Include="DataLayer\Repository\Interface\IMaxUSStateRepositoryProvider.cs" />
     <Compile Include="DataLayer\Repository\MaxGeneralRepository.cs" />
     <Compile Include="DataLayer\Repository\MaxPaymentCardRepository.cs" />
-    <Compile Include="DataLayer\Repository\MaxRoleUserRelationRepository.cs" />
     <Compile Include="DataLayer\Repository\MaxSecurityRepository.cs" />
     <Compile Include="DataLayer\Repository\MaxUSStateRepository.cs" />
     <Compile Include="DataLayer\Repository\Provider\MaxGeneralRepositoryDefaultProvider.cs" />
@@ -120,9 +118,14 @@
     <None Include="MaxFactry.snk" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MaxFactry.Base">
-      <Version>1.0.22.1</Version>
-    </PackageReference>
+    <ProjectReference Include="..\..\MaxFactry.Base\MaxFactry.Base-NF-2.0\MaxFactry.Base-NF-2.0.ref.csproj">
+      <Project>{b4784207-457e-4c7c-bf95-f72a901ed032}</Project>
+      <Name>MaxFactry.Base-NF-2.0.ref</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MaxFactry.Core\MaxFactry.Core-NF-2.0\MaxFactry.Core-NF-2.0.csproj">
+      <Project>{27e6cf32-fd87-4ae5-afa2-fad5cb86ae0c}</Project>
+      <Name>MaxFactry.Core-NF-2.0</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -132,4 +135,11 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Target Name="SpicNSpan" AfterTargets="Clean">
+    <!-- common vars https://msdn.microsoft.com/en-us/library/c02as0cs.aspx?f=255&MSPPError=-2147217396 -->
+    <RemoveDir Directories="$(TargetDir)" />
+    <!-- bin -->
+    <RemoveDir Directories="$(ProjectDir)$(BaseIntermediateOutputPath)" />
+    <!-- obj -->
+  </Target>
 </Project>

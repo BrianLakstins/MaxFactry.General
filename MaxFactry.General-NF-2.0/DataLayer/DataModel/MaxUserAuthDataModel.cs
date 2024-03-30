@@ -28,6 +28,8 @@
 #region Change Log
 // <changelog>
 // <change date="11/3/2020" author="Brian A. Lakstins" description="Initial creation">
+// <change date="3/20/2024" author="Brian A. Lakstins" description="Happy birthday to my mom.  Sara Jean Lakstins (Cartwright) - 3/20/1944 to 3/14/2019.">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Change parent class.  Add specific data name for the hash salt id instead of using the Id data name.">
 // </changelog>
 #endregion
 
@@ -40,8 +42,8 @@ namespace MaxFactry.General.DataLayer
 	/// <summary>
 	/// Data model for the user information associated with the User Authoriziation
 	/// </summary>
-    public class MaxUserAuthDataModel : MaxBaseIdDataModel
-	{
+    public class MaxUserAuthDataModel : MaxBaseGuidKeyDataModel
+    {
 		/// <summary>
 		/// Key used for the user associated with this Authorization
 		/// </summary>
@@ -62,10 +64,15 @@ namespace MaxFactry.General.DataLayer
 		/// </summary>
         public readonly string ClientSecret = "ClientSecret";
 
-		/// <summary>
-		/// Sha256 has of ClientSecret used for this Authorization
-		/// </summary>
-		public readonly string ClientSecretHash = "ClientSecretHash";
+        /// <summary>
+        /// Salt used to hash client secret
+        /// </summary>
+        public readonly string ClientSecretHashSaltId = "ClientSecretHashSaltId";
+
+        /// <summary>
+        /// Sha256 has of ClientSecret used for this Authorization
+        /// </summary>
+        public readonly string ClientSecretHash = "ClientSecretHash";
 
 		/// <summary>
 		/// List of use scopes this Authorization has access to
@@ -87,8 +94,9 @@ namespace MaxFactry.General.DataLayer
 			this.AddType(this.Name, typeof(string));
 			this.AddType(this.ClientId, typeof(string));
 			this.AddType(this.ClientSecret, typeof(string));
-			this.AddPropertyAttribute(this.ClientSecret, "IsEncrypted", "true");
-			this.AddType(this.ClientSecretHash, typeof(MaxLongString));
+			this.AddAttribute(this.ClientSecret, AttributeIsEncrypted, "true");
+            this.AddType(this.ClientSecretHashSaltId, typeof(Guid));
+            this.AddType(this.ClientSecretHash, typeof(MaxLongString));
 			this.AddNullable(this.ScopeListText, typeof(MaxLongString));
 			this.AddNullable(this.DomainListText, typeof(MaxLongString));
 

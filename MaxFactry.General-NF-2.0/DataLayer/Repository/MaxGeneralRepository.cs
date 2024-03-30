@@ -30,6 +30,8 @@
 // <change date="6/4/2015" author="Brian A. Lakstins" description="Initial creation">
 // <change date="11/6/2017" author="Brian A. Lakstins" description="Add a way to persist configuration information">
 // <change date="6/19/2019" author="Brian A. Lakstins" description="Remove a way to persist configuration information.  Better done in Configuration library.">
+// <change date="3/20/2024" author="Brian A. Lakstins" description="Happy birthday to my mom.  Sara Jean Lakstins (Cartwright) - 3/20/1944 to 3/14/2019.">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Change parent class.  Remove Download method because it can be handled with MaxHttpLibrary.">
 // </changelog>
 #endregion
 
@@ -43,31 +45,7 @@ namespace MaxFactry.General.DataLayer
     /// <summary>
     /// Repository for web content
     /// </summary>
-    public class MaxGeneralRepository : MaxBaseIdRepository
+    public class MaxGeneralRepository : MaxBaseRepository
     {
-        /// <summary>
-        /// Downloads data from an external url.
-        /// </summary>
-        /// <param name="loData">The content data model.</param>
-        /// <param name="lsUrl">The url to the file.</param>
-        /// <returns>Data from download of the file..</returns>
-        public static MaxData Download(MaxData loData, string lsUrl)
-        {
-            MaxFileDownloadDataModel loDataModel = loData.DataModel as MaxFileDownloadDataModel;
-            if (null == loDataModel)
-            {
-                throw new MaxException("Error casting [" + loData.DataModel.GetType() + "] for DataModel");
-            }
-
-            IMaxStorageReadRepositoryProvider loRepositoryProvider = Instance.GetStorageReadRepositoryProvider(loData);
-            IMaxGeneralRepositoryProvider loProvider = loRepositoryProvider as IMaxGeneralRepositoryProvider;
-            if (null == loProvider)
-            {
-                throw new MaxException("Error casting [" + loRepositoryProvider.GetType() + "] for Provider");
-            }
-
-            MaxData loDataOut = loProvider.Download(loDataModel, lsUrl);
-            return loDataOut;
-        }
     }
 }

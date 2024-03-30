@@ -28,6 +28,9 @@
 #region Change Log
 // <changelog>
 // <change date="11/3/2020" author="Brian A. Lakstins" description="Initial creation">
+// <change date="3/20/2024" author="Brian A. Lakstins" description="Update for change to MaxDataModel">
+// <change date="3/20/2024" author="Brian A. Lakstins" description="Happy birthday to my mom.  Sara Jean Lakstins (Cartwright) - 3/20/1944 to 3/14/2019.">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Change parent class.">
 // </changelog>
 #endregion
 
@@ -40,8 +43,8 @@ namespace MaxFactry.General.DataLayer
 	/// <summary>
 	/// Data model for the authorization tokens
 	/// </summary>
-    public class MaxUserAuthTokenDataModel : MaxBaseIdDataModel
-	{
+    public class MaxUserAuthTokenDataModel : MaxBaseGuidKeyDataModel
+    {
 		/// <summary>
 		/// Key used for the user associated with this Authorization
 		/// </summary>
@@ -93,11 +96,11 @@ namespace MaxFactry.General.DataLayer
 			this.AddNullable(this.UserAuthGrantId, typeof(Guid));
 			this.AddNullable(this.TokenHash, typeof(string));
 			this.AddNullable(this.Token, typeof(string));
-            this.AddPropertyAttribute(this.Token, "IsEncrypted", "true");
+            this.AddAttribute(this.Token, "IsEncrypted", "true");
             this.AddNullable(this.Expiration, typeof(int));
 			this.AddNullable(this.TokenType, typeof(string));
 			this.AddNullable(this.TokenResult, typeof(MaxLongString));
-			this.AddPropertyAttribute(this.TokenResult, "IsEncrypted", "true");
+			this.AddAttribute(this.TokenResult, "IsEncrypted", "true");
 
 			this.RepositoryProviderType = typeof(MaxFactry.General.DataLayer.Provider.MaxGeneralRepositoryDefaultProvider);
             this.RepositoryType = typeof(MaxGeneralRepository);

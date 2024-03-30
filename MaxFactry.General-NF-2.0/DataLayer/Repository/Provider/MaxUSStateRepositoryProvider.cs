@@ -32,7 +32,7 @@
 // <change date="7/4/2016" author="Brian A. Lakstins" description="Updated to access provider configuration using base provider methods.">
 // <change date="6/5/2020" author="Brian A. Lakstins" description="Updated for change to base.">
 // <change date="3/20/2024" author="Brian A. Lakstins" description="Happy birthday to my mom.  Sara Jean Lakstins (Cartwright) - 3/20/1944 to 3/14/2019.">
-// <change date="3/23/2024" author="Brian A. Lakstins" description="Change parent classs.  Update for changes to parent class.">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Change parent classs.  Update for changes to parent class.">
 // </changelog>
 #endregion
 
@@ -41,6 +41,7 @@ namespace MaxFactry.General.DataLayer.Provider
     using System;
     using MaxFactry.Core;
     using MaxFactry.Base.DataLayer;
+    using MaxFactry.Base.DataLayer.Library;
     using MaxFactry.Base.DataLayer.Provider;
 
     /// <summary>
@@ -189,10 +190,9 @@ namespace MaxFactry.General.DataLayer.Provider
         /// <param name="lnTotal">Total count.</param>
         /// <param name="laDataNameList">Fields to include.</param>
         /// <returns>Data list representing list of states.</returns>
-        public override MaxDataList Select(MaxData loData, MaxDataQuery loDataQuery, int lnPageIndex, int lnPageSize, string lsOrderBy, out int lnTotal, params string[] laDataNameList)
+        public override MaxDataList Select(MaxData loData, MaxDataQuery loDataQuery, int lnPageIndex, int lnPageSize, string lsOrderBy, params string[] laDataNameList)
         {
             MaxDataList loR = this.SelectAll(loData);
-            lnTotal = loR.Count;
             return loR;
         }
 
@@ -210,6 +210,8 @@ namespace MaxFactry.General.DataLayer.Provider
                 MaxData loDataReturn = this._oUSStateDataList[lnD];
                 loR.Add(loDataReturn);
             }
+
+            loR.Total = loR.Count;
 
             return loR;
         }

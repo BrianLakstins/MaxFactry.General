@@ -29,6 +29,8 @@
 // <changelog>
 // <change date="6/4/2015" author="Brian A. Lakstins" description="Initial creation">
 // <change date="6/19/2019" author="Brian A. Lakstins" description="Remove some methods.">
+// <change date="3/20/2024" author="Brian A. Lakstins" description="Happy birthday to my mom.  Sara Jean Lakstins (Cartwright) - 3/20/1944 to 3/14/2019.">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Change parent class.  Remove Download method because it can be handled with MaxHttpLibrary.">
 // </changelog>
 #endregion
 
@@ -40,14 +42,7 @@ namespace MaxFactry.General.DataLayer
     /// <summary>
     /// Interface for MaxApplicationInternetRepository
     /// </summary>
-    public interface IMaxGeneralRepositoryProvider : IMaxBaseIdRepositoryProvider
+    public interface IMaxGeneralRepositoryProvider : IMaxBaseRepositoryProvider
     {
-        /// <summary>
-        /// Downloads data from an external url.
-        /// </summary>
-        /// <param name="loDataModel">The content data model.</param>
-        /// <param name="lsUrl">The url to the file.</param>
-        /// <returns>Data from download of the file..</returns>
-        MaxData Download(MaxFileDownloadDataModel loDataModel, string lsUrl);
     }
 }

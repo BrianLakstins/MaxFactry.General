@@ -33,6 +33,7 @@
 // <change date="11/4/2020" author="Brian A. Lakstins" description="Fix issue where cache was being edited and not updated to data storage">
 // <change date="1/16/2021" author="Brian A. Lakstins" description="Update definition of cache keys.">
 // <change date="2/24/2021" author="Brian A. Lakstins" description="Update auth code storage">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class. Use parent methods instead of repository.">
 // </changelog>
 #endregion
 
@@ -43,11 +44,12 @@ namespace MaxFactry.General.BusinessLayer
 	using MaxFactry.Base.BusinessLayer;
 	using MaxFactry.Base.DataLayer;
     using MaxFactry.General.DataLayer;
+    using MaxFactry.Base.DataLayer.Library;
 
-	/// <summary>
+    /// <summary>
     /// Entity used to manage information about users for the MaxSecurityProvider.
-	/// </summary>
-	public class MaxUserEntity : MaxBaseIdEntity
+    /// </summary>
+    public class MaxUserEntity : MaxBaseGuidKeyEntity
 	{
 		/// <summary>
         /// Initializes a new instance of the MaxUserEntity class
@@ -150,7 +152,7 @@ namespace MaxFactry.General.BusinessLayer
                 typeof(MaxUserDataModel)) as MaxUserEntity;
         }
 
-        public string GetUserAuthCode(string lsName)
+        public string GetAuthCode(string lsName)
         {
             string lsCacheKey = this.GetCacheKey() + "AuthCode/" + lsName.ToLower();
             string lsR = MaxCacheRepository.Get(this.GetType(), lsCacheKey, typeof(string)) as string;
@@ -168,47 +170,10 @@ namespace MaxFactry.General.BusinessLayer
             return lsR;
         }
 
-        public void ClearUserAuthCode(string lsName)
+        public void ClearAuthCode(string lsName)
         {
             string lsCacheKey = this.GetCacheKey() + "AuthCode/" + lsName.ToLower();
             MaxCacheRepository.Remove(this.GetType(), lsCacheKey);
-        }
-
-        /// <summary>
-        /// Loads all user entities that match the given id that have not been deleted.
-        /// </summary>
-        /// <param name="loUserId">The Id of the user.</param>
-        /// <returns>List of users.</returns>
-        public MaxEntityList LoadAllByIdCache(Guid loUserId)
-        {
-            MaxEntityList loR = MaxEntityList.Create(this.GetType());
-            string lsCacheAllDataKey = this.GetCacheKey() + "LoadAll";
-            MaxDataList loDataAllList = MaxCacheRepository.Get(this.GetType(), lsCacheAllDataKey, typeof(MaxDataList)) as MaxDataList;
-            if (null != loDataAllList)
-            {
-                for (int lnD = 0; lnD < loDataAllList.Count; lnD++)
-                {
-                    if (MaxConvertLibrary.ConvertToGuid(typeof(object), loDataAllList[lnD].Get(this.DataModel.Id)).Equals(loUserId))
-                    {
-                        MaxEntity loEntity = MaxBusinessLibrary.GetEntity(this.GetType(), loDataAllList[lnD].Clone());
-                        loR.Add(loEntity);
-                    }
-                }
-            }
-            else
-            {
-                string lsCacheDataKey = this.GetCacheKey() + "LoadAllById/" + MaxConvertLibrary.ConvertToString(typeof(object), loUserId);
-                MaxDataList loDataList = MaxCacheRepository.Get(this.GetType(), lsCacheDataKey, typeof(MaxDataList)) as MaxDataList;
-                if (null == loDataList)
-                {
-                    loDataList = MaxSecurityRepository.SelectAllByProperty(this.Data, this.DataModel.Id, loUserId);
-                    MaxCacheRepository.Set(this.GetType(), lsCacheDataKey, loDataList);
-                }
-
-                loR = MaxEntityList.Create(this.GetType(), loDataList);
-            }
-
-            return loR;
         }
 
         /// <summary>
@@ -250,15 +215,12 @@ namespace MaxFactry.General.BusinessLayer
         /// <param name="lsPropertySort">Sort information.</param>
         /// <param name="lnTotal">Total matching records.</param>
         /// <returns>List of users.</returns>
-        public MaxEntityList LoadAllByUsernamePartial(string lsUserName, int lnPageIndex, int lnPageSize, string lsPropertySort, out int lnTotal)
+        public MaxEntityList LoadAllByUsernamePartial(string lsUserName, int lnPageIndex, int lnPageSize, string lsPropertySort, params string[] laPropertyNameList)
         {
-            MaxEntityList loR = new MaxEntityList(this.GetType());
-            MaxData loData = MaxUserEntity.Create().Data;
-            string lsOrderBy = this.GetOrderBy(loData.DataModel, lsPropertySort);
-            MaxDataList loDataList = MaxSecurityRepository.SelectAllByUserNamePartial(MaxUserEntity.Create().Data, lsUserName, lnPageIndex, lnPageSize, lsOrderBy, out lnTotal);
-            loR = MaxEntityList.Create(this.GetType(), loDataList);
-            loR = this.GetSorted(loR, lsPropertySort, lsOrderBy);
-            return loR;
+            MaxDataQuery loDataQuery = new MaxDataQuery();
+            loDataQuery.AddFilter(this.UserName, "LIKE", "%" + lsUserName + "%");
+            MaxData loData = new MaxData(this.Data);
+            return this.LoadAllByPageCache(loData, lnPageSize, lnPageIndex, lsPropertySort, loDataQuery, laPropertyNameList);
         }
 
         /// <summary>
@@ -270,36 +232,12 @@ namespace MaxFactry.General.BusinessLayer
         /// <param name="lsPropertySort">Sort information.</param>
         /// <param name="lnTotal">Total matching records.</param>
         /// <returns>List of users.</returns>
-        public MaxEntityList LoadAllByEmailPartial(string lsEmail, int lnPageIndex, int lnPageSize, string lsPropertySort, out int lnTotal)
+        public MaxEntityList LoadAllByEmailPartial(string lsEmail, int lnPageIndex, int lnPageSize, string lsPropertySort, params string[] laPropertyNameList)
         {
-            lnTotal = 0;
-            MaxEntityList loR = new MaxEntityList(this.GetType());
-            MaxData loData = MaxUserEntity.Create().Data;
-            string lsOrderBy = this.GetOrderBy(loData.DataModel, lsPropertySort);
-            MaxDataList loDataList = MaxSecurityRepository.SelectAllByEmailPartial(loData, lsEmail, lnPageIndex, lnPageSize, lsOrderBy, out lnTotal);
-            loR = MaxEntityList.Create(this.GetType(), loDataList);
-            loR = this.GetSorted(loR, lsPropertySort, lsOrderBy);
-            return loR;
-        }
-
-        /// <summary>
-        /// Gets the count of all users that match the username (including any that have been deleted).
-        /// </summary>
-        /// <param name="lsUserName">The username of the user.</param>
-        /// <returns>The number of users.</returns>
-		public int GetCountByUserName(string lsUserName)
-		{
-            return MaxSecurityRepository.GetCountByUserName(this.Data, lsUserName);
-		}
-
-        /// <summary>
-        /// Inserts a new record
-        /// </summary>
-        /// <param name="loId">Unique Id of this item</param>
-        /// <returns>true if inserted.  False if cannot be inserted.</returns>
-        public bool InsertMember(Guid loId)
-        {
-            return this.Insert(loId);
+            MaxDataQuery loDataQuery = new MaxDataQuery();
+            loDataQuery.AddFilter(this.Email, "LIKE", "%" + lsEmail + "%");
+            MaxData loData = new MaxData(this.Data);
+            return this.LoadAllByPageCache(loData, lnPageSize, lnPageIndex, lsPropertySort, loDataQuery, laPropertyNameList);
         }
 
         /// <summary>
@@ -315,7 +253,6 @@ namespace MaxFactry.General.BusinessLayer
             if (lbR)
             {
                 loMaxUserLog.Insert(
-                    Guid.NewGuid(),
                     loUserPassword.UserId,
                     MaxUserLogEntity.LogEntryTypeLogin,
                     "CheckPassword Succeeded");
@@ -323,7 +260,6 @@ namespace MaxFactry.General.BusinessLayer
             else
             {
                 loMaxUserLog.Insert(
-                    Guid.NewGuid(),
                     loUserPassword.UserId,
                     MaxUserLogEntity.LogEntryTypePasswordFail,
                     "CheckPassword failed using [" + lsPasswordToCheck + "]");
@@ -335,7 +271,6 @@ namespace MaxFactry.General.BusinessLayer
         /// <summary>
         /// Validates a user using some external provider.
         /// </summary>
-        /// <param name="loUser">The user to validate.</param>
         /// <param name="lsPassword">The password to check.</param>
         /// <returns>True if the password is correct.</returns>
         public virtual bool ValidateUserExternal(string lsPassword)
@@ -351,67 +286,6 @@ namespace MaxFactry.General.BusinessLayer
         /// <returns>True if the password is correct.</returns>
         public virtual bool ValidateUserExternal(string lsUsername, string lsPassword)
         {
-            return false;
-        }
-
-        public virtual bool LoadCurrent()
-        {
-            object loValue = MaxConfigurationLibrary.GetValue(MaxEnumGroup.ScopeAny, "MaxSecurityUserId");
-            if (null != loValue)
-            {
-                Guid loId = MaxConvertLibrary.ConvertToGuid(typeof(object), loValue);
-                return this.LoadByIdCache(loId);
-            }
-
-            return false;
-        }
-
-        public static bool IsAuthenticated
-        {
-            get
-            {
-                MaxUserEntity loUser = MaxUserEntity.Create();
-                if (loUser.LoadCurrent())
-                {
-                    return true;
-                }
-
-                return false;
-            }
-        }
-
-        public bool IsInRoleList(string lsRoleList)
-        {
-            MaxUserEntity loUser = MaxUserEntity.Create();
-            if (loUser.LoadCurrent())
-            {
-                string[] laRoleList = lsRoleList.Split(new char[] { ',' });
-
-                MaxEntityList loList = MaxRoleEntity.Create().LoadAllByUserIdCache(loUser.Id);
-                for (int lnE = 0; lnE < loList.Count; lnE++)
-                {
-                    string lsRoleToCheck = ((MaxRoleEntity)loList[lnE]).RoleName;
-                    foreach (string lsRole in laRoleList)
-                    {
-                        if (lsRole.ToLower().Equals(lsRoleToCheck.ToLower()))
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        public static bool IsCurrentUserInRoleList(string lsRoleList)
-        {
-            MaxUserEntity loUser = MaxUserEntity.Create();
-            if (loUser.LoadCurrent())
-            {
-                return loUser.IsInRoleList(lsRoleList);
-            }
-
             return false;
         }
 	}

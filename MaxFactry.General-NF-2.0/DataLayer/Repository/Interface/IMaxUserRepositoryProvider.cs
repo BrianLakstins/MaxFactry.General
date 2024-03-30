@@ -52,7 +52,7 @@ namespace MaxFactry.General.DataLayer
         /// <param name="lsOrderBy">Sort information</param>
         /// <param name="lnTotal">Total matching records.</param>
         /// <returns>List of users.</returns>
-		MaxDataList SelectAllUserByUserName(MaxData loData, string lsUserName, int lnPageIndex, int lnPageSize, string lsOrderBy, out int lnTotal);
+		MaxDataList SelectAllUserByUserName(MaxData loData, string lsUserName, int lnPageIndex, int lnPageSize, string lsOrderBy);
 
         /// <summary>
         /// Selects all users that match the given username.
@@ -64,7 +64,7 @@ namespace MaxFactry.General.DataLayer
         /// <param name="lsOrderBy">Sort information</param>
         /// <param name="lnTotal">Total matching records.</param>
         /// <returns>List of users.</returns>
-        MaxDataList SelectAllUserByEmail(MaxData loData, string lsEmail, int lnPageIndex, int lnPageSize, string lsOrderBy, out int lnTotal);
+        MaxDataList SelectAllUserByEmail(MaxData loData, string lsEmail, int lnPageIndex, int lnPageSize, string lsOrderBy);
 
         /// <summary>
         /// Selects all users that match the given username.
@@ -76,7 +76,7 @@ namespace MaxFactry.General.DataLayer
         /// <param name="lsOrderBy">Sort information</param>
         /// <param name="lnTotal">Total matching records.</param>
         /// <returns>List of users.</returns>
-        MaxDataList SelectAllUserByUserNamePartial(MaxData loData, string lsUserName, int lnPageIndex, int lnPageSize, string lsOrderBy, out int lnTotal);
+        MaxDataList SelectAllUserByUserNamePartial(MaxData loData, string lsUserName, int lnPageIndex, int lnPageSize, string lsOrderBy);
 
         /// <summary>
         /// Selects all users that match the given username.
@@ -88,7 +88,7 @@ namespace MaxFactry.General.DataLayer
         /// <param name="lsOrderBy">Sort information</param>
         /// <param name="lnTotal">Total matching records.</param>
         /// <returns>List of users.</returns>
-        MaxDataList SelectAllUserByEmailPartial(MaxData loData, string lsEmail, int lnPageIndex, int lnPageSize, string lsOrderBy, out int lnTotal);
+        MaxDataList SelectAllUserByEmailPartial(MaxData loData, string lsEmail, int lnPageIndex, int lnPageSize, string lsOrderBy);
 
         /// <summary>
         /// Gets the count of users that match the username.

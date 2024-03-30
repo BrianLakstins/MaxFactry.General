@@ -28,7 +28,8 @@
 #region Change Log
 // <changelog>
 // <change date="3/23/2015" author="Brian A. Lakstins" description="Initial Release">
-// </changelog>
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
+//changelog>
 #endregion
 
 namespace MaxFactry.General.BusinessLayer
@@ -37,6 +38,7 @@ namespace MaxFactry.General.BusinessLayer
     using MaxFactry.Core;
     using MaxFactry.Base.BusinessLayer;
     using MaxFactry.Base.DataLayer;
+    using MaxFactry.Base.DataLayer.Library;
     using MaxFactry.General.DataLayer;
 
     /// <summary>

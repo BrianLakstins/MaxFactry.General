@@ -28,18 +28,18 @@
 #region Change Log
 // <changelog>
 // <change date="4/28/2023" author="Brian A. Lakstins" description="Initial creation">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
 // </changelog>
 #endregion
 
 namespace MaxFactry.General.BusinessLayer
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
-    using System.Text.RegularExpressions;
     using MaxFactry.Core;
     using MaxFactry.Base.BusinessLayer ;
     using MaxFactry.Base.DataLayer;
+    using MaxFactry.Base.DataLayer.Library;
     using MaxFactry.General.DataLayer;
 
     /// <summary>

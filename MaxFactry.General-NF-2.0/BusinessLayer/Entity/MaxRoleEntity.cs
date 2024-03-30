@@ -33,6 +33,7 @@
 // <change date="11/10/2017" author="Brian A. Lakstins" description="Fix delete of role.">
 // <change date="1/16/2021" author="Brian A. Lakstins" description="Update definition of cache keys.">
 // <change date="2/19/2021" author="Brian A. Lakstins" description="Use standard methods to load relationships.">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class. Use parent methods instead of repository.">
 // </changelog>
 #endregion
 
@@ -43,12 +44,13 @@ namespace MaxFactry.General.BusinessLayer
 	using MaxFactry.Base.BusinessLayer;
 	using MaxFactry.Base.DataLayer;
     using MaxFactry.General.DataLayer;
+    using MaxFactry.Base.DataLayer.Library;
 
-	/// <summary>
+    /// <summary>
     /// Entity used to manage information about users for the MaxSecurityProvider.
     /// The aspect of this entity depends on the data used when loading the entity (core versus relation).
-	/// </summary>
-	public class MaxRoleEntity : MaxBaseIdEntity
+    /// </summary>
+    public class MaxRoleEntity : MaxBaseGuidKeyEntity
 	{
 		/// <summary>
         /// Initializes a new instance of the MaxRoleEntity class
@@ -75,69 +77,14 @@ namespace MaxFactry.General.BusinessLayer
 		{
 			get
 			{
-                string lsR = string.Empty;
-                if (this.Data.DataModel is MaxRoleDataModel)
-                {
-                    lsR = this.GetString(this.DataModel.RoleName);
-                }
-                else if (this.Data.DataModel is MaxRoleUserRelationDataModel)
-                {
-                    lsR = this.GetString(this.DataModelRelationUser.RoleName);
-                }
-
-                return lsR;
+               return this.GetString(this.DataModel.RoleName);
 			}
 
 			set
 			{
-                if (this.Data.DataModel is MaxRoleDataModel)
-                {
-                    this.Set(this.DataModel.RoleName, value);
-                }
-                else if (this.Data.DataModel is MaxRoleUserRelationDataModel)
-                {
-                    this.Set(this.DataModelRelationUser.RoleName, value);
-                }
+                this.Set(this.DataModel.RoleName, value);
 			}
 		}
-
-        /// <summary>
-        /// Gets the userId.  Only available for relationship data.
-        /// </summary>
-        public Guid UserId
-        {
-            get
-            {
-                Guid loR = Guid.Empty;
-                if (this.Data.DataModel is MaxRoleUserRelationDataModel)
-                {
-                    loR = this.GetGuid(this.DataModelRelationUser.ChildId);
-                }
-
-                return loR;
-            }
-        }
-
-        /// <summary>
-        /// Gets the RoleId.
-        /// </summary>
-        public Guid RoleId
-        {
-            get
-            {
-                Guid loR = Guid.Empty;
-                if (this.Data.DataModel is MaxRoleDataModel)
-                {
-                    loR = this.GetGuid(this.DataModel.Id);
-                }
-                else if (this.Data.DataModel is MaxRoleUserRelationDataModel)
-                {
-                    loR = this.GetGuid(this.DataModelRelationUser.ParentId);
-                }
-
-                return loR;
-            }
-        }
 
         /// <summary>
         /// Gets the Data Model for this entity
@@ -147,17 +94,6 @@ namespace MaxFactry.General.BusinessLayer
             get
             {
                 return (MaxRoleDataModel)MaxDataLibrary.GetDataModel(this.DataModelType);
-            }
-        }
-
-        /// <summary>
-        /// Gets the Data Model for this entity relationship to the user entity
-        /// </summary>
-        protected MaxRoleUserRelationDataModel DataModelRelationUser
-        {
-            get
-            {
-                return MaxDataLibrary.GetDataModel(typeof(MaxRoleUserRelationDataModel)) as MaxRoleUserRelationDataModel;
             }
         }
 
@@ -179,34 +115,7 @@ namespace MaxFactry.General.BusinessLayer
         /// <returns>List of users.</returns>
         public MaxEntityList LoadAllByRoleCache(string lsRoleName)
         {
-            MaxEntityList loR = MaxEntityList.Create(this.GetType());
-            string lsCacheAllDataKey = this.GetCacheKey() + "LoadAll";
-            MaxDataList loDataAllList = MaxCacheRepository.Get(this.GetType(), lsCacheAllDataKey, typeof(MaxDataList)) as MaxDataList;
-            if (null != loDataAllList)
-            {
-                for (int lnD = 0; lnD < loDataAllList.Count; lnD++)
-                {
-                    if (loDataAllList[lnD].Get(this.DataModel.RoleName).Equals(lsRoleName))
-                    {
-                        MaxEntity loEntity = MaxBusinessLibrary.GetEntity(this.GetType(), loDataAllList[lnD]);
-                        loR.Add(loEntity);
-                    }
-                }
-            }
-            else
-            {
-                string lsCacheDataKey = this.GetCacheKey() + "LoadAllByRole/" + MaxConvertLibrary.ConvertToString(typeof(object), lsRoleName);
-                MaxDataList loDataList = MaxCacheRepository.Get(this.GetType(), lsCacheDataKey, typeof(MaxDataList)) as MaxDataList;
-                if (null == loDataList)
-                {
-                    loDataList = MaxSecurityRepository.SelectAllByProperty(this.Data, this.DataModel.RoleName, lsRoleName);
-                    MaxCacheRepository.Set(this.GetType(), lsCacheDataKey, loDataList);
-                }
-
-                loR = MaxEntityList.Create(this.GetType(), loDataList);
-            }
-
-            return loR;
+            return this.LoadAllByPropertyCache(this.DataModel.RoleName, lsRoleName);
         }
 
         /// <summary>
@@ -216,25 +125,24 @@ namespace MaxFactry.General.BusinessLayer
         /// <returns>True if successful.</returns>
         public bool DeleteByRoleName(string lsRoleName)
         {
-            MaxDataList loDataList = MaxSecurityRepository.SelectAllByProperty(this.Data, this.DataModel.RoleName, lsRoleName);
             bool lbR = true;
-            for (int lnD = 0; lnD < loDataList.Count; lnD++)
+            MaxEntityList loList = this.LoadAllByRoleCache(lsRoleName);
+            for (int lnE = 0; lnE < loList.Count; lnE++)
             {
-                MaxRoleEntity loEntity = MaxRoleEntity.Create();
-                loEntity.Load(loDataList[lnD]);
-                MaxDataList loRelationList = MaxRoleUserRelationRepository.SelectAllByProperty(new MaxData(this.DataModelRelationUser), this.DataModelRelationUser.ParentId, loEntity.RoleId);
+                MaxRoleEntity loEntity = loList[lnE] as MaxRoleEntity;
+                MaxEntityList loRelationList = MaxRoleRelationUserEntity.Create().LoadAllByRoleIdCache(loEntity.Id);
                 for (int lnR = 0; lnR < loRelationList.Count; lnR++)
                 {
-                    MaxRoleUserRelationRepository.Delete(loRelationList[lnR]);
+                    if (lbR)
+                    {
+                        lbR = loRelationList[lnR].Delete();
+                    }
                 }
 
-                if (!MaxSecurityRepository.Delete(loDataList[lnD]))
+                if (lbR)
                 {
-                    lbR = false;
+                    lbR = loEntity.Delete();
                 }
-
-                string lsCacheKey = this.GetCacheKey() + "Load*";
-                MaxCacheRepository.Remove(this.GetType(), lsCacheKey);
             }
 
             return lbR;
@@ -248,43 +156,14 @@ namespace MaxFactry.General.BusinessLayer
         public MaxEntityList LoadAllByUserIdCache(Guid loUserId)
         {
             MaxEntityList loR = MaxEntityList.Create(this.GetType());
-            string lsCacheDataKey = this.GetCacheKey() + "LoadAllByUserId/" + loUserId.ToString();
-            MaxDataList loDataList = MaxCacheRepository.Get(this.GetType(), lsCacheDataKey, typeof(MaxDataList)) as MaxDataList;
-            if (null == loDataList)
+            MaxEntityList loRelationList = MaxRoleRelationUserEntity.Create().LoadAllByUserIdCache(loUserId);
+            for (int lnR = 0; lnR < loRelationList.Count; lnR++)
             {
-                loDataList = MaxRoleUserRelationRepository.SelectAllByProperty(new MaxData(this.DataModelRelationUser), this.DataModelRelationUser.ChildId, loUserId);
-                MaxCacheRepository.Set(this.GetType(), lsCacheDataKey, loDataList);
-            }
-
-            loR = MaxEntityList.Create(this.GetType(), loDataList);
-            return loR;
-        }
-
-        /// <summary>
-        /// Loads all role entity relations that match the given role that have not been deleted.
-        /// </summary>
-        /// <param name="lsRoleName">The role to load.</param>
-        /// <returns>List of users.</returns>
-        public MaxEntityList LoadAllRelationByRoleNameCache(string lsRoleName)
-        {
-            MaxEntityList loRoleList = this.LoadAllByRoleCache(lsRoleName);
-            MaxEntityList loR = MaxEntityList.Create(typeof(MaxRoleEntity));
-            for (int lnR = 0; lnR < loRoleList.Count; lnR++)
-            {
-                Guid loRoleId = ((MaxRoleEntity)loRoleList[lnR]).RoleId;
-                string lsCacheDataKey = this.GetCacheKey() + "LoadAllRelationByRoleName/" + loRoleId.ToString();
-                MaxDataList loDataList = MaxCacheRepository.Get(this.GetType(), lsCacheDataKey, typeof(MaxDataList)) as MaxDataList;
-                if (null == loDataList)
+                MaxRoleRelationUserEntity loRelation = loRelationList[lnR] as MaxRoleRelationUserEntity;
+                MaxRoleEntity loEntity = MaxRoleEntity.Create();
+                if (loEntity.LoadByIdCache(loRelation.RoleId))
                 {
-                    loDataList = MaxRoleUserRelationRepository.SelectAllByProperty(new MaxData(this.DataModelRelationUser), this.DataModelRelationUser.ParentId, loRoleId);
-                    MaxCacheRepository.Set(this.GetType(), lsCacheDataKey, loDataList);
-                }
-
-                for (int lnD = 0; lnD < loDataList.Count; lnD++)
-                {
-                    MaxRoleEntity loEntityRelationUser = MaxRoleEntity.Create();
-                    loEntityRelationUser.Load(loDataList[lnD]);
-                    loR.Add(loEntityRelationUser);
+                    loR.Add(loEntity);
                 }
             }
 
@@ -299,39 +178,34 @@ namespace MaxFactry.General.BusinessLayer
         public void AddRoles(Guid loUserId, string[] laRoleName)
         {
             //// Create an List of RoleId that are already associated with this user.
-            MaxIndex loMaxIndex = new MaxIndex();
-            MaxEntityList loEntityList = this.LoadAllByUserIdCache(loUserId);
-            for (int lnE = 0; lnE < loEntityList.Count; lnE++)
+            MaxIndex loRoleIdExistingIndex = new MaxIndex();
+            MaxEntityList loRelationList = MaxRoleRelationUserEntity.Create().LoadAllByUserIdCache(loUserId);
+            for (int lnR = 0; lnR < loRelationList.Count; lnR++)
             {
-                loMaxIndex.Add(((MaxRoleEntity)loEntityList[lnE]).RoleId.ToString(), true);
+                MaxRoleRelationUserEntity loRelation = loRelationList[lnR] as MaxRoleRelationUserEntity;
+                loRoleIdExistingIndex.Add(loRelation.RoleId.ToString(), true);
             }
 
-            //// Get all roles so only existing ones can be added to a user.
+            //// Create an index of roles for quick lookup by name
             MaxEntityList loAllRoleEntityList = this.LoadAllCache();
-            //// Go through all Roles and add any that match names, but are not already associated with the user.
+            MaxIndex loRoleNameIndex = new MaxIndex();
             for (int lnE = 0; lnE < loAllRoleEntityList.Count; lnE++)
             {
-                MaxRoleEntity loEntity = (MaxRoleEntity)loAllRoleEntityList[lnE];
-                if (!loMaxIndex.Contains(loEntity.RoleId.ToString()))
-                {
-                    foreach (string lsRole in laRoleName)
-                    {
-                        if (loEntity.RoleName.ToLower().Equals(lsRole.ToLower()))
-                        {
-                            // Add the role to the user
-                            MaxData loData = new MaxData(this.DataModelRelationUser);
-                            loData.Set(this.DataModelRelationUser.RoleName, loEntity.RoleName);
-                            loData.Set(this.DataModelRelationUser.ParentId, loEntity.RoleId);
-                            loData.Set(this.DataModelRelationUser.ChildId, loUserId);
-                            loData.Set(this.DataModelRelationUser.StorageKey, MaxDataLibrary.GetStorageKey(loData));
-                            MaxRoleUserRelationRepository.Insert(loData);
-                        }
-                    }
-                }
+                loRoleNameIndex.Add(((MaxRoleEntity)loAllRoleEntityList[lnE]).RoleName, loAllRoleEntityList[lnE]);
             }
 
-            string lsCacheKey = this.GetCacheKey() + "Load*";
-            MaxCacheRepository.Remove(this.GetType(), lsCacheKey);
+            foreach (string lsRole in laRoleName)
+            {
+                MaxRoleEntity loEntity = loRoleNameIndex[lsRole] as MaxRoleEntity;
+                if (null != loEntity && !loRoleIdExistingIndex.Contains(loEntity.Id.ToString()))
+                {
+                    MaxRoleRelationUserEntity loRelation = MaxRoleRelationUserEntity.Create();
+                    loRelation.RoleId = loEntity.Id;
+                    loRelation.UserId = loUserId;
+                    loRelation.Name = lsRole;
+                    loRelation.Insert();
+                }
+            }
         }
 
         /// <summary>
@@ -341,40 +215,28 @@ namespace MaxFactry.General.BusinessLayer
         /// <param name="laRoleName">A list of the names of the roles.</param>
         public void RemoveRoles(Guid loUserId, string[] laRoleName)
         {
-            //// Create an List of RoleId that are already associated with this user.
-            MaxIndex loMaxIndex = new MaxIndex();
-            MaxEntityList loEntityList = this.LoadAllByUserIdCache(loUserId);
-            for (int lnE = 0; lnE < loEntityList.Count; lnE++)
-            {
-                loMaxIndex.Add(((MaxRoleEntity)loEntityList[lnE]).RoleId.ToString(), true);
-            }
-
-            //// Get all roles so only existing ones can be added to a user.
+            //// Create an index of roles for quick lookup by name
             MaxEntityList loAllRoleEntityList = this.LoadAllCache();
-            //// Go through all Roles and add any that match names, but are not already associated with the user.
+            MaxIndex loRoleNameIndex = new MaxIndex();
             for (int lnE = 0; lnE < loAllRoleEntityList.Count; lnE++)
             {
-                MaxRoleEntity loEntity = (MaxRoleEntity)loAllRoleEntityList[lnE];
-                if (loMaxIndex.Contains(loEntity.RoleId.ToString()))
+                MaxRoleEntity loEntity = loAllRoleEntityList[lnE] as MaxRoleEntity;
+                loRoleNameIndex.Add(loEntity.RoleName, loEntity);
+            }
+
+            MaxEntityList loRelationList = MaxRoleRelationUserEntity.Create().LoadAllByUserIdCache(loUserId);
+            for (int lnR = 0; lnR < loRelationList.Count; lnR++)
+            {
+                MaxRoleRelationUserEntity loRelation = loRelationList[lnR] as MaxRoleRelationUserEntity;
+                foreach (string lsRole in laRoleName)
                 {
-                    foreach (string lsRole in laRoleName)
+                    MaxRoleEntity loEntity = loRoleNameIndex[lsRole] as MaxRoleEntity;
+                    if (loEntity.Id == loRelation.RoleId)
                     {
-                        if (loEntity.RoleName.ToLower().Equals(lsRole.ToLower()))
-                        {
-                            // Remote the role from the user
-                            MaxData loData = new MaxData(this.DataModelRelationUser);
-                            loData.Set(this.DataModelRelationUser.RoleName, loEntity.RoleName);
-                            loData.Set(this.DataModelRelationUser.ParentId, loEntity.RoleId);
-                            loData.Set(this.DataModelRelationUser.ChildId, loUserId);
-                            loData.Set(this.DataModelRelationUser.StorageKey, MaxDataLibrary.GetStorageKey(loData));
-                            MaxRoleUserRelationRepository.Delete(loData);
-                        }
+                        loRelation.Delete();
                     }
                 }
             }
-
-            string lsCacheKey = this.GetCacheKey() + "Load*";
-            MaxCacheRepository.Remove(this.GetType(), lsCacheKey);
         }
     }
 }

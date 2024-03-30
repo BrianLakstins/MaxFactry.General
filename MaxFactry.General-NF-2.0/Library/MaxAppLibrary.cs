@@ -35,6 +35,8 @@
 // <change date="6/5/2020" author="Brian A. Lakstins" description="Change order of application start to be able to pass global configuration.">
 // <change date="7/20/2023" author="Brian A. Lakstins" description="Add some methods to check configuration.">
 // <change date="7/25/2023" author="Brian A. Lakstins" description="Change order of methods so they match when they are run.  Add GetTempFolder.  Add GetConfig.">
+// <change date="3/20/2024" author="Brian A. Lakstins" description="Happy birthday to my mom.  Sara Jean Lakstins (Cartwright) - 3/20/1944 to 3/14/2019.">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class">
 // </changelog>
 #endregion
 

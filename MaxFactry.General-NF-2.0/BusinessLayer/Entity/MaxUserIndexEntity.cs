@@ -29,17 +29,16 @@
 // <changelog>
 // <change date="6/4/2015" author="Brian A. Lakstins" description="Initial creation">
 // <change date="12/21/2016" author="Brian A. Lakstins" description="Fix datamodel definition">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
 // </changelog>
 #endregion
 
 namespace MaxFactry.General.BusinessLayer
 {
     using System;
-    using System.IO;
-    using System.Text.RegularExpressions;
-    using MaxFactry.Core;
     using MaxFactry.Base.BusinessLayer;
     using MaxFactry.Base.DataLayer;
+    using MaxFactry.Base.DataLayer.Library;
     using MaxFactry.General.DataLayer;
 
     /// <summary>

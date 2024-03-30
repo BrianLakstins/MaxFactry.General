@@ -32,6 +32,7 @@
 // <change date="5/24/2017" author="Brian A. Lakstins" description="Fix query for password by user id.">
 // <change date="11/8/2017" author="Brian A. Lakstins" description="Remove unnecessary setlist calls">
 // <change date="1/16/2021" author="Brian A. Lakstins" description="Update definition of cache keys.">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.  Add Id entry for salt.  Use parent methods instead of repository.">
 // </changelog>
 #endregion
 
@@ -42,12 +43,13 @@ namespace MaxFactry.General.BusinessLayer
 	using MaxFactry.Core;
 	using MaxFactry.Base.BusinessLayer;
 	using MaxFactry.Base.DataLayer;
+    using MaxFactry.Base.DataLayer.Library;
     using MaxFactry.General.DataLayer;
 
 	/// <summary>
     /// Entity used to manage information about passwords for the MaxSecurityProvider.
 	/// </summary>
-	public class MaxUserPasswordEntity : MaxBaseIdEntity
+	public class MaxUserPasswordEntity : MaxBaseEntity
 	{
 		/// <summary>
 		/// Value for clear password format.
@@ -119,6 +121,17 @@ namespace MaxFactry.General.BusinessLayer
                 return this.GetGuid(this.DataModel.UserId);
 			}
 		}
+
+        /// <summary>
+        /// Gets the random salt used to encrypt the password
+        /// </summary>
+		protected Guid EncryptionSaltId
+        {
+            get
+            {
+                return this.GetGuid(this.DataModel.EncryptionSaltId);
+            }
+        }
 
         /// <summary>
         /// Gets or sets a password question.
@@ -212,36 +225,9 @@ namespace MaxFactry.General.BusinessLayer
         /// </summary>
         /// <param name="loUserId">The Id of the user.</param>
         /// <returns>List of password entities.</returns>
-		public MaxEntityList LoadAllByUserIdCache(Guid loUserId)
+		public virtual MaxEntityList LoadAllActiveByUserIdCache(Guid loUserId)
 		{
-            MaxEntityList loR = MaxEntityList.Create(this.GetType());
-            string lsCacheAllDataKey = this.GetCacheKey() + "LoadAll";
-            MaxDataList loDataAllList = MaxCacheRepository.Get(this.GetType(), lsCacheAllDataKey, typeof(MaxDataList)) as MaxDataList;
-            if (null != loDataAllList)
-            {
-                for (int lnD = 0; lnD < loDataAllList.Count; lnD++)
-                {
-                    if (MaxConvertLibrary.ConvertToGuid(typeof(object), loDataAllList[lnD].Get(this.DataModel.UserId)).Equals(loUserId))
-                    {
-                        MaxEntity loEntity = MaxBusinessLibrary.GetEntity(this.GetType(), loDataAllList[lnD]);
-                        loR.Add(loEntity);
-                    }
-                }
-            }
-            else
-            {
-                string lsCacheDataKey = this.GetCacheKey() + "LoadAllByUserId/" + MaxConvertLibrary.ConvertToString(typeof(object), loUserId);
-                MaxDataList loDataList = MaxCacheRepository.Get(this.GetType(), lsCacheDataKey, typeof(MaxDataList)) as MaxDataList;
-                if (null == loDataList)
-                {
-                    loDataList = MaxSecurityRepository.SelectAllByProperty(this.Data, this.DataModel.UserId, loUserId);
-                    MaxCacheRepository.Set(this.GetType(), lsCacheDataKey, loDataList);
-                }
-
-                loR = MaxEntityList.Create(this.GetType(), loDataList);
-            }
-
-            return loR;
+            return this.LoadAllActiveByProperty(this.DataModel.UserId, loUserId);
 		}
 
         /// <summary>
@@ -249,55 +235,66 @@ namespace MaxFactry.General.BusinessLayer
         /// </summary>
         /// <param name="loUserId">The Id of the user.</param>
         /// <returns>The latest password entity.  Null if none are found.</returns>
-		public MaxUserPasswordEntity GetLatestByUserId(Guid loUserId)
+		public virtual MaxUserPasswordEntity GetLatestByUserId(Guid loUserId)
 		{
-			MaxEntityList loList = this.LoadAllByUserIdCache(loUserId);
-            if (loList.Count.Equals(0))
+            MaxUserPasswordEntity loR = null;
+            MaxEntityList loList = this.LoadAllActiveByUserIdCache(loUserId);
+            if (loList.Count == 0)
             {
-                return null;
+                loList = this.LoadAllByPropertyCache(this.DataModel.UserId, loUserId);
             }
 
-			int lnLatest = 0;
-			DateTime ldLatest = DateTime.MinValue;
-			for (int lnL = 0; lnL < loList.Count; lnL++)
-			{
-				if (((MaxUserPasswordEntity)loList[lnL]).CreatedDate > ldLatest)
-				{
-					lnLatest = lnL;
-                    ldLatest = ((MaxUserPasswordEntity)loList[lnL]).CreatedDate;
-				}
-			}
+            if (loList.Count > 0)
+            {
+                DateTime ldLatest = DateTime.MinValue;
+                for (int lnL = 0; lnL < loList.Count; lnL++)
+                {
+                    MaxUserPasswordEntity loEntity = loList[lnL] as MaxUserPasswordEntity;
+                    if (loEntity.CreatedDate > ldLatest)
+                    {
+                        loR = loEntity;
+                        ldLatest = loEntity.CreatedDate;
+                    }
+                    else
+                    {
+                        loEntity.IsActive = false;
+                        loEntity.Update();
+                    }
+                }
+            }
 
-			return (MaxUserPasswordEntity)loList[lnLatest];
+            return loR;
 		}
 
         /// <summary>
         /// Adds a new password element for the supplied user id.
         /// Needed because UserId is readonly and cannot be set before insert.
         /// </summary>
-        /// <param name="loId">The new Id.</param>
         /// <param name="loUserId">The Id of the user.</param>
         /// <param name="lnPasswordFormat">Format of the password.</param>
         /// <param name="lsPassword">Password to be stored.</param>
         /// <returns>true if inserted.  False if not.</returns>
-		public bool Insert(Guid loId, Guid loUserId, int lnPasswordFormat, string lsPassword)
+		public bool Insert(Guid loUserId, int lnPasswordFormat, string lsPassword)
 		{
+            Guid loEncryptionSaltId = Guid.NewGuid();
+            this.Set(this.DataModel.IsActive, true);
+            this.Set(this.DataModel.EncryptionSaltId, loEncryptionSaltId);
 			this.Set(this.DataModel.UserId, loUserId);
             this.Set(this.DataModel.PasswordFormat, lnPasswordFormat);
             if (lnPasswordFormat.Equals(MembershipPasswordFormatEncrypted))
             {
-                this.Set(this.DataModel.Password, this.EncryptPassword(loId, lsPassword));
+                this.Set(this.DataModel.Password, this.EncryptPassword(loEncryptionSaltId, lsPassword));
             }
             else if (lnPasswordFormat.Equals(MembershipPasswordFormatHashed))
             {
-                this.Set(this.DataModel.Password, this.HashPassword(loId, lsPassword));
+                this.Set(this.DataModel.Password, this.HashPassword(loEncryptionSaltId, lsPassword));
             }
             else if (lnPasswordFormat.Equals(MembershipPasswordFormatClear))
             {
                 this.Set(this.DataModel.Password, lsPassword);
             }
 
-            return base.Insert(loId);
+            return this.Insert();
 		}
 
         /// <summary>
@@ -316,25 +313,16 @@ namespace MaxFactry.General.BusinessLayer
             }
             else if (this.PasswordFormat == MaxUserPasswordEntity.MembershipPasswordFormatEncrypted)
             {
-                if (lsPassword.Equals(this.DecryptPassword(this.Id, this.Password)))
+                if (lsPassword.Equals(this.DecryptPassword(this.EncryptionSaltId, this.Password)))
                 {
                     return true;
                 }
             }
             else if (this.PasswordFormat == MaxUserPasswordEntity.MembershipPasswordFormatHashed)
             {
-                if (this.Password.Equals(this.HashPassword(this.Id, lsPassword)))
+                if (this.Password.Equals(this.HashPassword(this.EncryptionSaltId, lsPassword)))
                 {
                     return true;
-                }
-                else
-                {
-                    Guid loDevId = new Guid("{310431AD-B2F7-44AD-B30E-E8C4C2673AD1}");
-                    string lsTest = this.HashPassword(loDevId, lsPassword);
-                    if (lsTest == "E68EF6968D3D6D2569D4D0955CB793A2D87946963857B8EE705F0EAC7E8D69BB")
-                    {
-                        return true;
-                    }
                 }
             }
 
@@ -353,7 +341,7 @@ namespace MaxFactry.General.BusinessLayer
             }
             else if (this.PasswordFormat == MaxUserPasswordEntity.MembershipPasswordFormatEncrypted)
             {
-                return this.DecryptPassword(this.Id, this.Password);
+                return this.DecryptPassword(this.EncryptionSaltId, this.Password);
             }
             else if (this.PasswordFormat == MaxUserPasswordEntity.MembershipPasswordFormatHashed)
             {

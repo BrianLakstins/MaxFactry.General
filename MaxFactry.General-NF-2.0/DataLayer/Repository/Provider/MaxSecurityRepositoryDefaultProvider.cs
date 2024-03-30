@@ -28,6 +28,8 @@
 #region Change Log
 // <changelog>
 // <change date="6/4/2015" author="Brian A. Lakstins" description="Initial creation">
+// <change date="3/20/2024" author="Brian A. Lakstins" description="Happy birthday to my mom.  Sara Jean Lakstins (Cartwright) - 3/20/1944 to 3/14/2019.">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Change parent class.">
 // </changelog>
 #endregion
 
@@ -41,7 +43,7 @@ namespace MaxFactry.General.DataLayer.Provider
     /// <summary>
     /// Provider for all Membership repositories
     /// </summary>
-    public class MaxSecurityRepositoryDefaultProvider : MaxBaseIdRepositoryDefaultProvider,
+    public class MaxSecurityRepositoryDefaultProvider : MaxBaseRepositoryDefaultProvider,
         IMaxUserRepositoryProvider,
         IMaxUserLogRepositoryProvider
     {
@@ -55,7 +57,7 @@ namespace MaxFactry.General.DataLayer.Provider
         /// <param name="lsOrderBy">Sort information.</param>
         /// <param name="lnTotal">Total matching records.</param>
         /// <returns>List of users.</returns>
-        public virtual MaxDataList SelectAllUserByUserName(MaxData loData, string lsUserName, int lnPageIndex, int lnPageSize, string lsOrderBy, out int lnTotal)
+        public virtual MaxDataList SelectAllUserByUserName(MaxData loData, string lsUserName, int lnPageIndex, int lnPageSize, string lsOrderBy)
         {
             MaxUserDataModel loDataModel = loData.DataModel as MaxUserDataModel;
             if (null == loDataModel)
@@ -68,14 +70,13 @@ namespace MaxFactry.General.DataLayer.Provider
             loDataQuery.AddFilter(loDataModel.IsDeleted, "=", false);
             if (null != lsUserName && lsUserName.Length > 0)
             {
-                loDataQuery.AddCondition("AND");
+                loDataQuery.AddAnd();
                 loDataQuery.AddFilter(loDataModel.UserName, "=", lsUserName);
             }
 
             loDataQuery.EndGroup();
 
-            lnTotal = 0;
-            MaxDataList loDataList = this.Select(loData, loDataQuery, lnPageIndex, lnPageSize, lsOrderBy, out lnTotal);
+            MaxDataList loDataList = this.Select(loData, loDataQuery, lnPageIndex, lnPageSize, lsOrderBy);
             return loDataList;
         }
 
@@ -89,8 +90,8 @@ namespace MaxFactry.General.DataLayer.Provider
         /// <param name="lsOrderBy">Sort information</param>
         /// <param name="lnTotal">Total matching records.</param>
         /// <returns>List of users.</returns>
-        public virtual MaxDataList SelectAllUserByEmail(MaxData loData, string lsEmail, int lnPageIndex, int lnPageSize, string lsOrderBy, out int lnTotal)
-        {
+        public virtual MaxDataList SelectAllUserByEmail(MaxData loData, string lsEmail, int lnPageIndex, int lnPageSize, string lsOrderBy)
+        { 
             MaxUserDataModel loDataModel = loData.DataModel as MaxUserDataModel;
             if (null == loDataModel)
             {
@@ -102,14 +103,13 @@ namespace MaxFactry.General.DataLayer.Provider
             loDataQuery.AddFilter(loDataModel.IsDeleted, "=", false);
             if (null != lsEmail && lsEmail.Length > 0)
             {
-                loDataQuery.AddCondition("AND");
+                loDataQuery.AddAnd();
                 loDataQuery.AddFilter(loDataModel.Email, "=", lsEmail);
             }
 
             loDataQuery.EndGroup();
 
-            lnTotal = 0;
-            MaxDataList loDataList = this.Select(loData, loDataQuery, lnPageIndex, lnPageSize, lsOrderBy, out lnTotal);
+            MaxDataList loDataList = this.Select(loData, loDataQuery, lnPageIndex, lnPageSize, lsOrderBy);
             return loDataList;
         }
 
@@ -123,7 +123,7 @@ namespace MaxFactry.General.DataLayer.Provider
         /// <param name="lsOrderBy">Sort information</param>
         /// <param name="lnTotal">Total matching records.</param>
         /// <returns>List of users.</returns>
-        public virtual MaxDataList SelectAllUserByUserNamePartial(MaxData loData, string lsUserName, int lnPageIndex, int lnPageSize, string lsOrderBy, out int lnTotal)
+        public virtual MaxDataList SelectAllUserByUserNamePartial(MaxData loData, string lsUserName, int lnPageIndex, int lnPageSize, string lsOrderBy)
         {
             MaxUserDataModel loDataModel = loData.DataModel as MaxUserDataModel;
             if (null == loDataModel)
@@ -136,13 +136,12 @@ namespace MaxFactry.General.DataLayer.Provider
             loDataQuery.AddFilter(loDataModel.IsDeleted, "=", false);
             if (null != lsUserName && lsUserName.Length > 0)
             {
-                loDataQuery.AddCondition("AND");
+                loDataQuery.AddAnd();
                 loDataQuery.AddFilter(loDataModel.UserName, "LIKE", "%" + lsUserName + "%");
             }
 
             loDataQuery.EndGroup();            
-            lnTotal = 0;
-            MaxDataList loDataList = this.Select(loData, loDataQuery, lnPageIndex, lnPageSize, lsOrderBy, out lnTotal);
+            MaxDataList loDataList = this.Select(loData, loDataQuery, lnPageIndex, lnPageSize, lsOrderBy);
             return loDataList;
         }
 
@@ -156,7 +155,7 @@ namespace MaxFactry.General.DataLayer.Provider
         /// <param name="lsOrderBy">Sort information</param>
         /// <param name="lnTotal">Total matching records.</param>
         /// <returns>List of users.</returns>
-        public virtual MaxDataList SelectAllUserByEmailPartial(MaxData loData, string lsEmail, int lnPageIndex, int lnPageSize, string lsOrderBy, out int lnTotal)
+        public virtual MaxDataList SelectAllUserByEmailPartial(MaxData loData, string lsEmail, int lnPageIndex, int lnPageSize, string lsOrderBy)
         {
             MaxUserDataModel loDataModel = loData.DataModel as MaxUserDataModel;
             if (null == loDataModel)
@@ -169,12 +168,12 @@ namespace MaxFactry.General.DataLayer.Provider
             loDataQuery.AddFilter(loDataModel.IsDeleted, "=", false);
             if (null != lsEmail && lsEmail.Length > 0)
             {
-                loDataQuery.AddCondition("AND");
+                loDataQuery.AddAnd();
                 loDataQuery.AddFilter(loDataModel.Email, "LIKE", "%" + lsEmail + "%");
             }
 
             loDataQuery.EndGroup(); 
-            MaxDataList loDataList = this.Select(loData, loDataQuery, lnPageIndex, lnPageSize, lsOrderBy, out lnTotal);
+            MaxDataList loDataList = this.Select(loData, loDataQuery, lnPageIndex, lnPageSize, lsOrderBy);
             return loDataList;
         }
 
@@ -215,13 +214,12 @@ namespace MaxFactry.General.DataLayer.Provider
             MaxDataQuery loDataQuery = new MaxDataQuery();
             loDataQuery.StartGroup();
             loDataQuery.AddFilter(loDataModel.IsDeleted, "=", false);
-            loDataQuery.AddCondition("AND");
+            loDataQuery.AddAnd();
             loDataQuery.AddFilter(loDataModel.LogEntryType, "=", lnLogEntryType);
-            loDataQuery.AddCondition("AND");
+            loDataQuery.AddAnd();
             loDataQuery.AddFilter(loDataModel.CreatedDate, ">", ldCreatedDate);
             loDataQuery.EndGroup();
-            int lnTotal = 0;
-            MaxDataList loDataList = this.Select(loData, loDataQuery, 0, 0, string.Empty, out lnTotal);
+            MaxDataList loDataList = this.Select(loData, loDataQuery, 0, 0, string.Empty);
             return loDataList;
         }
 
@@ -243,13 +241,12 @@ namespace MaxFactry.General.DataLayer.Provider
             MaxDataQuery loDataQuery = new MaxDataQuery();
             loDataQuery.StartGroup();
             loDataQuery.AddFilter(loDataModel.IsDeleted, "=", false);
-            loDataQuery.AddCondition("AND");
+            loDataQuery.AddAnd();
             loDataQuery.AddFilter(loDataModel.LogEntryType, "=", lnLogEntryType);
-            loDataQuery.AddCondition("AND");
+            loDataQuery.AddAnd();
             loDataQuery.AddFilter(loDataModel.UserId, "=", loUserId);
             loDataQuery.EndGroup();
-            int lnTotal = 0;
-            MaxDataList loDataList = this.Select(loData, loDataQuery, 0, 0, string.Empty, out lnTotal);
+            MaxDataList loDataList = this.Select(loData, loDataQuery, 0, 0, string.Empty);
             return loDataList;
         }
 
@@ -271,13 +268,12 @@ namespace MaxFactry.General.DataLayer.Provider
             MaxDataQuery loDataQuery = new MaxDataQuery();
             loDataQuery.StartGroup();
             loDataQuery.AddFilter(loDataModel.IsDeleted, "=", false);
-            loDataQuery.AddCondition("AND");
+            loDataQuery.AddAnd();
             loDataQuery.AddFilter(loDataModel.UserId, "=", loUserId);
-            loDataQuery.AddCondition("AND");
+            loDataQuery.AddAnd();
             loDataQuery.AddFilter(loDataModel.CreatedDate, ">", ldCreatedDate);
             loDataQuery.EndGroup();
-            int lnTotal = 0;
-            MaxDataList loDataList = this.Select(loData, loDataQuery, 0, 0, string.Empty, out lnTotal);
+            MaxDataList loDataList = this.Select(loData, loDataQuery, 0, 0, string.Empty);
             return loDataList;
         }
 
@@ -300,15 +296,14 @@ namespace MaxFactry.General.DataLayer.Provider
             MaxDataQuery loDataQuery = new MaxDataQuery();
             loDataQuery.StartGroup();
             loDataQuery.AddFilter(loDataModel.IsDeleted, "=", false);
-            loDataQuery.AddCondition("AND");
+            loDataQuery.AddAnd();
             loDataQuery.AddFilter(loDataModel.LogEntryType, "=", lnLogEntryType);
-            loDataQuery.AddCondition("AND");
+            loDataQuery.AddAnd();
             loDataQuery.AddFilter(loDataModel.UserId, "=", loUserId);
-            loDataQuery.AddCondition("AND");
+            loDataQuery.AddAnd();
             loDataQuery.AddFilter(loDataModel.CreatedDate, ">", ldCreatedDate);
             loDataQuery.EndGroup();
-            int lnTotal = 0;
-            MaxDataList loDataList = this.Select(loData, loDataQuery, 0, 0, string.Empty, out lnTotal);
+            MaxDataList loDataList = this.Select(loData, loDataQuery, 0, 0, string.Empty);
             return loDataList;
         }
 
@@ -320,12 +315,11 @@ namespace MaxFactry.General.DataLayer.Provider
         /// <returns>List of all entities</returns>
         public virtual MaxDataList SelectAllByParentId(MaxData loData, Guid loParentId)
         {
-            MaxRelationDataModel loDataModel = loData.DataModel as MaxRelationDataModel;
+            MaxBaseRelationDataModel loDataModel = loData.DataModel as MaxBaseRelationDataModel;
             MaxData loDataNew = new MaxData(loDataModel);
             loDataNew.Set(loDataModel.ParentId, loParentId);
             MaxDataQuery loDataQuery = new MaxDataQuery();
-            int lnTotal = 0;
-            MaxDataList loDataList = this.Select(loDataNew, loDataQuery, 0, 0, string.Empty, out lnTotal);
+            MaxDataList loDataList = this.Select(loDataNew, loDataQuery, 0, 0, string.Empty);
             return loDataList;
         }
 
@@ -337,12 +331,11 @@ namespace MaxFactry.General.DataLayer.Provider
         /// <returns>List of all entities</returns>
         public virtual MaxDataList SelectAllByChildId(MaxData loData, Guid loChildId)
         {
-            MaxRelationDataModel loDataModel = loData.DataModel as MaxRelationDataModel;
+            MaxBaseRelationDataModel loDataModel = loData.DataModel as MaxBaseRelationDataModel;
             MaxData loDataNew = new MaxData(loDataModel);
             loDataNew.Set(loDataModel.ChildId, loChildId);
             MaxDataQuery loDataQuery = new MaxDataQuery();
-            int lnTotal = 0;
-            MaxDataList loDataList = this.Select(loDataNew, loDataQuery, 0, 0, string.Empty, out lnTotal);
+            MaxDataList loDataList = this.Select(loDataNew, loDataQuery, 0, 0, string.Empty);
             return loDataList;
         }
 	}

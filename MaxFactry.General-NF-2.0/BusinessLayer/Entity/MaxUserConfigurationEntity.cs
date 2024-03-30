@@ -30,6 +30,7 @@
 // <change date="6/4/2015" author="Brian A. Lakstins" description="Initial creation">
 // <change date="4/20/2016" author="Brian A. Lakstins" description="Updated to use centralized caching.">
 // <change date="1/16/2021" author="Brian A. Lakstins" description="Update definition of cache keys.">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class. Use parent methods instead of repository.">
 // </changelog>
 #endregion
 
@@ -40,11 +41,12 @@ namespace MaxFactry.General.BusinessLayer
 	using MaxFactry.Base.BusinessLayer;
 	using MaxFactry.Base.DataLayer;
     using MaxFactry.General.DataLayer;
+    using MaxFactry.Base.DataLayer.Library;
 
-	/// <summary>
-	/// Entity used to manage information about configuration for the MaxSecurityProvider.
-	/// </summary>
-	public class MaxUserConfigurationEntity : MaxBaseIdEntity
+    /// <summary>
+    /// Entity used to manage information about configuration for the MaxSecurityProvider.
+    /// </summary>
+    public class MaxUserConfigurationEntity : MaxBaseEntity
 	{
 		/// <summary>
         /// Initializes a new instance of the MaxUserConfigurationEntity class.
@@ -284,39 +286,49 @@ namespace MaxFactry.General.BusinessLayer
         /// <returns>The current membership configuration.</returns>
         public MaxUserConfigurationEntity GetCurrent()
         {
-            string lsCacheDataKey = this.GetCacheKey() + "LoadAllCurrent";
-            MaxData loData = MaxCacheRepository.Get(typeof(MaxUserConfigurationEntity), lsCacheDataKey, typeof(MaxData)) as MaxData;
-            if (null != loData)
+            MaxUserConfigurationEntity loR = null;
+            MaxEntityList loList = this.LoadAllActiveCache();
+            if (loList.Count > 0)
             {
-                this.Load(loData);
-                return this;
-            }
-
-            MaxDataList loDataList = MaxSecurityRepository.SelectAll(this.Data);
-            for (int lnD = 0; lnD < loDataList.Count; lnD++)
-            {
-                this.Load(loDataList[lnD]);
-                if (this.IsActive)
+                DateTime ldLatest = DateTime.MinValue;
+                for (int lnL = 0; lnL < loList.Count; lnL++)
                 {
-                    MaxCacheRepository.Set(typeof(MaxUserConfigurationEntity), lsCacheDataKey, this.Data);
-                    return this;
+                    MaxUserConfigurationEntity loEntity = loList[lnL] as MaxUserConfigurationEntity;
+                    if (loEntity.CreatedDate > ldLatest)
+                    {
+                        loR = loEntity;
+                        ldLatest = loEntity.CreatedDate;
+                    }
+                    else
+                    {
+                        loEntity.IsActive = false;
+                        loEntity.Update();
+                    }
                 }
             }
 
-            this.EnablePasswordReset = true;
-            this.EnablePasswordRetrieval = false;
-            this.IsActive = true;
-            this.MaxInvalidPasswordAttempts = 5;
-            this.MembershipPasswordFormat = MaxUserPasswordEntity.MembershipPasswordFormatHashed;
-            this.MinRequiredNonAlphanumericCharacters = 0;
-            this.MinRequiredPasswordLength = 8;
-            this.PasswordAttemptWindow = 5;
-            this.PasswordStrengthRegularExpression = string.Empty;
-            this.RequiresQuestionAndAnswer = false;
-            this.RequiresUniqueEmail = true;
-            this.OnlineWindowDuration = 10;
-            this.Insert(Guid.NewGuid());
-            return this;
+            if (null == loR)
+            {
+                loR = MaxUserConfigurationEntity.Create();
+                loR.EnablePasswordReset = true;
+                loR.EnablePasswordRetrieval = false;
+                loR.IsActive = true;
+                loR.MaxInvalidPasswordAttempts = 5;
+                loR.MembershipPasswordFormat = MaxUserPasswordEntity.MembershipPasswordFormatHashed;
+                loR.MinRequiredNonAlphanumericCharacters = 0;
+                loR.MinRequiredPasswordLength = 8;
+                loR.PasswordAttemptWindow = 5;
+                loR.PasswordStrengthRegularExpression = string.Empty;
+                loR.RequiresQuestionAndAnswer = false;
+                loR.RequiresUniqueEmail = true;
+                loR.OnlineWindowDuration = 10;
+                if (!loR.Insert())
+                {
+                    throw new MaxException("Unable to save user configuration");
+                }
+            }
+
+            return loR;
         }
 	}
 }

@@ -29,6 +29,8 @@
 // <changelog>
 // <change date="6/4/2015" author="Brian A. Lakstins" description="Initial creation">
 // <change date="12/21/2016" author="Brian A. Lakstins" description="Updates for changes to core.">
+// <change date="3/20/2024" author="Brian A. Lakstins" description="Happy birthday to my mom.  Sara Jean Lakstins (Cartwright) - 3/20/1944 to 3/14/2019.">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Change parent classs.  Update for changes to parent class.">
 // </changelog>
 #endregion
 
@@ -42,7 +44,7 @@ namespace MaxFactry.General.DataLayer
 	/// Provides session services using MaxFactryLibrary.
     /// TODO: Use Cache
 	/// </summary>
-	public sealed class MaxSecurityRepository : MaxBaseIdRepository
+	public sealed class MaxSecurityRepository : MaxBaseRepository
 	{
         /// <summary>
         /// Selects all users that match the given username.
@@ -54,7 +56,7 @@ namespace MaxFactry.General.DataLayer
         /// <param name="lsOrderBy">Sort information.</param>
         /// <param name="lnTotal">Total matching records.</param>
         /// <returns>List of users.</returns>
-        public static MaxDataList SelectAllByUserName(MaxData loData, string lsUserName, int lnPageIndex, int lnPageSize, string lsOrderBy, out int lnTotal)
+        public static MaxDataList SelectAllByUserName(MaxData loData, string lsUserName, int lnPageIndex, int lnPageSize, string lsOrderBy)
 		{
             MaxUserDataModel loDataModel = loData.DataModel as MaxUserDataModel;
             if (null == loDataModel)
@@ -65,14 +67,14 @@ namespace MaxFactry.General.DataLayer
             loData.Set(loDataModel.UserName, lsUserName);
             MaxData loDataFilter = new MaxData(loData);
             loDataFilter.Set(loDataModel.UserName, lsUserName);
-            IMaxStorageReadRepositoryProvider loRepositoryProvider = Instance.GetStorageReadRepositoryProvider(loDataFilter);
+            IMaxBaseReadRepositoryProvider loRepositoryProvider = Instance.GetRepositoryProvider(loDataFilter);
             IMaxUserRepositoryProvider loProvider = loRepositoryProvider as IMaxUserRepositoryProvider;
             if (null == loProvider)
             {
                 throw new MaxException("Error casting [" + loRepositoryProvider.GetType() + "] for Provider");
             }
 
-            MaxDataList loDataList = loProvider.SelectAllUserByUserName(loDataFilter, lsUserName, lnPageIndex, lnPageSize, lsOrderBy, out lnTotal);
+            MaxDataList loDataList = loProvider.SelectAllUserByUserName(loDataFilter, lsUserName, lnPageIndex, lnPageSize, lsOrderBy);
             return loDataList;
         }
 
@@ -86,7 +88,7 @@ namespace MaxFactry.General.DataLayer
         /// <param name="lsOrderBy">Sort information.</param>
         /// <param name="lnTotal">Total matching records.</param>
         /// <returns>List of users.</returns>
-        public static MaxDataList SelectAllByEmail(MaxData loData, string lsEmail, int lnPageIndex, int lnPageSize, string lsOrderBy, out int lnTotal)
+        public static MaxDataList SelectAllByEmail(MaxData loData, string lsEmail, int lnPageIndex, int lnPageSize, string lsOrderBy)
 		{
             MaxUserDataModel loDataModel = loData.DataModel as MaxUserDataModel;
             if (null == loDataModel)
@@ -97,14 +99,14 @@ namespace MaxFactry.General.DataLayer
             loData.Set(loDataModel.Email, lsEmail);
             MaxData loDataFilter = new MaxData(loData);
             loDataFilter.Set(loDataModel.Email, lsEmail);
-            IMaxStorageReadRepositoryProvider loRepositoryProvider = Instance.GetStorageReadRepositoryProvider(loDataFilter);
+            IMaxBaseReadRepositoryProvider loRepositoryProvider = Instance.GetRepositoryProvider(loDataFilter);
             IMaxUserRepositoryProvider loProvider = loRepositoryProvider as IMaxUserRepositoryProvider;
             if (null == loProvider)
             {
                 throw new MaxException("Error casting [" + loRepositoryProvider.GetType() + "] for Provider");
             }
 
-            MaxDataList loDataList = loProvider.SelectAllUserByEmail(loDataFilter, lsEmail, lnPageIndex, lnPageSize, lsOrderBy, out lnTotal);
+            MaxDataList loDataList = loProvider.SelectAllUserByEmail(loDataFilter, lsEmail, lnPageIndex, lnPageSize, lsOrderBy);
             return loDataList;
         }
 
@@ -118,17 +120,17 @@ namespace MaxFactry.General.DataLayer
         /// <param name="lsOrderBy">Sort information.</param>
         /// <param name="lnTotal">Total matching records.</param>
         /// <returns>List of users.</returns>
-        public static MaxDataList SelectAllByUserNamePartial(MaxData loData, string lsUserName, int lnPageIndex, int lnPageSize, string lsOrderBy, out int lnTotal)
+        public static MaxDataList SelectAllByUserNamePartial(MaxData loData, string lsUserName, int lnPageIndex, int lnPageSize, string lsOrderBy)
         {
             MaxData loDataFilter = new MaxData(loData);
-            IMaxStorageReadRepositoryProvider loRepositoryProvider = Instance.GetStorageReadRepositoryProvider(loDataFilter);
+            IMaxBaseReadRepositoryProvider loRepositoryProvider = Instance.GetRepositoryProvider(loDataFilter);
             IMaxUserRepositoryProvider loProvider = loRepositoryProvider as IMaxUserRepositoryProvider;
             if (null == loProvider)
             {
                 throw new MaxException("Error casting [" + loRepositoryProvider.GetType() + "] for Provider");
             }
 
-            MaxDataList loDataList = loProvider.SelectAllUserByUserNamePartial(loDataFilter, lsUserName, lnPageIndex, lnPageSize, lsOrderBy, out lnTotal);
+            MaxDataList loDataList = loProvider.SelectAllUserByUserNamePartial(loDataFilter, lsUserName, lnPageIndex, lnPageSize, lsOrderBy);
             return loDataList;
         }
 
@@ -142,17 +144,17 @@ namespace MaxFactry.General.DataLayer
         /// <param name="lsOrderBy">Sort information.</param>
         /// <param name="lnTotal">Total matching records.</param>
         /// <returns>List of users.</returns>
-        public static MaxDataList SelectAllByEmailPartial(MaxData loData, string lsEmail, int lnPageIndex, int lnPageSize, string lsOrderBy, out int lnTotal)
+        public static MaxDataList SelectAllByEmailPartial(MaxData loData, string lsEmail, int lnPageIndex, int lnPageSize, string lsOrderBy)
         {
             MaxData loDataFilter = new MaxData(loData);
-            IMaxStorageReadRepositoryProvider loRepositoryProvider = Instance.GetStorageReadRepositoryProvider(loDataFilter);
+            IMaxBaseReadRepositoryProvider loRepositoryProvider = Instance.GetRepositoryProvider(loDataFilter);
             IMaxUserRepositoryProvider loProvider = loRepositoryProvider as IMaxUserRepositoryProvider;
             if (null == loProvider)
             {
                 throw new MaxException("Error casting [" + loRepositoryProvider.GetType() + "] for Provider");
             }
 
-            MaxDataList loDataList = loProvider.SelectAllUserByEmailPartial(loDataFilter, lsEmail, lnPageIndex, lnPageSize, lsOrderBy, out lnTotal);
+            MaxDataList loDataList = loProvider.SelectAllUserByEmailPartial(loDataFilter, lsEmail, lnPageIndex, lnPageSize, lsOrderBy);
             return loDataList;
         }
 
@@ -173,7 +175,7 @@ namespace MaxFactry.General.DataLayer
             loData.Set(loDataModel.UserName, lsUserName);
             MaxData loDataFilter = new MaxData(loData);
             loDataFilter.Set(loDataModel.UserName, lsUserName);
-            IMaxStorageReadRepositoryProvider loRepositoryProvider = Instance.GetStorageReadRepositoryProvider(loDataFilter);
+            IMaxBaseReadRepositoryProvider loRepositoryProvider = Instance.GetRepositoryProvider(loDataFilter);
             IMaxUserRepositoryProvider loProvider = loRepositoryProvider as IMaxUserRepositoryProvider;
             if (null == loProvider)
             {
@@ -202,7 +204,7 @@ namespace MaxFactry.General.DataLayer
             loData.Set(loDataModel.LogEntryType, lnLogEntryType);
             MaxData loDataFilter = new MaxData(loData);
             loDataFilter.Set(loDataModel.LogEntryType, lnLogEntryType);
-            IMaxStorageReadRepositoryProvider loRepositoryProvider = Instance.GetStorageReadRepositoryProvider(loDataFilter);
+            IMaxBaseReadRepositoryProvider loRepositoryProvider = Instance.GetRepositoryProvider(loDataFilter);
             IMaxUserLogRepositoryProvider loProvider = loRepositoryProvider as IMaxUserLogRepositoryProvider;
             if (null == loProvider)
             {
@@ -231,7 +233,7 @@ namespace MaxFactry.General.DataLayer
             loData.Set(loDataModel.UserId, loUserId);
             MaxData loDataFilter = new MaxData(loData);
             loDataFilter.Set(loDataModel.UserId, loUserId);
-            IMaxStorageReadRepositoryProvider loRepositoryProvider = Instance.GetStorageReadRepositoryProvider(loDataFilter);
+            IMaxBaseReadRepositoryProvider loRepositoryProvider = Instance.GetRepositoryProvider(loDataFilter);
             IMaxUserLogRepositoryProvider loProvider = loRepositoryProvider as IMaxUserLogRepositoryProvider;
             if (null == loProvider)
             {
@@ -262,7 +264,7 @@ namespace MaxFactry.General.DataLayer
             MaxData loDataFilter = new MaxData(loData);
             loDataFilter.Set(loDataModel.UserId, loUserId);
             loDataFilter.Set(loDataModel.LogEntryType, lnLogEntryType);
-            IMaxStorageReadRepositoryProvider loRepositoryProvider = Instance.GetStorageReadRepositoryProvider(loDataFilter);
+            IMaxBaseReadRepositoryProvider loRepositoryProvider = Instance.GetRepositoryProvider(loDataFilter);
             IMaxUserLogRepositoryProvider loProvider = loRepositoryProvider as IMaxUserLogRepositoryProvider;
             if (null == loProvider)
             {
@@ -294,7 +296,7 @@ namespace MaxFactry.General.DataLayer
             MaxData loDataFilter = new MaxData(loData);
             loDataFilter.Set(loDataModel.UserId, loUserId);
             loDataFilter.Set(loDataModel.LogEntryType, lnLogEntryType);
-            IMaxStorageReadRepositoryProvider loRepositoryProvider = Instance.GetStorageReadRepositoryProvider(loDataFilter);
+            IMaxBaseReadRepositoryProvider loRepositoryProvider = Instance.GetRepositoryProvider(loDataFilter);
             IMaxUserLogRepositoryProvider loProvider = loRepositoryProvider as IMaxUserLogRepositoryProvider;
             if (null == loProvider)
             {

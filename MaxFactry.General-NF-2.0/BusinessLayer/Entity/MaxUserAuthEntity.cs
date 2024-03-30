@@ -29,6 +29,7 @@
 // <changelog>
 // <change date="11/3/2020" author="Brian A. Lakstins" description="Initial creation">
 // <change date="1/16/2021" author="Brian A. Lakstins" description="Update definition of cache keys.">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class. Use parent methods instead of repository.">
 // </changelog>
 #endregion
 
@@ -38,12 +39,13 @@ namespace MaxFactry.General.BusinessLayer
 	using MaxFactry.Core;
 	using MaxFactry.Base.BusinessLayer;
 	using MaxFactry.Base.DataLayer;
+    using MaxFactry.Base.DataLayer.Library;
     using MaxFactry.General.DataLayer;
 
 	/// <summary>
     /// Entity used to manage information about UserAuths for the MaxSecurityProvider.
 	/// </summary>
-	public class MaxUserAuthEntity : MaxBaseIdEntity
+	public class MaxUserAuthEntity : MaxBaseGuidKeyEntity
 	{
 		/// <summary>
         /// Initializes a new instance of the MaxUserAuthEntity class
@@ -189,10 +191,12 @@ namespace MaxFactry.General.BusinessLayer
                 typeof(MaxUserAuthDataModel)) as MaxUserAuthEntity;
         }
 
-        public override bool Insert(Guid loId)
+        public override bool Insert()
         {
-            this.Set(this.DataModel.ClientSecretHash, this.Hash(loId, this.ClientSecret));
-            return base.Insert(loId);
+            Guid loSaltId = Guid.NewGuid();
+            this.Set(this.DataModel.ClientSecretHashSaltId, loSaltId);
+            this.Set(this.DataModel.ClientSecretHash, this.Hash(loSaltId, this.ClientSecret));
+            return base.Insert();
         }
 
         /// <summary>
@@ -213,34 +217,7 @@ namespace MaxFactry.General.BusinessLayer
         /// <returns>List of UserAuths.</returns>
         public MaxEntityList LoadAllByClientIdCache(string lsClientId)
         {
-            MaxEntityList loR = MaxEntityList.Create(this.GetType());
-            string lsCacheAllDataKey = this.GetCacheKey() + "LoadAll";
-            MaxDataList loDataAllList = MaxCacheRepository.Get(this.GetType(), lsCacheAllDataKey, typeof(MaxDataList)) as MaxDataList;
-            if (null != loDataAllList)
-            {
-                for (int lnD = 0; lnD < loDataAllList.Count; lnD++)
-                {
-                    if (MaxConvertLibrary.ConvertToString(typeof(object), loDataAllList[lnD].Get(this.DataModel.ClientId)).Equals(lsClientId))
-                    {
-                        MaxEntity loEntity = MaxBusinessLibrary.GetEntity(this.GetType(), loDataAllList[lnD]);
-                        loR.Add(loEntity);
-                    }
-                }
-            }
-            else
-            {
-                string lsCacheDataKey = this.GetCacheKey() + "LoadAllByClientId/" + MaxConvertLibrary.ConvertToString(typeof(object), lsClientId);
-                MaxDataList loDataList = MaxCacheRepository.Get(this.GetType(), lsCacheDataKey, typeof(MaxDataList)) as MaxDataList;
-                if (null == loDataList)
-                {
-                    loDataList = MaxSecurityRepository.SelectAllByProperty(this.Data, this.DataModel.ClientId, lsClientId);
-                    MaxCacheRepository.Set(this.GetType(), lsCacheDataKey, loDataList);
-                }
-
-                loR = MaxEntityList.Create(this.GetType(), loDataList);
-            }
-
-            return loR;
+            return this.LoadAllByPropertyCache(this.DataModel.ClientId, lsClientId);
         }
 	}
 }
