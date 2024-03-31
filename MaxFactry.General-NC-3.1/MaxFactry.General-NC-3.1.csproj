@@ -3,9 +3,9 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>MaxFactry.General</RootNamespace>
-	  <Version>1.0.24.2</Version>
-	  <AssemblyVersion>1.0.24.2</AssemblyVersion>
-	  <FileVersion>2024.03.13.01</FileVersion>
+	  <Version>1.0.24.3</Version>
+	  <AssemblyVersion>1.0.24.3</AssemblyVersion>
+	  <FileVersion>2024.03.30.01</FileVersion>
 	  <SignAssembly>True</SignAssembly>
 	  <AssemblyOriginatorKeyFile>MaxFactry.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
@@ -15,10 +15,10 @@
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxEmailEntity.cs" Link="BusinessLayer\Entity\MaxEmailEntity.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxFileDownloadEntity.cs" Link="BusinessLayer\Entity\MaxFileDownloadEntity.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxFileEntity.cs" Link="BusinessLayer\Entity\MaxFileEntity.cs" />
-		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxHttpClientEntity.cs" Link="BusinessLayer\Entity\MaxHttpClientEntity.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxPaymentCardEntity.cs" Link="BusinessLayer\Entity\MaxPaymentCardEntity.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxProfileIndexEntity.cs" Link="BusinessLayer\Entity\MaxProfileIndexEntity.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxRoleEntity.cs" Link="BusinessLayer\Entity\MaxRoleEntity.cs" />
+		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxRoleRelationUserEntity.cs" Link="BusinessLayer\Entity\MaxRoleRelationUserEntity.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxUserAuthEntity.cs" Link="BusinessLayer\Entity\MaxUserAuthEntity.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxUserAuthGrantEntity.cs" Link="BusinessLayer\Entity\MaxUserAuthGrantEntity.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxUserAuthTokenEntity.cs" Link="BusinessLayer\Entity\MaxUserAuthTokenEntity.cs" />
@@ -30,23 +30,22 @@
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxUSStateEntity.cs" Link="BusinessLayer\Entity\MaxUSStateEntity.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Structure\MaxCSSStyleStructure.cs" Link="BusinessLayer\Structure\MaxCSSStyleStructure.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Structure\MaxHtmlTagStructure.cs" Link="BusinessLayer\Structure\MaxHtmlTagStructure.cs" />
-		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxEmailDataModel.cs" Link="DataLayer\DataModel\MaxEmailDataModel.cs" />
-		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxFileDataModel.cs" Link="DataLayer\DataModel\MaxFileDataModel.cs" />
-		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxFileDownloadDataModel.cs" Link="DataLayer\DataModel\MaxFileDownloadDataModel.cs" />
-		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxHttpClientDataModel.cs" Link="DataLayer\DataModel\MaxHttpClientDataModel.cs" />
-		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxPaymentCardDataModel.cs" Link="DataLayer\DataModel\MaxPaymentCardDataModel.cs" />
-		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxProfileIndexDataModel.cs" Link="DataLayer\DataModel\MaxProfileIndexDataModel.cs" />
-		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxRoleDataModel.cs" Link="DataLayer\DataModel\MaxRoleDataModel.cs" />
-		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxRoleUserRelationDataModel.cs" Link="DataLayer\DataModel\MaxRoleUserRelationDataModel.cs" />
-		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUserAuthDataModel.cs" Link="DataLayer\DataModel\MaxUserAuthDataModel.cs" />
-		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUserAuthGrantDataModel.cs" Link="DataLayer\DataModel\MaxUserAuthGrantDataModel.cs" />
-		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUserAuthTokenDataModel.cs" Link="DataLayer\DataModel\MaxUserAuthTokenDataModel.cs" />
-		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUserConfigurationDataModel.cs" Link="DataLayer\DataModel\MaxUserConfigurationDataModel.cs" />
-		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUserDataModel.cs" Link="DataLayer\DataModel\MaxUserDataModel.cs" />
-		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUserIndexDataModel.cs" Link="DataLayer\DataModel\MaxUserIndexDataModel.cs" />
-		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUserLogDataModel.cs" Link="DataLayer\DataModel\MaxUserLogDataModel.cs" />
-		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUserPasswordDataModel.cs" Link="DataLayer\DataModel\MaxUserPasswordDataModel.cs" />
-		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUSStateDataModel.cs" Link="DataLayer\DataModel\MaxUSStateDataModel.cs" />
+		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxEmailDataModel.cs" Link="DataLayer\Repository\DataModel\MaxEmailDataModel.cs" />
+		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxFileDataModel.cs" Link="DataLayer\Repository\DataModel\MaxFileDataModel.cs" />
+		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxFileDownloadDataModel.cs" Link="DataLayer\Repository\DataModel\MaxFileDownloadDataModel.cs" />
+		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxPaymentCardDataModel.cs" Link="DataLayer\Repository\DataModel\MaxPaymentCardDataModel.cs" />
+		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxProfileIndexDataModel.cs" Link="DataLayer\Repository\DataModel\MaxProfileIndexDataModel.cs" />
+		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxRoleDataModel.cs" Link="DataLayer\Repository\DataModel\MaxRoleDataModel.cs" />
+		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxRoleRelationUserDataModel.cs" Link="DataLayer\Repository\DataModel\MaxRoleRelationUserDataModel.cs" />
+		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUserAuthDataModel.cs" Link="DataLayer\Repository\DataModel\MaxUserAuthDataModel.cs" />
+		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUserAuthGrantDataModel.cs" Link="DataLayer\Repository\DataModel\MaxUserAuthGrantDataModel.cs" />
+		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUserAuthTokenDataModel.cs" Link="DataLayer\Repository\DataModel\MaxUserAuthTokenDataModel.cs" />
+		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUserConfigurationDataModel.cs" Link="DataLayer\Repository\DataModel\MaxUserConfigurationDataModel.cs" />
+		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUserDataModel.cs" Link="DataLayer\Repository\DataModel\MaxUserDataModel.cs" />
+		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUserIndexDataModel.cs" Link="DataLayer\Repository\DataModel\MaxUserIndexDataModel.cs" />
+		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUserLogDataModel.cs" Link="DataLayer\Repository\DataModel\MaxUserLogDataModel.cs" />
+		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUserPasswordDataModel.cs" Link="DataLayer\Repository\DataModel\MaxUserPasswordDataModel.cs" />
+		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUSStateDataModel.cs" Link="DataLayer\Repository\DataModel\MaxUSStateDataModel.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\Interface\IMaxGeneralRepositoryProvider.cs" Link="DataLayer\Repository\Interface\IMaxGeneralRepositoryProvider.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\Interface\IMaxPaymentCardRepositoryProvider.cs" Link="DataLayer\Repository\Interface\IMaxPaymentCardRepositoryProvider.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\Interface\IMaxUserLogRepositoryProvider.cs" Link="DataLayer\Repository\Interface\IMaxUserLogRepositoryProvider.cs" />
@@ -54,7 +53,6 @@
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\Interface\IMaxUSStateRepositoryProvider.cs" Link="DataLayer\Repository\Interface\IMaxUSStateRepositoryProvider.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\MaxGeneralRepository.cs" Link="DataLayer\Repository\MaxGeneralRepository.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\MaxPaymentCardRepository.cs" Link="DataLayer\Repository\MaxPaymentCardRepository.cs" />
-		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\MaxRoleUserRelationRepository.cs" Link="DataLayer\Repository\MaxRoleUserRelationRepository.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\MaxSecurityRepository.cs" Link="DataLayer\Repository\MaxSecurityRepository.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\MaxUSStateRepository.cs" Link="DataLayer\Repository\MaxUSStateRepository.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\Provider\MaxGeneralRepositoryDefaultProvider.cs" Link="DataLayer\Repository\Provider\MaxGeneralRepositoryDefaultProvider.cs" />
@@ -95,7 +93,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="MaxFactry.Base" Version="1.0.24.1" />
+	  <PackageReference Include="MaxFactry.Base" Version="1.0.24.3" />
 	</ItemGroup>
 
 </Project>

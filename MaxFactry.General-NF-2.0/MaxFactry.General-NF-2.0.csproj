@@ -45,10 +45,10 @@
     <Compile Include="BusinessLayer\Entity\MaxEmailEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxFileEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxFileDownloadEntity.cs" />
-    <Compile Include="BusinessLayer\Entity\MaxHttpClientEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxPaymentCardEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxProfileIndexEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxRoleEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxRoleRelationUserEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxUserAuthTokenEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxUserAuthGrantEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxUserConfigurationEntity.cs" />
@@ -60,14 +60,13 @@
     <Compile Include="BusinessLayer\Entity\MaxUSStateEntity.cs" />
     <Compile Include="BusinessLayer\Structure\MaxCSSStyleStructure.cs" />
     <Compile Include="BusinessLayer\Structure\MaxHtmlTagStructure.cs" />
-    <Compile Include="DataLayer\DataModel\MaxHttpClientDataModel.cs" />
     <Compile Include="DataLayer\DataModel\MaxEmailDataModel.cs" />
     <Compile Include="DataLayer\DataModel\MaxFileDataModel.cs" />
     <Compile Include="DataLayer\DataModel\MaxFileDownloadDataModel.cs" />
     <Compile Include="DataLayer\DataModel\MaxPaymentCardDataModel.cs" />
     <Compile Include="DataLayer\DataModel\MaxProfileIndexDataModel.cs" />
     <Compile Include="DataLayer\DataModel\MaxRoleDataModel.cs" />
-    <Compile Include="DataLayer\DataModel\MaxRoleUserRelationDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxRoleRelationUserDataModel.cs" />
     <Compile Include="DataLayer\DataModel\MaxUserAuthTokenDataModel.cs" />
     <Compile Include="DataLayer\DataModel\MaxUserAuthGrantDataModel.cs" />
     <Compile Include="DataLayer\DataModel\MaxUserConfigurationDataModel.cs" />
@@ -84,7 +83,6 @@
     <Compile Include="DataLayer\Repository\Interface\IMaxUSStateRepositoryProvider.cs" />
     <Compile Include="DataLayer\Repository\MaxGeneralRepository.cs" />
     <Compile Include="DataLayer\Repository\MaxPaymentCardRepository.cs" />
-    <Compile Include="DataLayer\Repository\MaxRoleUserRelationRepository.cs" />
     <Compile Include="DataLayer\Repository\MaxSecurityRepository.cs" />
     <Compile Include="DataLayer\Repository\MaxUSStateRepository.cs" />
     <Compile Include="DataLayer\Repository\Provider\MaxGeneralRepositoryDefaultProvider.cs" />
@@ -121,7 +119,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MaxFactry.Base">
-      <Version>1.0.24.1</Version>
+      <Version>1.0.24.3</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
