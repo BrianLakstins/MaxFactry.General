@@ -49,6 +49,7 @@
 // <change date="3/16/2021" author="Brian A. Lakstins" description="Fix handling of file uploads">
 // <change date="7/9/2021" author="Brian A. Lakstins" description="Add array handling">
 // <change date="7/22/2021" author="Brian A. Lakstins" description="Add array handling when array of strings instead of object">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.  Updated to use DataKey.">
 // </changelog>
 #endregion
 
@@ -561,16 +562,16 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                             loR = this.ProcessPut(loRequest, loEntity, loR);
                         }
 
-                        if (Request.Method == HttpMethod.Delete && (Guid.Empty != loRequest.Id || !string.IsNullOrEmpty(loRequest.EntityPropertyKey)))
+                        if (Request.Method == HttpMethod.Delete && !string.IsNullOrEmpty(loRequest.GetDataKey(int.MinValue)))
                         {
                             loR = this.ProcessDelete(loRequest, loEntity, loR);
                         }
-                        else if ((!string.IsNullOrEmpty(loRequest.EntityPropertyKey) || Guid.Empty != loRequest.Id) && loR.ItemList.Count == 0)
+                        else if (!string.IsNullOrEmpty(loRequest.GetDataKey(int.MinValue)) && loR.ItemList.Count == 0)
                         {
                             loR = this.ProcessLoad(loRequest, loEntity, loR);
                         }
 
-                        if (((string.IsNullOrEmpty(loRequest.EntityPropertyKey) && Guid.Empty == loRequest.Id) || this.Request.Method == HttpMethod.Delete || this.Request.Method == HttpMethod.Put) && loR.ItemList.Count == 0)
+                        if ((string.IsNullOrEmpty(loRequest.GetDataKey(int.MinValue)) || this.Request.Method == HttpMethod.Delete || this.Request.Method == HttpMethod.Put) && loR.ItemList.Count == 0)
                         {
                             //// Load list
                             if (!this.HasPermission(loRequest, loEntity, (int)MaxEnumGroup.PermissionSelect))
@@ -634,26 +635,10 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             if (null != loRequest.RequestPropertyList && loRequest.RequestPropertyList.Length > 0)
             {
                 Dictionary<string, string> loEntityPropertyIndex = new Dictionary<string, string>();
-                string lsEntityPropertyKeyName = loEntity.GetPropertyName(() => loEntity.EntityPropertyKey).ToLowerInvariant();
-                string lsIdKeyName = string.Empty;
-                if (loEntity is MaxBaseIdEntity)
-                {
-                    lsIdKeyName = loEntity.GetPropertyName(() => ((MaxBaseIdEntity)loEntity).Id).ToLowerInvariant();
-                }
-
-                string lsKeyName = string.Empty;
                 foreach (string lsProperty in loRequest.RequestPropertyList)
                 {
                     string lsPropertyKey = lsProperty.ToLowerInvariant();
                     loEntityPropertyIndex.Add(lsPropertyKey, lsProperty);
-                    if (lsPropertyKey == lsEntityPropertyKeyName)
-                    {
-                        lsKeyName = lsPropertyKey;
-                    }
-                    else if (lsPropertyKey == lsIdKeyName && string.IsNullOrEmpty(lsKeyName))
-                    {
-                        lsKeyName = lsPropertyKey;
-                    }
                 }
 
                 PropertyInfo[] laProperty = loEntity.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
@@ -664,36 +649,14 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     MaxEntity loEntityCopy = loEntity.GetType().GetMethod("Create").Invoke(null, null) as MaxEntity;
                     bool lbMapProperties = true;
                     lbValueFound = false;
-                    if (!string.IsNullOrEmpty(lsKeyName))
+                    string lsDataKey = loRequest.GetDataKey(lnEntityNum);
+                    if (!string.IsNullOrEmpty(lsDataKey))
                     {
-                        if (loEntityPropertyIndex.ContainsKey(lsKeyName))
+                        lbMapProperties = false;
+                        if (loEntityCopy.LoadByDataKeyCache(lsDataKey))
                         {
-                            string lsPropertyName = loEntityPropertyIndex[lsKeyName];
-                            string lsEntityPropertyValue = loRequest.Item.GetValueString(lsPropertyName);
-                            if (lnEntityNum >= 0)
-                            {
-                                lsEntityPropertyValue = loRequest.Item.GetValueString(lsPropertyName + "[" + lnEntityNum.ToString() + "]");
-                            }
-
-                            if (!string.IsNullOrEmpty(lsEntityPropertyValue))
-                            {
-                                lbMapProperties = false;
-                                if (lsKeyName == lsIdKeyName && loEntityCopy is MaxBaseIdEntity)
-                                {
-                                    Guid loId = MaxConvertLibrary.ConvertToGuid(typeof(object), lsEntityPropertyValue);
-                                    if (((MaxBaseIdEntity)loEntityCopy).LoadByIdCache(loId))
-                                    {
-                                        lbMapProperties = true;
-                                        lbValueFound = true;
-                                    }
-                                }
-                                else if (loEntityCopy.LoadByEntityPropertyKeyCache(lsEntityPropertyValue))
-                                {
-                                    lbMapProperties = true;
-                                    lbValueFound = true;
-
-                                }
-                            }
+                            lbMapProperties = true;
+                            lbValueFound = true;
                         }
                     }
 
@@ -810,16 +773,9 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 for (int lnE = 0; lnE < loList.Count; lnE++)
                 {
                     bool lbSaved = false;
-                    if (!string.IsNullOrEmpty(loList[lnE].EntityPropertyKey))
+                    if (!string.IsNullOrEmpty(loList[lnE].DataKey))
                     {
-                        if (string.IsNullOrEmpty(loList[lnE].StorageKey))
-                        {
-                            lbSaved = loList[lnE].Insert();
-                        }
-                        else
-                        {
-                            lbSaved = loList[lnE].Update();
-                        }
+                        lbSaved = loList[lnE].Update();
                     }
                     else if (loList[lnE] is MaxBaseIdEntity)
                     {
@@ -833,17 +789,21 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                             lbSaved = loBaseIdEntity.Update();
                         }
                     }
+                    else if (string.IsNullOrEmpty(loList[lnE].DataKey))
+                    {
+                        lbSaved = loList[lnE].Insert();
+                    }
 
                     if (lbSaved)
                     {
                         lnUpdatedCount++;
                         if (loList.Count == 1)
                         {
-                            loR.Item = loEntity.MapIndex(loRequest.ResponsePropertyList);
+                            loR.Item = loList[lnE].MapIndex(loRequest.ResponsePropertyList);
                         }
                         else
                         {
-                            loR.ItemList.Add(loEntity.MapIndex(loRequest.ResponsePropertyList));
+                            loR.ItemList.Add(loList[lnE].MapIndex(loRequest.ResponsePropertyList));
                         }
                     }
                 }
@@ -900,9 +860,9 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 loR.Message.Error = "User does not have permission to delete item.";
                 loR.Status = HttpStatusCode.Forbidden;
             }
-            else if (!string.IsNullOrEmpty(loRequest.EntityPropertyKey))
+            else if (!string.IsNullOrEmpty(loRequest.GetDataKey(int.MinValue)))
             {
-                if (loEntity.LoadByEntityPropertyKeyCache(loRequest.EntityPropertyKey))
+                if (loEntity.LoadByDataKeyCache(loRequest.GetDataKey(int.MinValue)))
                 {
                     lbCanDelete = true;
                 }
@@ -910,18 +870,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 {
                     loR.Message.Error = "Item with the provided Property Key cannot be loaded.";
                 }
-            }
-            else if (loRequest.Id != Guid.Empty && loEntity is MaxBaseIdEntity)
-            {
-                if (((MaxBaseIdEntity)loEntity).LoadByIdCache(loRequest.Id))
-                {
-                    lbCanDelete = true;
-                }
-                else
-                {
-                    loR.Message.Error = "Item with the provided Id cannot be loaded.";
-                }
-            }
+            }            
 
             if (lbCanDelete && loEntity.Delete())
             {
@@ -941,26 +890,15 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 loR.Message.Error = "User does not have permission for this item.";
                 loR.Status = HttpStatusCode.Forbidden;
             }
-            else if (!string.IsNullOrEmpty(loRequest.EntityPropertyKey))
+            else if (!string.IsNullOrEmpty(loRequest.GetDataKey(int.MinValue)))
             {
-                if (loEntity.LoadByEntityPropertyKeyCache(loRequest.EntityPropertyKey))
+                if (loEntity.LoadByDataKeyCache(loRequest.GetDataKey(int.MinValue)))
                 {
                     lbIsLoaded = true;
                 }
                 else
                 {
-                    loR.Message.Error = "Item with the provided Property Key cannot be loaded.";
-                }
-            }
-            else if (loRequest.Id != Guid.Empty && loEntity is MaxBaseIdEntity)
-            {
-                if (((MaxBaseIdEntity)loEntity).LoadByIdCache(loRequest.Id))
-                {
-                    lbIsLoaded = true;
-                }
-                else
-                {
-                    loR.Message.Error = "Item with the provided Id cannot be loaded.";
+                    loR.Message.Error = "Item with the provided Data Key cannot be loaded.";
                 }
             }
 

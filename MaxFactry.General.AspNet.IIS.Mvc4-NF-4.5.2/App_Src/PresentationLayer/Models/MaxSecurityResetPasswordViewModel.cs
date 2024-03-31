@@ -33,6 +33,7 @@
 // <change date="1/17/2021" author="Brian A. Lakstins" description="Add password length check">
 // <change date="2/24/2021" author="Brian A. Lakstins" description="Update password reset process.">
 // <change date="2/25/2021" author="Brian A. Lakstins" description="Change password reset">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
 // </changelog>
 #endregion
 
@@ -90,7 +91,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         {
             get 
             {
-                return MaxUserEntity.Create().GetUserAuthCode(this.User.UserName);
+                return MaxUserEntity.Create().GetAuthCode(this.User.UserName);
             }
         }
 
@@ -249,7 +250,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         if (MaxMembershipUser.SetPassword(this.User, this.Password))
                         {
                             lsR = string.Empty;
-                            MaxUserEntity.Create().ClearUserAuthCode(this.User.UserName);
+                            MaxUserEntity.Create().ClearAuthCode(this.User.UserName);
                         }
                         else
                         {

@@ -29,6 +29,7 @@
 // <changelog>
 // <change date="12/10/2020" author="Brian A. Lakstins" description="Initial creation">
 // <change date="12/19/2020" author="Brian A. Lakstins" description="Add accesstoken to help in checking security for a user">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.  Restructing to use DataKey">
 // </changelog>
 #endregion
 
@@ -40,58 +41,51 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
     using System.Collections.Generic;
     using MaxFactry.Core;
     using MaxFactry.General.BusinessLayer;
+    using System.Xml.Linq;
 
     /// <summary>
     /// View model for parsing a request to any api call
     /// </summary>
     public class MaxApiRequestViewModel
     {
-        private Guid _oId = Guid.Empty;
-
-        private string _sEntityPropertyKey = string.Empty;
-
         private HttpRequestMessage _oRequest = null;
 
         private MembershipUser _oUser = null;
 
         private List<string> _oRoleList = null;
 
+        private const string _sDataKey = "DataKey";
+
+        private const string _sId = "Id";
+
         public MaxApiRequestViewModel(HttpRequestMessage loRequest)
         {
             _oRequest = loRequest;
         }
 
-        public Guid Id
+        public string GetDataKey(int lnNum)
         {
-            get
+            string lsR = this.Item.GetValueString(_sDataKey);
+            if (this.Item.Contains(_sDataKey + "[" + lnNum + "]"))
             {
-                if (Guid.Empty == this._oId)
+                lsR = this.Item.GetValueString(_sDataKey + "[" + lnNum + "]");
+            }
+
+            if (string.IsNullOrEmpty(lsR))
+            {
+                Guid loR = MaxConvertLibrary.ConvertToGuid(typeof(object), this.Item.GetValueString(_sId));
+                if (lnNum >= 0 && this.Item.Contains(_sId + "[" + lnNum + "]"))
                 {
-                    if (null != this.Item && this.Item.Contains("Id"))
-                    {
-                        this._oId = MaxConvertLibrary.ConvertToGuid(typeof(object), this.Item["Id"]);
-                    }
+                    loR = MaxConvertLibrary.ConvertToGuid(typeof(object), this.Item.GetValueString(_sId + "[" + lnNum + "]"));
                 }
 
-                return this._oId;
-            }
-        }
-
-        public string EntityPropertyKey
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(this._sEntityPropertyKey))
+                if (loR != Guid.Empty)
                 {
-                    string lsEntityKeyName = "EntityPropertyKey";
-                    if (null != this.Item && this.Item.Contains(lsEntityKeyName))
-                    {
-                        this._sEntityPropertyKey = this.Item.GetValueString(lsEntityKeyName);
-                    }
+                    lsR = loR.ToString();
                 }
-
-                return this._sEntityPropertyKey;
             }
+
+            return lsR;
         }
 
         public string[] RequestPropertyList { get; set; }

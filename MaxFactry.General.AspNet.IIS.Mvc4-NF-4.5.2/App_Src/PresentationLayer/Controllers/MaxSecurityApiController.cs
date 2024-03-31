@@ -47,19 +47,14 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
     using System.IO;
     using System.Net;
     using System.Net.Http;
-    using System.Threading;
     using System.Threading.Tasks;
     using System.Web;
     using System.Web.Http;
     using MaxFactry.Core;
     using MaxFactry.Base.BusinessLayer;
-    using MaxFactry.General.AspNet.BusinessLayer;
     using MaxFactry.General.AspNet.PresentationLayer;
-    using MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer;
     using MaxFactry.General.BusinessLayer;
-    using MaxFactry.General.PresentationLayer;
-    using MaxFactry.Base.DataLayer;
-    using System.Net.NetworkInformation;
+    using MaxFactry.Base.DataLayer.Library;
     using System.Web.Security;
 
     [MaxRequireHttps(Order = 1)]
@@ -174,7 +169,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         {
                             MaxUserAuthGrantEntity loGrantEntity = MaxUserAuthGrantEntity.Create();
                             Guid loGrantId = MaxConvertLibrary.ConvertAlphabet64ToGuid(typeof(object), lsCode);
-                            if (loGrantEntity.LoadByIdCache(loGrantId) && loGrantEntity.UserAuthId == loEntity.Id && loGrantEntity.IsActive && loGrantEntity.RedirectUri == lsRedirectUri)
+                            if (loGrantEntity.LoadByDataKeyCache(loGrantId.ToString()) && loGrantEntity.UserAuthId == loEntity.Id && loGrantEntity.IsActive && loGrantEntity.RedirectUri == lsRedirectUri)
                             {
                                 string lsToken = MaxUserAuthTokenEntity.GenerateToken(false);
                                 string lsTokenType = "Bearer";

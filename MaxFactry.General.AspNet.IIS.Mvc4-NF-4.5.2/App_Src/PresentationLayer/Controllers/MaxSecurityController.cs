@@ -35,6 +35,7 @@
 // <change date="11/17/2020" author="Brian A. Lakstins" description="Add reset password.">
 // <change date="12/10/2020" author="Brian A. Lakstins" description="Generate email content in Model">
 // <change date="10/10/2023" author="Brian A. Lakstins" description="Added OAuth2 Login integration">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.  Updated to use DataKey.">
 // </changelog>
 #endregion
 
@@ -555,7 +556,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             {
                 Guid loId = MaxConvertLibrary.ConvertToGuid(typeof(object), loModel.Id);
                 MaxUserAuthGrantEntity loGrantEntity = MaxUserAuthGrantEntity.Create();
-                if (loGrantEntity.LoadByIdCache(loId))
+                if (loGrantEntity.LoadByDataKeyCache(loId.ToString()))
                 {
                     loGrantEntity.IsActive = true;
                     loGrantEntity.Update();
@@ -602,7 +603,6 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             try
             {
                 MaxUserAuthGrantEntity loEntity = MaxUserAuthGrantEntity.Create();
-                loEntity.SetId(Guid.NewGuid());
                 loEntity.IsActive = true;
                 loEntity.State = loEntity.Id.ToString();
                 loEntity.Nonce = Guid.NewGuid().ToString();
@@ -676,7 +676,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
                 Guid loId = MaxConvertLibrary.ConvertToGuid(typeof(object), lsState);
                 MaxUserAuthGrantEntity loEntity = MaxUserAuthGrantEntity.Create();
-                if (loEntity.LoadByIdCache(loId) && loEntity.IsActive)
+                if (loEntity.LoadByDataKeyCache(loId.ToString()) && loEntity.IsActive)
                 {
                     loEntity.IsActive = false;
                     loEntity.Update();

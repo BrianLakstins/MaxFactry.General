@@ -29,6 +29,7 @@
 // <changelog>
 // <change date="10/8/2015" author="Brian A. Lakstins" description="Initial creation">
 // <change date="12/4/2020" author="Brian A. Lakstins" description="Add ability to GetHtml from a Razor file or raw Razor View text">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
 // </changelog>
 #endregion
 
@@ -245,7 +246,7 @@ namespace MaxFactry.General.PresentationLayer.Provider
                 }
             }
 
-            string lsCacheKey = MaxFactry.Base.DataLayer.MaxDataLibrary.GetStorageKey(null) + MaxEncryptionLibrary.GetHash(typeof(object), MaxEncryptionLibrary.MD5Hash, lsViewText);
+            string lsCacheKey = MaxFactry.Base.DataLayer.Library.MaxDataLibrary.GetStorageKey(null) + MaxEncryptionLibrary.GetHash(typeof(object), MaxEncryptionLibrary.MD5Hash, lsViewText);
 #if mvc5
             if (_oRazorCacheIndex.Contains(lsCacheKey))
             {
