@@ -32,6 +32,7 @@
 // <change date="6/27/2014" author="Brian A. Lakstins" description="Remove dependency on AppId.">
 // <change date="10/17/2014" author="Brian A. Lakstins" description="Updated to not keep config in memory.">
 // <change date="12/18/2014" author="Brian A. Lakstins" description="Updates to follow core data access patterns.">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class. Use new MaxRoleRelationUserEntity class">
 // </changelog>
 #endregion
 
@@ -213,21 +214,28 @@ namespace System.Web.Security
         /// <returns>A string array containing the names of all the users who are members of the specified role for the configured applicationName.</returns>
         public override string[] GetUsersInRole(string roleName)
         {
-            MaxEntityList loList = MaxRoleEntity.Create().LoadAllRelationByRoleNameCache(roleName);
-            string lsUserList = string.Empty;
+            string lsR = string.Empty;
             string lsDivider = Guid.NewGuid().ToString();
-            for (int lnE = 0; lnE < loList.Count; lnE++)
+            MaxRoleEntity loEntity = MaxRoleEntity.Create();
+            MaxEntityList loList = loEntity.LoadAllByRoleCache(roleName);
+            if (loList.Count == 1)
             {
-                MaxRoleEntity loEntity = (MaxRoleEntity)loList[lnE];
-                MembershipUser loUser = Membership.GetUser(loEntity.UserId);
-                if (null != loUser)
+                loEntity = loList[0] as MaxRoleEntity;
+                MaxRoleRelationUserEntity loRelation = MaxRoleRelationUserEntity.Create();
+                MaxEntityList loRelationList = loRelation.LoadAllByRoleIdCache(loEntity.Id);
+                for (int lnE = 0; lnE < loRelationList.Count; lnE++)
                 {
-                    lsUserList += loUser.UserName + lsDivider;
+                    loRelation = loRelationList[lnE] as MaxRoleRelationUserEntity;
+                    MembershipUser loUser = Membership.GetUser(loRelation.UserId);
+                    if (null != loUser)
+                    {
+                      lsR += loUser.UserName + lsDivider;
+                    }
                 }
             }
 
-            string[] laUserList = lsUserList.Split(new string[] { lsDivider }, StringSplitOptions.RemoveEmptyEntries);
-            return laUserList;
+            string[] laR = lsR.Split(new string[] { lsDivider }, StringSplitOptions.RemoveEmptyEntries);
+            return laR;
         }
 
         /// <summary>

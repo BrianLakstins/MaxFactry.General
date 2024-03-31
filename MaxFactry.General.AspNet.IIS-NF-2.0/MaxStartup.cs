@@ -31,6 +31,7 @@
 // <change date="6/20/2014" author="Brian A. Lakstins" description="Moved encryption provider to MaxFactry_System.Web namespace.">
 // <change date="6/23/2014" author="Brian A. Lakstins" description="Updates for testing.">
 // <change date="6/27/2014" author="Brian A. Lakstins" description="Remove dependency on AppId.">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
 // </changelog>
 #endregion
 
@@ -41,7 +42,7 @@ namespace MaxFactry.General.AspNet.IIS
     using System.Web;
     using MaxFactry.Core;
     using MaxFactry.Base.BusinessLayer;
-    using MaxFactry.Base.DataLayer;
+    using MaxFactry.Base.DataLayer.Library;
 
     public class MaxStartup : MaxFactry.Base.MaxStartup
     {
@@ -93,7 +94,7 @@ namespace MaxFactry.General.AspNet.IIS
             MaxLogLibrary.Instance.ProviderAdd(
                 typeof(MaxFactry.Core.Provider.MaxLogLibraryAspNetIISProvider));
             //// Override provider for MaxDataLibrary
-            MaxDataLibrary.Instance.ProviderSet(typeof(MaxFactry.Base.DataLayer.Provider.MaxDataLibraryGeneralAspNetProvider));
+            MaxDataLibrary.Instance.ProviderSet(typeof(MaxFactry.Base.DataLayer.Library.Provider.MaxDataLibraryGeneralAspNetProvider));
             //// Override user entity with Membership specific entity
             MaxBusinessLibrary.RegisterEntityProvider(
                 typeof(MaxFactry.General.BusinessLayer.MaxUserEntity),

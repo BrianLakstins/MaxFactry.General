@@ -29,6 +29,7 @@
 // <changelog>
 // <change date="2/22/2014" author="Brian A. Lakstins" description="Initial creation">
 // <change date="2/24/2021" author="Brian A. Lakstins" description="Add password reset method.">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
 // </changelog>
 #endregion
 
@@ -60,7 +61,7 @@ namespace System.Web.Security
             {
                 if (null == this._oUserLogList)
                 {
-                    this._oUserLogList = MaxUserLogEntity.Create().LoadAllByUserId(this._oMaxUser.Id);
+                    this._oUserLogList = MaxUserLogEntity.Create().LoadAllByUserIdCache(this._oMaxUser.Id);
                 }
 
                 return this._oUserLogList;
@@ -178,7 +179,6 @@ namespace System.Web.Security
                 {
                     MaxUserLogEntity loMaxUserLog = MaxUserLogEntity.Create();
                     loMaxUserLog.Insert(
-                        Guid.NewGuid(),
                         this._oMaxUser.Id,
                         MaxUserLogEntity.LogEntryTypeLockout,
                         lnLoginFailureCount.ToString() + " failures since " + ldPasswordWindow.ToString());

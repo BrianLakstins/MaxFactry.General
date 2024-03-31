@@ -28,10 +28,12 @@
 #region Change Log
 // <changelog>
 // <change date="5/22/2020" author="Brian A. Lakstins" description="Initial creation">
+// <change date="3/15/2021" author="Brian A. Lakstins" description="Reduce exceptions by checking for context">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class. Use parent methods instead of repository.">
 // </changelog>
 #endregion
 
-namespace MaxFactry.Base.DataLayer.Provider
+namespace MaxFactry.Base.DataLayer.Library.Provider
 {
     using System;
     using System.Diagnostics;
@@ -50,21 +52,21 @@ namespace MaxFactry.Base.DataLayer.Provider
         /// <returns>string used for the storage key</returns>
         public override string GetStorageKey(MaxData loData)
         {
-            string lsR = this.GetStorageKeyFromData(loData);
-            //// Only check the configuration for the central storage key if one was not found in the data
-            if (null == lsR || lsR.Length.Equals(0))
+            string lsR = this.GetStorageKeyFromProcess();
+            MaxBaseDataModel loBaseDataModel = loData.DataModel as MaxBaseDataModel;
+            if (null != loBaseDataModel && null != loData.Get(loBaseDataModel.StorageKey))
             {
-                lsR = this.GetStorageKeyFromProcess();
+                lsR = MaxConvertLibrary.ConvertToString(typeof(object), loData.Get(loBaseDataModel.StorageKey));
+            }
+            else if (null == lsR || lsR.Length.Equals(0))
+            {
+                lsR = this.GetStorageKeyFromQueryString();
                 if (null == lsR || lsR.Length.Equals(0))
                 {
-                    lsR = this.GetStorageKeyFromQueryString();
+                    lsR = this.GetStorageKeyFromCookie();
                     if (null == lsR || lsR.Length.Equals(0))
                     {
-                        lsR = this.GetStorageKeyFromCookie();
-                        if (null == lsR || lsR.Length.Equals(0))
-                        {
-                            lsR = this.GetStorageKeyFromConfiguration();
-                        }
+                        lsR = this.GetStorageKeyFromConfiguration();
                     }
                 }
             }
@@ -166,14 +168,17 @@ namespace MaxFactry.Base.DataLayer.Provider
 
                 try
                 {
-                    if (null != HttpContext.Current.Request)
+                    if (null != HttpContext.Current)
                     {
-                        MaxConfigurationLibrary.SetValue(MaxEnumGroup.ScopeProcess, "MaxDataLibraryGeneralAspNetProvider.HasRequest", true);
-                        return true;
-                    }
-                    else
-                    {
-                        MaxConfigurationLibrary.SetValue(MaxEnumGroup.ScopeProcess, "MaxDataLibraryGeneralAspNetProvider.HasRequest", false);
+                        if (null != HttpContext.Current.Request)
+                        {
+                            MaxConfigurationLibrary.SetValue(MaxEnumGroup.ScopeProcess, "MaxDataLibraryGeneralAspNetProvider.HasRequest", true);
+                            return true;
+                        }
+                        else
+                        {
+                            MaxConfigurationLibrary.SetValue(MaxEnumGroup.ScopeProcess, "MaxDataLibraryGeneralAspNetProvider.HasRequest", false);
+                        }
                     }
                 }
                 catch

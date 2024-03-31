@@ -39,6 +39,7 @@
 // <change date="11/25/2020" author="Brian A. Lakstins" description="Handle users that don't have a password yet.">
 // <change date="12/19/2020" author="Brian A. Lakstins" description="Handle multiple users sharing an email address so none are returned when looking for username by email">
 // <change date="6/9/2021" author="Brian A. Lakstins" description="Only log user being online once per 5 minutes">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
 // </changelog>
 #endregion
 
@@ -230,8 +231,7 @@ namespace System.Web.Security
         {
             status = MembershipCreateStatus.ProviderError;
 
-            Guid loKey = Guid.Empty;
-            status = this.CheckUserData(providerUserKey, username, email, out loKey);
+            status = this.CheckUserData(providerUserKey, username, email, out Guid loKey);
             if (status != MembershipCreateStatus.Success)
             {
                 return null;
@@ -260,12 +260,12 @@ namespace System.Web.Security
                 loMaxUserNew.IsActive = true;
             }
 
-            if (loMaxUserNew.InsertMember(loKey))
+            if (loMaxUserNew.Insert())
             {
                 MaxUserPasswordEntity loMaxPassword = MaxUserPasswordEntity.Create();
                 loMaxPassword.PasswordQuestion = passwordQuestion;
                 loMaxPassword.PasswordAnswer = passwordAnswer;
-                if (loMaxPassword.Insert(Guid.NewGuid(), loMaxUserNew.Id, this.GetMaxPasswordFormat(), password))
+                if (loMaxPassword.Insert(loMaxUserNew.Id, this.GetMaxPasswordFormat(), password))
                 {
                     return this.GetUserDetails(loMaxUserNew);
                 }
@@ -297,11 +297,10 @@ namespace System.Web.Security
                     MaxUserPasswordEntity loMaxPasswordNew = MaxUserPasswordEntity.Create();
                     loMaxPasswordNew.PasswordQuestion = newPasswordQuestion;
                     loMaxPasswordNew.PasswordAnswer = newPasswordAnswer;
-                    if (loMaxPasswordNew.Insert(Guid.NewGuid(), loMaxUser.Id, this.GetMaxPasswordFormat(), password))
+                    if (loMaxPasswordNew.Insert(loMaxUser.Id, this.GetMaxPasswordFormat(), password))
                     {
                         MaxUserLogEntity loMaxUserLog = MaxUserLogEntity.Create();
                         loMaxUserLog.Insert(
-                            Guid.NewGuid(),
                             loMaxUser.Id,
                             MaxUserLogEntity.LogEntryTypePasswordChange,
                             "Question and answer updated for question [" + newPasswordQuestion + "]");
@@ -382,7 +381,7 @@ namespace System.Web.Security
 					MaxUserPasswordEntity loMaxPasswordNew = MaxUserPasswordEntity.Create();
                     loMaxPasswordNew.PasswordQuestion = lsPasswordQuestion;
 					loMaxPasswordNew.PasswordAnswer = lsPasswordAnswer;
-                    if (loMaxPasswordNew.Insert(Guid.NewGuid(), loMaxUser.Id, this.GetMaxPasswordFormat(), newPassword))
+                    if (loMaxPasswordNew.Insert(loMaxUser.Id, this.GetMaxPasswordFormat(), newPassword))
                     {
                         if (loMaxUser.IsPasswordResetNeeded)
                         {
@@ -392,7 +391,6 @@ namespace System.Web.Security
 
                         MaxUserLogEntity loMaxUserLog = MaxUserLogEntity.Create();
                         loMaxUserLog.Insert(
-                            Guid.NewGuid(),
                             loMaxUser.Id,
                             MaxUserLogEntity.LogEntryTypePasswordChange,
                             "ChangePassword");
@@ -449,7 +447,7 @@ namespace System.Web.Security
 				MaxUserPasswordEntity loMaxPasswordNew = MaxUserPasswordEntity.Create();
                 loMaxPasswordNew.PasswordQuestion = lsPasswordQuestion;
 				loMaxPasswordNew.PasswordAnswer = lsPasswordAnswer;
-                if (loMaxPasswordNew.Insert(Guid.NewGuid(), loMaxUser.Id, this.GetMaxPasswordFormat(), lsPassword)) 
+                if (loMaxPasswordNew.Insert(loMaxUser.Id, this.GetMaxPasswordFormat(), lsPassword)) 
                 {
                     if (loMaxUser.IsPasswordResetNeeded)
                     {
@@ -459,7 +457,6 @@ namespace System.Web.Security
 
                     MaxUserLogEntity loMaxUserLog = MaxUserLogEntity.Create();
                     loMaxUserLog.Insert(
-                        Guid.NewGuid(),
                         loMaxUser.Id,
                         MaxUserLogEntity.LogEntryTypePasswordChange,
                         "ResetPassword");
@@ -492,7 +489,6 @@ namespace System.Web.Security
 
             MaxUserLogEntity loMaxUserLog = MaxUserLogEntity.Create();
 			loMaxUserLog.Insert(
-                Guid.NewGuid(),
                 loMaxUser.Id,
                 MaxUserLogEntity.LogEntryTypeUserChange,
                 "Previous [Comment=" + loMaxUser.Comment + "][Email=" + loMaxUser.Email + "][IsActive=" + loMaxUser.IsActive + "]");
@@ -557,7 +553,6 @@ namespace System.Web.Security
 				MaxUserEntity loMaxUser = this.GetMaxUser(userName);
                 MaxUserLogEntity loMaxUserLog = MaxUserLogEntity.Create();
 				loMaxUserLog.Insert(
-                    Guid.NewGuid(),
                     loMaxUser.Id,
                     MaxUserLogEntity.LogEntryTypeUnlockout,
                     "MaxMembershipProvider.UnlockUser(" + userName + ")");
@@ -596,7 +591,6 @@ namespace System.Web.Security
                     {
                         MaxUserLogEntity loMaxUserLog = MaxUserLogEntity.Create();
                         loMaxUserLog.Insert(
-                            Guid.NewGuid(),
                             loMaxUser.Id,
                             MaxUserLogEntity.LogEntryTypeActivity,
                             "GetUser(object providerUserKey, bool userIsOnline)");
@@ -623,19 +617,18 @@ namespace System.Web.Security
 			{
 				if (userIsOnline)
 				{
-                    string lsKey = loMaxUser.Id.ToString();
+                    string lsKey = this.GetType().ToString() + "/GetUser/" + loMaxUser.Id.ToString();
                     string lsLastLog = MaxCacheRepository.Get(this.GetType(), lsKey, typeof(string)) as string;
                     DateTime ldLastLog = DateTime.MinValue;
                     if (!string.IsNullOrEmpty(lsLastLog))
                     {
-                        ldLastLog = new DateTime(Convert.ToInt64(lsLastLog));
+                        ldLastLog = new DateTime(Convert.ToInt64(lsLastLog), DateTimeKind.Utc);
                     }
 
                     if (DateTime.UtcNow > ldLastLog.AddMinutes(5))
                     { 
                         MaxUserLogEntity loMaxUserLog = MaxUserLogEntity.Create();
                         loMaxUserLog.Insert(
-                            Guid.NewGuid(),
                             loMaxUser.Id,
                             MaxUserLogEntity.LogEntryTypeActivity,
                             "GetUser(string username, bool userIsOnline)");
@@ -707,7 +700,6 @@ namespace System.Web.Security
 
             MaxUserLogEntity loMaxUserLog = MaxUserLogEntity.Create();
 			loMaxUserLog.Insert(
-                Guid.NewGuid(),
                 loMaxUser.Id,
                 MaxUserLogEntity.LogEntryTypeUserDelete,
                 "DeleteAllRelatedData=" + deleteAllRelatedData.ToString());
@@ -755,7 +747,8 @@ namespace System.Web.Security
 		/// <returns>A MembershipUserCollection collection that contains a page of pageSizeMembershipUser objects beginning at the page specified by pageIndex.</returns>
 		public override MembershipUserCollection FindUsersByName(string usernameToMatch, int pageIndex, int pageSize, out int totalRecords)
 		{
-            MaxEntityList loList = MaxUserEntity.Create().LoadAllByUsernamePartial(usernameToMatch, pageIndex, pageSize, string.Empty, out totalRecords);
+            MaxEntityList loList = MaxUserEntity.Create().LoadAllByUsernamePartial(usernameToMatch, pageIndex, pageSize, string.Empty);
+            totalRecords = loList.Total;
 			MembershipUserCollection loCollection = new MembershipUserCollection();
 			for (int lnL = 0; lnL < loList.Count; lnL++)
 			{
@@ -775,7 +768,8 @@ namespace System.Web.Security
 		/// <returns>A MembershipUserCollection that contains a page of pageSizeMembershipUser objects beginning at the page specified by pageIndex.</returns>
 		public override MembershipUserCollection FindUsersByEmail(string emailToMatch, int pageIndex, int pageSize, out int totalRecords)
 		{
-            MaxEntityList loList = MaxUserEntity.Create().LoadAllByEmailPartial(emailToMatch, pageIndex, pageSize, string.Empty, out totalRecords);
+            MaxEntityList loList = MaxUserEntity.Create().LoadAllByEmailPartial(emailToMatch, pageIndex, pageSize, string.Empty);
+            totalRecords = loList.Total;
 			MembershipUserCollection loCollection = new MembershipUserCollection();
 			for (int lnL = 0; lnL < loList.Count; lnL++)
 			{
@@ -801,7 +795,6 @@ namespace System.Web.Security
                 if (lbR)
                 {
                     loMaxUserLog.Insert(
-                        Guid.NewGuid(),
                         loMaxPassword.UserId,
                         MaxUserLogEntity.LogEntryTypeLogin,
                         "CheckPassword Succeeded");
@@ -809,7 +802,6 @@ namespace System.Web.Security
                 else
                 {
                     loMaxUserLog.Insert(
-                        Guid.NewGuid(),
                         loMaxPassword.UserId,
                         MaxUserLogEntity.LogEntryTypePasswordFail,
                         "CheckPassword failed using [" + lsPasswordToCheck + "]");
@@ -1089,19 +1081,13 @@ namespace System.Web.Security
         /// <returns>An entity with the user information</returns>
         protected MaxUserEntity GetMaxUser(object loProviderKey)
         {
-            Guid loId = MaxConvertLibrary.ConvertToGuid(typeof(object), loProviderKey);
-            MaxEntityList loMaxUserList = MaxUserEntity.Create().LoadAllByIdCache(loId);
-            if (loMaxUserList.Count.Equals(1))
+            MaxUserEntity loR = MaxUserEntity.Create();
+            if (!loR.LoadByDataKeyCache(loProviderKey.ToString()))
             {
-                return (MaxUserEntity)loMaxUserList[0];
-            }
-            else if (loMaxUserList.Count.Equals(0))
-            {
-                // throw new MaxException("User [" + lsUserName + "] cannot be found.");
                 return null;
             }
 
-            throw new MaxException("More than one user matches [" + loProviderKey.ToString() + "].");
+            return loR;
         }
 
         /// <summary>

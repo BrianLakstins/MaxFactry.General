@@ -28,6 +28,7 @@
 #region Change Log
 // <changelog>
 // <change date="6/6/2015" author="Brian A. Lakstins" description="Initial creation">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Remove unused method.">
 // </changelog>
 #endregion
 
@@ -62,21 +63,6 @@ namespace MaxFactry.General.BusinessLayer
         public MaxUserMembershipEntity(Type loDataModelType)
             : base(loDataModelType)
         {
-        }
-
-        public override bool LoadCurrent()
-        {
-            MembershipUser loUser = Membership.GetUser();
-            if (null != loUser && null != loUser.ProviderUserKey)
-            {
-                Guid loId = MaxConvertLibrary.ConvertToGuid(typeof(object), loUser.ProviderUserKey);
-                if (this.LoadByIdCache(loId))
-                {
-                    return true;
-                }
-            }
-
-            return false;
         }
     }
 }

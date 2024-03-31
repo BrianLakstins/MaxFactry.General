@@ -41,6 +41,7 @@
 // <change date="2/5/2021" author="Brian A. Lakstins" description="Add more extensions that can be handled in the Views folder for VueJS apps.  Same extensions need to be handled in web.config in 'Process Static Files, or try as folder name' rewrite rule">
 // <change date="2/7/2021" author="Brian A. Lakstins" description="Fix issue loading extensions from assemblys">
 // <change date="3/3/2021" author="Brian A. Lakstins" description="Add ttf files.  Handle files from file system like they all might be binary.">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
 // </changelog>
 #endregion
 
@@ -51,12 +52,10 @@ namespace System.Web.Hosting
     using System.Collections.Generic;
     using System.IO;
     using System.Reflection;
-    using System.Text;
     using System.Web.Caching;
     using MaxFactry.General.AspNet.BusinessLayer;
     using MaxFactry.Core;
-    using MaxFactry.Base.DataLayer;
-    using MaxFactry.Base.BusinessLayer;
+    using MaxFactry.Base.DataLayer.Library;
 
     /// <summary>
     /// MaxFactry implementation of the VirtualPathProvider
