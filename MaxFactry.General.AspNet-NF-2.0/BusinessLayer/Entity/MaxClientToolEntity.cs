@@ -31,6 +31,7 @@
 // <change date="9/4/2020" author="Brian A. Lakstins" description="Add defaults">
 // <change date="9/6/2020" author="Brian A. Lakstins" description="Updated to handle versions.  Added latest 3.3 version of Bootstrap and 1 version of Jquery as defaults">
 // <change date="9/30/2020" author="Brian A. Lakstins" description="Add jquery plugins">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
 // </changelog>
 #endregion
 
@@ -38,11 +39,10 @@ namespace MaxFactry.General.AspNet.BusinessLayer
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
-    using System.Text.RegularExpressions;
     using MaxFactry.Core;
-    using MaxFactry.Base.BusinessLayer ;
+    using MaxFactry.Base.BusinessLayer;
     using MaxFactry.Base.DataLayer;
+    using MaxFactry.Base.DataLayer.Library;
     using MaxFactry.General.AspNet.DataLayer;
 
     /// <summary>

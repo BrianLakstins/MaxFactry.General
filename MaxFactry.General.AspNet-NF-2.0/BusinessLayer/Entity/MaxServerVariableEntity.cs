@@ -28,17 +28,17 @@
 #region Change Log
 // <changelog>
 // <change date="1/23/2015" author="Brian A. Lakstins" description="Initial Release">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
 // </changelog>
 #endregion
 
 namespace MaxFactry.General.AspNet.BusinessLayer
 {
     using System;
-    using System.IO;
-    using System.Text.RegularExpressions;
     using MaxFactry.Core;
     using MaxFactry.Base.BusinessLayer ;
     using MaxFactry.Base.DataLayer;
+    using MaxFactry.Base.DataLayer.Library;
     using MaxFactry.General.AspNet.DataLayer;
 
     /// <summary>

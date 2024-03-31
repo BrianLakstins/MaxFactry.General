@@ -32,17 +32,17 @@
 // <change date="10/23/2019" author="Brian A. Lakstins" description="Add loading a cached active version by file name.">
 // <change date="1/16/2021" author="Brian A. Lakstins" description="Update definition of cache keys.">
 // <change date="3/15/2021" author="Brian A. Lakstins" description="Allow external mime type">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
 // </changelog>
 #endregion
 
 namespace MaxFactry.General.AspNet.BusinessLayer
 {
     using System;
-    using System.IO;
-    using System.Text.RegularExpressions;
     using MaxFactry.Core;
     using MaxFactry.Base.BusinessLayer ;
     using MaxFactry.Base.DataLayer;
+    using MaxFactry.Base.DataLayer.Library;
     using MaxFactry.General.AspNet.DataLayer;
     using MaxFactry.General.BusinessLayer;
 
@@ -126,10 +126,10 @@ namespace MaxFactry.General.AspNet.BusinessLayer
             return this.Name.ToLowerInvariant().PadRight(500, ' ') + base.GetDefaultSortString();
         }
 
-        public virtual void GetFromDownloadUrl(string lsUrl)
+        public virtual void GetFromDownloadUrl(string lsUrl, string lsToken)
         {
             MaxFileDownloadEntity loEntity = MaxFileDownloadEntity.Create();
-            loEntity.Download(lsUrl);
+            loEntity.Download(lsUrl, lsToken);
             this.Content = loEntity.Content;
             this.ContentLength = loEntity.ContentLength;
             this.ContentType = loEntity.ContentType;
