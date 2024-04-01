@@ -30,6 +30,7 @@
 // <change date="12/10/2020" author="Brian A. Lakstins" description="Initial creation">
 // <change date="12/19/2020" author="Brian A. Lakstins" description="Add accesstoken to help in checking security for a user">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.  Restructing to use DataKey">
+// <change date="3/30/2024" author="Brian A. Lakstins" description="Updated to not use default value for DataKey.  Only use if specified.">
 // </changelog>
 #endregion
 
@@ -65,23 +66,38 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
         public string GetDataKey(int lnNum)
         {
-            string lsR = this.Item.GetValueString(_sDataKey);
-            if (this.Item.Contains(_sDataKey + "[" + lnNum + "]"))
+            string lsR = string.Empty;
+            if (lnNum < 0)
+            {
+                lsR = this.Item.GetValueString(_sDataKey);
+            }
+            else if (this.Item.Contains(_sDataKey + "[" + lnNum + "]"))
             {
                 lsR = this.Item.GetValueString(_sDataKey + "[" + lnNum + "]");
             }
 
             if (string.IsNullOrEmpty(lsR))
             {
-                Guid loR = MaxConvertLibrary.ConvertToGuid(typeof(object), this.Item.GetValueString(_sId));
-                if (lnNum >= 0 && this.Item.Contains(_sId + "[" + lnNum + "]"))
+                if (lnNum < 0)
                 {
-                    loR = MaxConvertLibrary.ConvertToGuid(typeof(object), this.Item.GetValueString(_sId + "[" + lnNum + "]"));
+                    lsR = this.Item.GetValueString(_sId);
+                }
+                else if (this.Item.Contains(_sId + "[" + lnNum + "]"))
+                {
+                    lsR = this.Item.GetValueString(_sId + "[" + lnNum + "]");
                 }
 
-                if (loR != Guid.Empty)
+                if (!string.IsNullOrEmpty(lsR))
                 {
-                    lsR = loR.ToString();
+                    Guid loR = MaxConvertLibrary.ConvertToGuid(typeof(object), lsR);
+                    if (loR != Guid.Empty)
+                    {
+                        lsR = loR.ToString();
+                    }
+                    else
+                    {
+                        lsR = string.Empty;
+                    }
                 }
             }
 

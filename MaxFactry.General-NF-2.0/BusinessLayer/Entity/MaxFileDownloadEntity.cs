@@ -29,6 +29,7 @@
 // <changelog>
 // <change date="6/4/2015" author="Brian A. Lakstins" description="Initial creation">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class. Use parent methods instead of repository.  Use HttpLibrary instead of respository for remote data.">
+// <change date="4/1/2024" author="Brian A. Lakstins" description="Only set file values if they were returned from the download.">
 // </changelog>
 #endregion
 
@@ -213,11 +214,26 @@ namespace MaxFactry.General.BusinessLayer
             MaxData loData = new MaxData(this.Data);
             if (null != loResponse && loResponse.Contains(MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.ResponseName.Content))
             {
-                loData.Set(this.DataModel.Name, loResponse[MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.ResponseName.ContentFileName]);
                 loData.Set(this.DataModel.Content, loResponse[MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.ResponseName.Content]);
                 loData.Set(this.DataModel.ContentLength, loResponse[MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.ResponseName.ContentLength]);
-                loData.Set(this.DataModel.ContentType, loResponse[MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.ResponseName.ContentType]);
-                loData.Set(this.DataModel.ResponseUrl, loResponse[MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.ResponseName.ContentLocation]);
+                if (null != loResponse[MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.ResponseName.ContentFileName])
+                {
+                    loData.Set(this.DataModel.Name, loResponse[MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.ResponseName.ContentFileName]);
+                }
+                if (null != loResponse[MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.ResponseName.ContentType])
+                {
+                    loData.Set(this.DataModel.ContentType, loResponse[MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.ResponseName.ContentType]);
+                }
+
+                if (null != loResponse[MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.ResponseName.ContentLastModified])
+                {
+                    loData.Set(this.DataModel.ContentDate, loResponse[MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.ResponseName.ContentLastModified]);
+                }
+
+                if (null != loResponse[MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.ResponseName.ContentLocation])
+                {
+                    loData.Set(this.DataModel.ResponseUrl, loResponse[MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.ResponseName.ContentLocation]);
+                }
             }
 
             return this.Load(loData);
