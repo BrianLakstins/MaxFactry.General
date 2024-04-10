@@ -113,6 +113,7 @@ namespace MaxFactry.General.BusinessLayer
 
         protected override string GetDataName(MaxDataModel loDataModel, string lsPropertyName)
         {
+#if net4_52 || netcore2_1
             if (lsPropertyName == this.GetPropertyName(() => this.RoleId))
             {
                 return this.DataModel.ParentId;
@@ -121,7 +122,7 @@ namespace MaxFactry.General.BusinessLayer
             {
                 return this.DataModel.ChildId;
             }
-
+#endif 
             return base.GetDataName(loDataModel, lsPropertyName);
         }
 
