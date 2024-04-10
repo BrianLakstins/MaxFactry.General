@@ -28,6 +28,7 @@
 #region Change Log
 // <changelog>
 // <change date="6/4/2015" author="Brian A. Lakstins" description="Initial creation">
+// <change date="4/10/2024" author="Brian A. Lakstins" description="Remove unsused methods">
 // </changelog>
 #endregion
 
@@ -42,41 +43,5 @@ namespace MaxFactry.General.DataLayer
 	/// </summary>
     public interface IMaxUserLogRepositoryProvider : IMaxBaseIdRepositoryProvider
 	{
-        /// <summary>
-        /// Selects a list of all user logs of the specified type created since a certain date.
-        /// </summary>
-        /// <param name="loData">The user log data.</param>
-        /// <param name="lnLogEntryType">Type of log entry.</param>
-        /// <param name="ldCreatedDate">Date the log entry was created.</param>
-        /// <returns>List of user logs.</returns>
-        MaxDataList SelectAllUserLogByLogEntryTypeCreatedDate(MaxData loData, int lnLogEntryType, DateTime ldCreatedDate);
-
-        /// <summary>
-        /// Selects a list of all user logs of the specified type created since a certain date.
-        /// </summary>
-        /// <param name="loData">The user log data.</param>
-        /// <param name="loUserId">The Id of the user.</param>
-        /// <param name="lnLogEntryType">Type of log entry.</param>
-        /// <returns>List of user logs.</returns>
-        MaxDataList SelectAllUserLogByUserIdLogEntryType(MaxData loData, Guid loUserId, int lnLogEntryType);
-
-        /// <summary>
-        /// Selects a list of all user logs of the specified type created since a certain date.
-        /// </summary>
-        /// <param name="loData">The user log data.</param>
-        /// <param name="loUserId">The Id of the user.</param>
-        /// <param name="ldCreatedDate">Date the log entry was created.</param>
-        /// <returns>List of user logs.</returns>
-        MaxDataList SelectAllUserLogByUserIdCreatedDate(MaxData loData, Guid loUserId, DateTime ldCreatedDate);
-
-        /// <summary>
-        /// Selects a list of all user logs of the specified type created since a certain date.
-        /// </summary>
-        /// <param name="loData">The user log data.</param>
-        /// <param name="loUserId">The Id of the user.</param>
-        /// <param name="lnLogEntryType">Type of log entry.</param>
-        /// <param name="ldCreatedDate">Date the log entry was created.</param>
-        /// <returns>List of user logs.</returns>
-        MaxDataList SelectAllUserLogByUserIdLogEntryTypeCreatedDate(MaxData loData, Guid loUserId, int lnLogEntryType, DateTime ldCreatedDate);
 	}
 }

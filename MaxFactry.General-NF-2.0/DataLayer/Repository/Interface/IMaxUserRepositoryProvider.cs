@@ -28,6 +28,7 @@
 #region Change Log
 // <changelog>
 // <change date="6/4/2015" author="Brian A. Lakstins" description="Initial creation">
+// <change date="4/10/2024" author="Brian A. Lakstins" description="Remove unsused methods">
 // </changelog>
 #endregion
 
@@ -42,60 +43,5 @@ namespace MaxFactry.General.DataLayer
 	/// </summary>
     public interface IMaxUserRepositoryProvider : IMaxBaseIdRepositoryProvider
 	{
-        /// <summary>
-        /// Selects all users that match the given username.
-        /// </summary>
-        /// <param name="loData">The user data.</param>
-        /// <param name="lsUserName">The username of the user.</param>
-        /// <param name="lnPageIndex">Page of data to select.</param>
-        /// <param name="lnPageSize">Size of the page to select.</param>
-        /// <param name="lsOrderBy">Sort information</param>
-        /// <param name="lnTotal">Total matching records.</param>
-        /// <returns>List of users.</returns>
-		MaxDataList SelectAllUserByUserName(MaxData loData, string lsUserName, int lnPageIndex, int lnPageSize, string lsOrderBy);
-
-        /// <summary>
-        /// Selects all users that match the given username.
-        /// </summary>
-        /// <param name="loData">The user data.</param>
-        /// <param name="lsEmail">The email of the user.</param>
-        /// <param name="lnPageIndex">Page of data to select.</param>
-        /// <param name="lnPageSize">Size of the page to select.</param>
-        /// <param name="lsOrderBy">Sort information</param>
-        /// <param name="lnTotal">Total matching records.</param>
-        /// <returns>List of users.</returns>
-        MaxDataList SelectAllUserByEmail(MaxData loData, string lsEmail, int lnPageIndex, int lnPageSize, string lsOrderBy);
-
-        /// <summary>
-        /// Selects all users that match the given username.
-        /// </summary>
-        /// <param name="loData">The user data.</param>
-        /// <param name="lsUserName">The username of the user.</param>
-        /// <param name="lnPageIndex">Page of data to select.</param>
-        /// <param name="lnPageSize">Size of the page to select.</param>
-        /// <param name="lsOrderBy">Sort information</param>
-        /// <param name="lnTotal">Total matching records.</param>
-        /// <returns>List of users.</returns>
-        MaxDataList SelectAllUserByUserNamePartial(MaxData loData, string lsUserName, int lnPageIndex, int lnPageSize, string lsOrderBy);
-
-        /// <summary>
-        /// Selects all users that match the given username.
-        /// </summary>
-        /// <param name="loData">The user data.</param>
-        /// <param name="lsEmail">The email of the user.</param>
-        /// <param name="lnPageIndex">Page of data to select.</param>
-        /// <param name="lnPageSize">Size of the page to select.</param>
-        /// <param name="lsOrderBy">Sort information</param>
-        /// <param name="lnTotal">Total matching records.</param>
-        /// <returns>List of users.</returns>
-        MaxDataList SelectAllUserByEmailPartial(MaxData loData, string lsEmail, int lnPageIndex, int lnPageSize, string lsOrderBy);
-
-        /// <summary>
-        /// Gets the count of users that match the username.
-        /// </summary>
-        /// <param name="loData">The user data.</param>
-        /// <param name="lsUserName">The username of the user.</param>
-        /// <returns>Count of users.</returns>
-        int GetUserCountByUserName(MaxData loData, string lsUserName);
 	}
 }
