@@ -604,7 +604,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             {
                 MaxUserAuthGrantEntity loEntity = MaxUserAuthGrantEntity.Create();
                 loEntity.IsActive = true;
-                loEntity.State = loEntity.Id.ToString();
+                loEntity.State = Guid.NewGuid().ToString();
                 loEntity.Nonce = Guid.NewGuid().ToString();
                 loEntity.ClientId = client_id;
                 loEntity.Scope = scope;
@@ -674,9 +674,8 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 string lsScope = this.Request.Form["scope"];
                 string lsAccessToken = this.Request.Form["access_token"];
 
-                Guid loId = MaxConvertLibrary.ConvertToGuid(typeof(object), lsState);
                 MaxUserAuthGrantEntity loEntity = MaxUserAuthGrantEntity.Create();
-                if (loEntity.LoadByDataKeyCache(loId.ToString()) && loEntity.IsActive)
+                if (loEntity.LoadByState(lsState) && loEntity.IsActive)
                 {
                     loEntity.IsActive = false;
                     loEntity.Update();

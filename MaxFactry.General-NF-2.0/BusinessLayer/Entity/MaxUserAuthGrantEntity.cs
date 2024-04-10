@@ -289,5 +289,17 @@ namespace MaxFactry.General.BusinessLayer
         {
             return this.LoadAllByPropertyCache(this.DataModel.UserKey, lsUserKey);
         }
-	}
+
+        public bool LoadByState(string lsState)
+        {
+            bool lbR = false;
+            MaxEntityList loList = this.LoadAllByProperty(this.DataModel.State, lsState);
+            if (loList.Count == 1)
+            {
+                lbR = this.Load(loList[0].GetData());
+            }
+
+            return lbR;
+        }
+    }
 }
