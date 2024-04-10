@@ -53,7 +53,6 @@ namespace MaxFactry.General.DataLayer
             this.RepositoryProviderType = typeof(MaxFactry.General.DataLayer.Provider.MaxSecurityRepositoryDefaultProvider);
             this.RepositoryType = typeof(MaxSecurityRepository);
 			this.RemoveType(this.AttributeIndexText);
-			this.RemoveType(this.Name);
 			this.RemoveType(this.RelationType);
 			this.RemoveType(this.RelativeOrder);
             this.RemoveType(this.OptionFlagList);

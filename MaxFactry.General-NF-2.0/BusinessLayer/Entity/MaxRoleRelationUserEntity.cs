@@ -111,6 +111,20 @@ namespace MaxFactry.General.BusinessLayer
                 typeof(MaxRoleRelationUserDataModel)) as MaxRoleRelationUserEntity;
         }
 
+        protected override string GetDataName(MaxDataModel loDataModel, string lsPropertyName)
+        {
+            if (lsPropertyName == this.GetPropertyName(() => this.RoleId))
+            {
+                return this.DataModel.ParentId;
+            }
+            else if (lsPropertyName == this.GetPropertyName(() => this.UserId))
+            {
+                return this.DataModel.ChildId;
+            }
+
+            return base.GetDataName(loDataModel, lsPropertyName);
+        }
+
         public MaxEntityList LoadAllByRoleIdCache(Guid loRoleId)
         {
             return this.LoadAllByParentIdCache(loRoleId);
