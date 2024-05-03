@@ -205,11 +205,12 @@ namespace MaxFactry.General.BusinessLayer
             return this.Name.ToLowerInvariant().PadRight(500, ' ') + base.GetDefaultSortString();
         }
 
-        public bool Download(string lsUrl, string lsToken)
+        public virtual bool Download(string lsUrl, string lsToken)
         {
             MaxIndex loRequest = new MaxIndex();
             loRequest.Add(MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.RequestContentName.RequestUrl, new Uri(lsUrl));
             loRequest.Add(MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.RequestContentName.Token, lsToken);
+            loRequest.Add(MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.RequestContentName.Timeout, new TimeSpan(0, 0, 300));
             MaxIndex loResponse = MaxHttpLibrary.GetResponse(loRequest);
             MaxData loData = new MaxData(this.Data);
             if (null != loResponse && loResponse.Contains(MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.ResponseName.Content))
@@ -351,23 +352,6 @@ namespace MaxFactry.General.BusinessLayer
             }
 
             return loR;
-        }
-
-        public virtual bool LoadContentRemote(string lsToken, string lsUrl)
-        {
-            bool lbR = false;
-            MaxIndex loRequest = new MaxIndex();
-            loRequest.Add(MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.RequestContentName.RequestUrl, lsUrl);
-            loRequest.Add(MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.RequestContentName.Token, lsToken);
-            MaxIndex loResponse = MaxHttpLibrary.GetResponse(loRequest);
-            if (null != loResponse)
-            {
-                this.Content = loResponse[MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.ResponseName.Content] as Stream;
-                this.ContentLength = MaxConvertLibrary.ConvertToLong(typeof(object), loResponse[MaxFactry.Base.DataLayer.Library.Provider.MaxHttpLibraryDefaultProvider.ResponseName.ContentLength]);
-                lbR = true;
-            }
-
-            return lbR;
         }
     }
 }
