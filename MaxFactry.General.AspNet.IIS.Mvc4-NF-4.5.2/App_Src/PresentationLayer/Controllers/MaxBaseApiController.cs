@@ -868,7 +868,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 }
                 else
                 {
-                    loR.Message.Error = "Item with the provided Property Key cannot be loaded.";
+                    loR.Message.Error = "Item with the provided Data Key cannot be loaded.";
                 }
             }            
 
@@ -928,18 +928,21 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         string[] laValue = loQuery.GetValues(lsName);
                         foreach (string lsValue in laValue)
                         {
+                            if (loR.Count > 0)
+                            {
+                                MaxIndex loFilterPartPrevious = loR[loR.Count - 1] as MaxIndex;
+                                if (!loFilterPartPrevious.Contains("Condition"))
+                                {
+                                    loFilterPartPrevious.Add("EndGroup", 1);
+                                }
+                            }
+
                             if (lsValue.Contains("\t"))
                             {
-                                MaxIndex loFilterPart = loR[loR.Count - 1] as MaxIndex;
-                                if (!loFilterPart.Contains("Condition"))
-                                {
-                                    loFilterPart.Add("EndGroup", 1);
-                                }
-
                                 string[] laPartValue = lsValue.Split(new char[] { '\t' });
                                 for (int lnPV = 0; lnPV < laPartValue.Length; lnPV++)
                                 {
-                                    loFilterPart = new MaxIndex();
+                                    MaxIndex loFilterPart = new MaxIndex();
                                     loFilterPart.Add("Name", lsName);
                                     loFilterPart.Add("Operator", "=");
                                     loFilterPart.Add("Value", laPartValue[lnPV]);
@@ -967,6 +970,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                             else
                             {
                                 MaxIndex loFilterPart = new MaxIndex();
+                                loFilterPart.Add("StartGroup", 1);
                                 loFilterPart.Add("Name", lsName);
                                 loFilterPart.Add("Operator", "=");
                                 loFilterPart.Add("Value", lsValue);
@@ -975,10 +979,14 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         }
                     }
 
-                    for (int lnFP = 0; lnFP < loR.Count - 1; lnFP++)
+                    for (int lnFP = 0; lnFP < loR.Count; lnFP++)
                     {
                         MaxIndex loFilterPart = loR[lnFP] as MaxIndex;
-                        if (!loFilterPart.Contains("Condition"))
+                        if (lnFP == loR.Count - 1 && !loFilterPart.Contains("EndGroup"))
+                        {
+                            loFilterPart.Add("EndGroup", 1);
+                        }
+                        else if (!loFilterPart.Contains("Condition"))
                         {
                             loFilterPart.Add("Condition", "AND");
                         }
