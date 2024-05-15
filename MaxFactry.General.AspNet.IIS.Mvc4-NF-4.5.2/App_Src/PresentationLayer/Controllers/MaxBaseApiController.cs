@@ -903,8 +903,15 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             }
 
             if (lbIsLoaded) 
-            { 
-                loR.Item = loEntity.MapIndex(loRequest.ResponsePropertyList);
+            {
+                MaxIndex loEntityIndex = loEntity.MapIndex(loRequest.ResponsePropertyList);
+                string[] laKey = loEntityIndex.GetSortedKeyList();
+                foreach (string lsKey in laKey)
+                {
+                    object loValue = loEntityIndex[lsKey];
+                    loR.Item[lsKey] = loValue;
+                }
+
                 if (string.IsNullOrEmpty(loR.Message.Success))
                 {
                     loR.Message.Success = "Got Item";
