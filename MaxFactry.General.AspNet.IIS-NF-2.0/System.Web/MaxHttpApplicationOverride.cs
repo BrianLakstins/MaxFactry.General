@@ -129,17 +129,7 @@ namespace System.Web
             MaxFactry.General.AspNet.IIS.MaxAppLibrary.Initialize(loConfig);
             this.FixAppDomainRestartWhenTouchingFiles();
             string lsVersion = MaxConfigurationLibrary.GetValue(MaxEnumGroup.ScopeApplication, "MaxAssemblyFileVersion").ToString();
-            //// Send an email about the application starting.
-            string lsContent = "START\r\nUTC Time: " + DateTime.UtcNow.ToString() + "\r\n";
-            lsContent += "Application Instance [" + MaxAppLibrary.GetApplicationRunId().ToString() + "] started\r\n";
-            lsContent += MaxFactry.Core.MaxLogLibrary.GetEnvironmentInformation() + "\r\n\r\n" + MaxAppLibrary.GetApplicationRunId().ToString();
-            MaxEmailEntity loEmail = MaxEmailEntity.Create();
-            loEmail.RelationType = "MaxApplicationNotification";
-            loEmail.RelationId = MaxConvertLibrary.ConvertToGuid(typeof(object), MaxAppLibrary.GetApplicationRunId());
-            loEmail.Subject = "[AppStartStop][" + lsVersion + "][" + this.Name + "] " + MaxAppLibrary.GetApplicationStartDateTime().ToString();
-            loEmail.Content = lsContent;
-            loEmail.Send();
-            MaxFactry.Core.MaxLogLibrary.Log(MaxFactry.Core.MaxEnumGroup.LogDebug, "Application_Start_Base", "MaxHttpApplicationOverride");
+            MaxFactry.Core.MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "Application_Start_Handler", MaxFactry.Core.MaxEnumGroup.LogInfo, "Starting Application {Name} for instance {InstanceId} as {Version} in environment {Environment}", this.Name, MaxAppLibrary.GetApplicationRunId().ToString(), lsVersion, MaxFactry.Core.MaxLogLibrary.GetEnvironmentInformation()));
         }
 
         protected virtual void Session_Start_Handler(object sender, EventArgs e)
@@ -203,17 +193,11 @@ namespace System.Web
                 //// Send an email about the application ending.
                 lsContent += MaxFactry.Core.MaxLogLibrary.GetEnvironmentInformation() + "\r\n\r\n" + MaxAppLibrary.GetApplicationRunId().ToString();
                 string lsVersion = MaxConfigurationLibrary.GetValue(MaxEnumGroup.ScopeApplication, "MaxAssemblyFileVersion").ToString();
-                MaxEmailEntity loEmail = MaxEmailEntity.Create();
-                loEmail.RelationType = "MaxApplicationNotification";
-                loEmail.RelationId = MaxConvertLibrary.ConvertToGuid(typeof(object), MaxAppLibrary.GetApplicationRunId());
-                loEmail.Subject = "[AppStartStop][" + lsVersion + "][" + this.Name + "] " + MaxAppLibrary.GetApplicationStartDateTime().ToString();
-                loEmail.Content = lsContent;
-                loEmail.Send();
-                MaxLogLibrary.Log(new MaxLogEntryStructure("Application_End_Handler", MaxEnumGroup.LogInfo, "Application Instance [" + MaxAppLibrary.GetApplicationRunId().ToString() + "] end after " + MaxAppLibrary.GetTimeSinceApplicationStart().ToString() + " milliseconds"));
+                MaxFactry.Core.MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "Application_End_Handler", MaxFactry.Core.MaxEnumGroup.LogInfo, "Ending Application {Name} for instance {InstanceId} as {Version} in environment {Environment} after {Time} milliseconds", this.Name, MaxAppLibrary.GetApplicationRunId().ToString(), lsVersion, MaxFactry.Core.MaxLogLibrary.GetEnvironmentInformation(), MaxAppLibrary.GetTimeSinceApplicationStart()));
             }
             catch (Exception loE)
             {
-                MaxLogLibrary.Log(new MaxLogEntryStructure("Application_End_Handler", MaxEnumGroup.LogError, "Error in Application End Handler {ERROR}", loE));
+                MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "Application_End_Handler", MaxEnumGroup.LogError, "Error in Application End Handler {ERROR}", loE));
             }
         }
 
