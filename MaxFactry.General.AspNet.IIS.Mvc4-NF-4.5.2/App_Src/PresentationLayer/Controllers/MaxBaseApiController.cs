@@ -715,6 +715,14 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                         DateTime loDateTime = MaxConvertLibrary.ConvertToDateTimeUtc(typeof(object), lsValue);
                                         loProperty.SetValue(loEntityCopy, loDateTime);
                                     }
+                                    else if (loProperty.PropertyType == typeof(MaxIndex))
+                                    {
+                                        MaxIndex loMaxIndex = MaxConvertLibrary.DeserializeObject(typeof(object), lsValue, typeof(MaxIndex)) as MaxIndex;
+                                        if (null != loMaxIndex)
+                                        {
+                                            loProperty.SetValue(loEntityCopy, loMaxIndex);
+                                        }
+                                    }
                                     else
                                     {
                                         loProperty.SetValue(loEntityCopy, lsValue);
