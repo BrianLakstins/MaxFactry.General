@@ -31,6 +31,7 @@
 // <change date="3/20/2024" author="Brian A. Lakstins" description="Update for change to MaxDataModel">
 // <change date="3/20/2024" author="Brian A. Lakstins" description="Happy birthday to my mom.  Sara Jean Lakstins (Cartwright) - 3/20/1944 to 3/14/2019.">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Change parent class.">
+// <change date="6/19/2024" author="Brian A. Lakstins" description="Add remote url field.">
 // </changelog>
 #endregion
 
@@ -85,10 +86,15 @@ namespace MaxFactry.General.DataLayer
 		/// </summary>
 		public readonly string TokenResult = "TokenResult";
 
-		/// <summary>
-		/// Initializes a new instance of the MaxUserAuthTokenDataModel class.
-		/// </summary>
-		public MaxUserAuthTokenDataModel() : base()
+        /// <summary>
+        /// Remote Url
+        /// </summary>
+        public readonly string RemoteUrl = "RemoteUrl";
+
+        /// <summary>
+        /// Initializes a new instance of the MaxUserAuthTokenDataModel class.
+        /// </summary>
+        public MaxUserAuthTokenDataModel() : base()
 		{
             this.SetDataStorageName("MaxSecurityUserAuthToken");
 			this.AddType(this.UserKey, typeof(string));
@@ -101,8 +107,9 @@ namespace MaxFactry.General.DataLayer
 			this.AddNullable(this.TokenType, typeof(string));
 			this.AddNullable(this.TokenResult, typeof(MaxLongString));
 			this.AddAttribute(this.TokenResult, "IsEncrypted", "true");
+            this.AddNullable(this.RemoteUrl, typeof(string));
 
-			this.RepositoryProviderType = typeof(MaxFactry.General.DataLayer.Provider.MaxGeneralRepositoryDefaultProvider);
+            this.RepositoryProviderType = typeof(MaxFactry.General.DataLayer.Provider.MaxGeneralRepositoryDefaultProvider);
             this.RepositoryType = typeof(MaxGeneralRepository);
 		}
 	}

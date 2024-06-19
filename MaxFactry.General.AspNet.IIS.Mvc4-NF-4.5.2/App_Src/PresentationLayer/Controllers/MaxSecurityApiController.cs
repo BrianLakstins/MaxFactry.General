@@ -35,6 +35,7 @@
 // <change date="1/17/2021" author="Brian A. Lakstins" description="Don't include roles in user list because of so many database queries">
 // <change date="1/19/2021" author="Brian A. Lakstins" description="Fix issue getting user by email address">
 // <change date="2/24/2021" author="Brian A. Lakstins" description="Update password reset process.">
+// <change date="6/19/2024" author="Brian A. Lakstins" description="Add user related logging.  Return configuration informaion on user requests.">
 // </changelog>
 #endregion
 
@@ -56,6 +57,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
     using MaxFactry.General.BusinessLayer;
     using MaxFactry.Base.DataLayer.Library;
     using System.Web.Security;
+    using System.Globalization;
 
     [MaxRequireHttps(Order = 1)]
     [System.Web.Http.AllowAnonymous]
@@ -94,6 +96,8 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         }
 
         /// <summary>
+        /// Used for server to server access to get a token to impersonate a certain user based on MaxUserAuthEntity created that is associated with that user
+        /// 
         /// PrettyMail takes the code and directly (i.e., not via a REDIRECT in the user’s browser, but via a server-to-server request) 
         /// queries GMail with both code and shared secret, to prove its identity: 
         /// GET gmail.com/oauth2/token?client_id=ABC&client_secret=XYZ&code=big_long_thing
@@ -222,6 +226,9 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         }
 
         /// <summary>
+        /// GET is used to get a list of non expired tokens.  The token value is not sent with the list.
+        /// DELETE is used to get a list of non expired tokens and delete one token.
+        /// POST is used to create a new token
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -320,7 +327,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         }
                         else
                         {
-                            loR.Message.Warning = "Token already exists with expiration date near requested date.";
+                            loR.Message.Warning = "Token already exists with expiration date " + loCurrentEntity.ExpirationDate.ToString("o", CultureInfo.InvariantCulture);
                         }
                     }
                 }
@@ -330,6 +337,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         }
 
         /// <summary>
+        /// Gets the current logged in user
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -343,13 +351,31 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 UserName = "UserName",
                 Email = "Email",
                 Id = "Id",
-                RoleList = "RoleList"
+                RoleList = "RoleList",
+                LastPasswordChangedDate = "LastPasswordChangedDate",
+                Comment = "Comment",
+                LastActivityDate = "LastActivityDate",
+                LastLoginDate = "LastLoginDate",
+                PasswordQuestion = "PasswordQuestion",
+                IsPasswordResetNeeded = "IsPasswordResetNeeded",
+                UserConfiguration = "UserConfiguration"
             };
 
             MaxApiResponseViewModel loR = GetResponse(loResponseItem);
             if (this.Request.Method != HttpMethod.Options)
             {
                 MaxApiRequestViewModel loRequest = await this.GetRequest();
+                MaxUserConfigurationEntity loConfiguration = MaxUserConfigurationEntity.Create().GetCurrent();
+                loR.Item.Add(loResponseItem.UserConfiguration, loConfiguration.MapIndex(
+                        loConfiguration.GetPropertyName(() => loConfiguration.OnlineWindowDuration),
+                        loConfiguration.GetPropertyName(() => loConfiguration.MinRequiredNonAlphanumericCharacters),
+                        loConfiguration.GetPropertyName(() => loConfiguration.MinRequiredPasswordLength),
+                        loConfiguration.GetPropertyName(() => loConfiguration.PasswordStrengthRegularExpression),
+                        loConfiguration.GetPropertyName(() => loConfiguration.ApplicationName),
+                        loConfiguration.GetPropertyName(() => loConfiguration.EnablePasswordReset),
+                        loConfiguration.GetPropertyName(() => loConfiguration.EnablePasswordRetrieval)
+                    ));
+
                 MembershipUser loUser = this.GetUser(loRequest);
                 if (null != loUser)
                 {
@@ -360,6 +386,17 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         loR.Item.Add(loResponseItem.UserName, loUser.UserName);
                         loR.Item.Add(loResponseItem.Email, loUser.Email);
                         loR.Item.Add(loResponseItem.Id, MaxConvertLibrary.ConvertToString(typeof(object), loUser.ProviderUserKey).ToLower());
+                        loR.Item.Add(loResponseItem.LastPasswordChangedDate, loUser.LastPasswordChangedDate);
+                        loR.Item.Add(loResponseItem.Comment, loUser.Comment);
+                        loR.Item.Add(loResponseItem.LastActivityDate, loUser.LastActivityDate);
+                        loR.Item.Add(loResponseItem.LastLoginDate, loUser.LastLoginDate);
+                        loR.Item.Add(loResponseItem.PasswordQuestion, loUser.PasswordQuestion);
+
+                        if (loUser is MaxMembershipUser)
+                        {
+                            loR.Item.Add(loResponseItem.IsPasswordResetNeeded, ((MaxMembershipUser)loUser).IsPasswordResetNeeded);
+                        }
+
                         string[] laRole = Roles.GetRolesForUser(loUser.UserName);
                         loR.Item.Add(loResponseItem.RoleList, laRole);
                         loR.Message.Success = "Got current user information";
@@ -657,6 +694,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         }
 
         /// <summary>
+        /// Attempts to log the user into the application
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -676,12 +714,24 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 LastActivityDate = "LastActivityDate",
                 LastLoginDate = "LastLoginDate",
                 PasswordQuestion = "PasswordQuestion",
-                IsPasswordResetNeeded = "IsPasswordResetNeeded"
+                IsPasswordResetNeeded = "IsPasswordResetNeeded",
+                UserConfiguration = "UserConfiguration"
             };
 
             MaxApiResponseViewModel loR = GetResponse(loResponseItem);
             if (this.Request.Method != HttpMethod.Options)
             {
+                MaxUserConfigurationEntity loConfiguration = MaxUserConfigurationEntity.Create().GetCurrent();
+                loR.Item.Add(loResponseItem.UserConfiguration, loConfiguration.MapIndex(
+                        loConfiguration.GetPropertyName(() => loConfiguration.OnlineWindowDuration),
+                        loConfiguration.GetPropertyName(() => loConfiguration.MinRequiredNonAlphanumericCharacters),
+                        loConfiguration.GetPropertyName(() => loConfiguration.MinRequiredPasswordLength),
+                        loConfiguration.GetPropertyName(() => loConfiguration.PasswordStrengthRegularExpression),
+                        loConfiguration.GetPropertyName(() => loConfiguration.ApplicationName),
+                        loConfiguration.GetPropertyName(() => loConfiguration.EnablePasswordReset),
+                        loConfiguration.GetPropertyName(() => loConfiguration.EnablePasswordRetrieval)
+                    ));
+
                 var loRequestItem = new
                 {
                     UserName = "UserName",
@@ -800,6 +850,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         }
 
         /// <summary>
+        /// Logs the user out of the application
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -816,6 +867,19 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             if (this.Request.Method != HttpMethod.Options)
             {
                 MaxApiRequestViewModel loRequest = await this.GetRequest();
+                MembershipUser loUser = this.GetUser(loRequest);
+                if (null != loUser)
+                {
+                    Guid loUserId = Guid.Empty;
+                    if (Guid.TryParse(loUser.ProviderUserKey.ToString(), out loUserId) && loUserId != Guid.Empty)
+                    {
+                        MaxUserLogEntity loMaxUserLog = MaxUserLogEntity.Create();
+                        loMaxUserLog.Insert(
+                            loUserId,
+                            MaxUserLogEntity.LogEntryTypeLogout,
+                            this.GetType() + ".Logout()");
+                    }
+                }
 
                 try
                 {

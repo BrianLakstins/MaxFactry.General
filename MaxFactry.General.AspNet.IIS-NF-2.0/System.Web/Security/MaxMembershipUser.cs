@@ -30,6 +30,7 @@
 // <change date="2/22/2014" author="Brian A. Lakstins" description="Initial creation">
 // <change date="2/24/2021" author="Brian A. Lakstins" description="Add password reset method.">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
+// <change date="6/19/2024" author="Brian A. Lakstins" description="Update user related logging.">
 // </changelog>
 #endregion
 
@@ -181,7 +182,7 @@ namespace System.Web.Security
                     loMaxUserLog.Insert(
                         this._oMaxUser.Id,
                         MaxUserLogEntity.LogEntryTypeLockout,
-                        lnLoginFailureCount.ToString() + " failures since " + ldPasswordWindow.ToString());
+                        this.GetType() + ".IsLockedOut - " + lnLoginFailureCount.ToString() + " failures since " + ldPasswordWindow.ToString());
                     lbR = true;
                 }
                 else if (lbR && ldLastUnlock > ldLastLoginFailure)

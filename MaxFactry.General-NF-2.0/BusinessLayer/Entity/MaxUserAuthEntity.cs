@@ -30,6 +30,7 @@
 // <change date="11/3/2020" author="Brian A. Lakstins" description="Initial creation">
 // <change date="1/16/2021" author="Brian A. Lakstins" description="Update definition of cache keys.">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class. Use parent methods instead of repository.">
+// <change date="6/19/2024" author="Brian A. Lakstins" description="Add user related logging.">
 // </changelog>
 #endregion
 
@@ -196,7 +197,29 @@ namespace MaxFactry.General.BusinessLayer
             Guid loSaltId = Guid.NewGuid();
             this.Set(this.DataModel.ClientSecretHashSaltId, loSaltId);
             this.Set(this.DataModel.ClientSecretHash, this.Hash(loSaltId, this.ClientSecret));
-            return base.Insert();
+            bool lbR = base.Insert();
+            Guid loUserId = Guid.Empty;
+            if (Guid.TryParse(this.UserKey, out loUserId) && loUserId != Guid.Empty)
+            {
+                MaxUserLogEntity loMaxUserLog = MaxUserLogEntity.Create();
+                if (lbR)
+                {
+                    loMaxUserLog.Insert(
+                        loUserId,
+                        MaxUserLogEntity.LogEntryTypeUserAuthInsert,
+                        this.GetType() + ".Insert() - succeeded");
+                }
+                else
+                {
+                    loMaxUserLog.Insert(
+                        loUserId,
+                        MaxUserLogEntity.LogEntryTypeUserAuthInsert,
+                        this.GetType() + ".Insert() - failed");
+                }
+            }
+
+
+            return lbR;
         }
 
         /// <summary>

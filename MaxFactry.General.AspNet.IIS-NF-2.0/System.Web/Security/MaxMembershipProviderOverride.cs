@@ -40,6 +40,7 @@
 // <change date="12/19/2020" author="Brian A. Lakstins" description="Handle multiple users sharing an email address so none are returned when looking for username by email">
 // <change date="6/9/2021" author="Brian A. Lakstins" description="Only log user being online once per 5 minutes">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
+// <change date="6/19/2024" author="Brian A. Lakstins" description="Add user related logging.  Updates to removal of an unneeded method.">
 // </changelog>
 #endregion
 
@@ -290,7 +291,7 @@ namespace System.Web.Security
 		{
 			MaxUserEntity loMaxUser = this.GetMaxUser(username);
 			MaxUserPasswordEntity loMaxPassword = MaxUserPasswordEntity.Create().GetLatestByUserId(loMaxUser.Id);
-			if (null == loMaxPassword || this.CheckPassword(password, loMaxPassword))
+			if (null == loMaxPassword || loMaxPassword.CheckPassword(password))
 			{
 				if (this.CheckPasswordData(password, newPasswordQuestion, newPasswordAnswer) == MembershipCreateStatus.Success)
 				{
@@ -303,7 +304,7 @@ namespace System.Web.Security
                         loMaxUserLog.Insert(
                             loMaxUser.Id,
                             MaxUserLogEntity.LogEntryTypePasswordChange,
-                            "Question and answer updated for question [" + newPasswordQuestion + "]");
+                            this.GetType() + ".ChangePasswordQuestionAndAnswer(string username, string password, string newPasswordQuestion, string newPasswordAnswer) - Question and answer updated for question [" + newPasswordQuestion + "]");
 
                         return true;
                     }
@@ -351,7 +352,7 @@ namespace System.Web.Security
 		{
 			MaxUserEntity loMaxUser = this.GetMaxUser(username);
 			MaxUserPasswordEntity loMaxPassword = MaxUserPasswordEntity.Create().GetLatestByUserId(loMaxUser.Id);
-			if (null == loMaxPassword || this.CheckPassword(oldPassword, loMaxPassword))
+			if (null == loMaxPassword || loMaxPassword.CheckPassword(oldPassword))
 			{
                 string lsPasswordQuestion = string.Empty;
                 string lsPasswordAnswer = string.Empty;
@@ -393,7 +394,7 @@ namespace System.Web.Security
                         loMaxUserLog.Insert(
                             loMaxUser.Id,
                             MaxUserLogEntity.LogEntryTypePasswordChange,
-                            "ChangePassword");
+                            this.GetType() + ".ChangePassword(string username, string oldPassword, string newPassword)");
                         return true;
                     }
 				}
@@ -459,7 +460,7 @@ namespace System.Web.Security
                     loMaxUserLog.Insert(
                         loMaxUser.Id,
                         MaxUserLogEntity.LogEntryTypePasswordChange,
-                        "ResetPassword");
+                        this.GetType() + ".ResetPassword(string username, string answer)");
                     return lsPassword;
                 }
 			}
@@ -491,7 +492,7 @@ namespace System.Web.Security
 			loMaxUserLog.Insert(
                 loMaxUser.Id,
                 MaxUserLogEntity.LogEntryTypeUserChange,
-                "Previous [Comment=" + loMaxUser.Comment + "][Email=" + loMaxUser.Email + "][IsActive=" + loMaxUser.IsActive + "]");
+                this.GetType() + ".UpdateUser(MembershipUser user)");
 
 			loMaxUser.Comment = user.Comment;
 			loMaxUser.Email = user.Email;
@@ -524,7 +525,7 @@ namespace System.Web.Security
                 {
                     if (!string.IsNullOrEmpty(loMaxPassword.Password))
                     {
-                        lbR = this.CheckPassword(password, loMaxPassword);
+                        lbR = loMaxPassword.CheckPassword(password);
                     }
                     else
                     {
@@ -536,6 +537,15 @@ namespace System.Web.Security
             {
                 loMaxUser = MaxUserEntity.Create();
                 lbR = loMaxUser.ValidateUserExternal(username, password);
+            }
+
+            MaxUserLogEntity loMaxUserLog = MaxUserLogEntity.Create();
+            if (lbR)
+            {
+                loMaxUserLog.Insert(
+                    loMaxUser.Id,
+                    MaxUserLogEntity.LogEntryTypeLogin,
+                    this.GetType() + ".ValidateUser(string username, string password) - succeeded");
             }
 
             return lbR;
@@ -555,7 +565,7 @@ namespace System.Web.Security
 				loMaxUserLog.Insert(
                     loMaxUser.Id,
                     MaxUserLogEntity.LogEntryTypeUnlockout,
-                    "MaxMembershipProvider.UnlockUser(" + userName + ")");
+                    this.GetType() + ".UnlockUser(string userName)");
 			}
 			catch (Exception loE)
 			{
@@ -593,7 +603,7 @@ namespace System.Web.Security
                         loMaxUserLog.Insert(
                             loMaxUser.Id,
                             MaxUserLogEntity.LogEntryTypeActivity,
-                            "GetUser(object providerUserKey, bool userIsOnline)");
+                            this.GetType() + ".GetUser(object providerUserKey, bool userIsOnline)");
                         MaxCacheRepository.Set(this.GetType(), lsKey, DateTime.UtcNow.Ticks.ToString());
                     }
                 }
@@ -631,7 +641,7 @@ namespace System.Web.Security
                         loMaxUserLog.Insert(
                             loMaxUser.Id,
                             MaxUserLogEntity.LogEntryTypeActivity,
-                            "GetUser(string username, bool userIsOnline)");
+                            this.GetType() + ".GetUser(string username, bool userIsOnline)");
                         MaxCacheRepository.Set(this.GetType(), lsKey, DateTime.UtcNow.Ticks.ToString());
                     }
 				}
@@ -702,9 +712,9 @@ namespace System.Web.Security
 			loMaxUserLog.Insert(
                 loMaxUser.Id,
                 MaxUserLogEntity.LogEntryTypeUserDelete,
-                "DeleteAllRelatedData=" + deleteAllRelatedData.ToString());
+                this.GetType() + ".DeleteUser(string username, bool deleteAllRelatedData)");
 
-			loMaxUser.Delete();
+            loMaxUser.Delete();
 			return true;
 		}
 
@@ -778,38 +788,6 @@ namespace System.Web.Security
 
 			return loCollection;
 		}
-
-        /// <summary>
-        /// Checks the password that is passed to make sure it matches the current password
-        /// </summary>
-        /// <param name="lsPasswordToCheck">Password to check</param>
-        /// <param name="loMaxPassword">Password entity with current password information</param>
-        /// <returns>true if matching, false if not matching</returns>
-        protected bool CheckPassword(string lsPasswordToCheck, MaxUserPasswordEntity loMaxPassword)
-        {
-            bool lbR = false;
-            if (null != loMaxPassword)
-            {
-                lbR = loMaxPassword.CheckPassword(lsPasswordToCheck);
-                MaxUserLogEntity loMaxUserLog = MaxUserLogEntity.Create();
-                if (lbR)
-                {
-                    loMaxUserLog.Insert(
-                        loMaxPassword.UserId,
-                        MaxUserLogEntity.LogEntryTypeLogin,
-                        "CheckPassword Succeeded");
-                }
-                else
-                {
-                    loMaxUserLog.Insert(
-                        loMaxPassword.UserId,
-                        MaxUserLogEntity.LogEntryTypePasswordFail,
-                        "CheckPassword failed using [" + lsPasswordToCheck + "]");
-                }
-            }
-
-            return lbR;
-        }
 
         /// <summary>
         /// Checks to make sure there is not another user with this same username.

@@ -33,6 +33,7 @@
 // <change date="11/8/2017" author="Brian A. Lakstins" description="Remove unnecessary setlist calls">
 // <change date="1/16/2021" author="Brian A. Lakstins" description="Update definition of cache keys.">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.  Add Id entry for salt.  Use parent methods instead of repository.">
+// <change date="6/19/2024" author="Brian A. Lakstins" description="Add user related logging.">
 // </changelog>
 #endregion
 
@@ -304,29 +305,46 @@ namespace MaxFactry.General.BusinessLayer
         /// <returns>true for match.  False if not a match.</returns>
         public bool CheckPassword(string lsPassword)
         {
+            bool lbR = false;
             if (this.PasswordFormat == MaxUserPasswordEntity.MembershipPasswordFormatClear)
             {
                 if (lsPassword.Equals(this.Password))
                 {
-                    return true;
+                    lbR = true;
                 }
             }
             else if (this.PasswordFormat == MaxUserPasswordEntity.MembershipPasswordFormatEncrypted)
             {
                 if (lsPassword.Equals(this.DecryptPassword(this.EncryptionSaltId, this.Password)))
                 {
-                    return true;
+                    lbR = true;
                 }
             }
             else if (this.PasswordFormat == MaxUserPasswordEntity.MembershipPasswordFormatHashed)
             {
                 if (this.Password.Equals(this.HashPassword(this.EncryptionSaltId, lsPassword)))
                 {
-                    return true;
+                    lbR = true;
                 }
             }
 
-            return false;
+            MaxUserLogEntity loMaxUserLog = MaxUserLogEntity.Create();
+            if (lbR)
+            {
+                loMaxUserLog.Insert(
+                    this.UserId,
+                    MaxUserLogEntity.LogEntryTypeLogin,
+                    this.GetType() + ".CheckPassword(string lsPassword) - succeeded");
+            }
+            else
+            {
+                loMaxUserLog.Insert(
+                    this.UserId,
+                    MaxUserLogEntity.LogEntryTypePasswordFail,
+                    this.GetType() + ".CheckPassword(string lsPassword) - failed");
+            }
+
+            return lbR;
         }
 
         /// <summary>

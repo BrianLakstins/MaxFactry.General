@@ -34,6 +34,7 @@
 // <change date="1/16/2021" author="Brian A. Lakstins" description="Update definition of cache keys.">
 // <change date="2/24/2021" author="Brian A. Lakstins" description="Update auth code storage">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class. Use parent methods instead of repository.">
+// <change date="6/19/2024" author="Brian A. Lakstins" description="Remove unneeded method.">
 // </changelog>
 #endregion
 
@@ -238,34 +239,6 @@ namespace MaxFactry.General.BusinessLayer
             loDataQuery.AddFilter(this.Email, "LIKE", "%" + lsEmail + "%");
             MaxData loData = new MaxData(this.Data);
             return this.LoadAllByPageCache(loData, lnPageSize, lnPageIndex, lsPropertySort, loDataQuery, laPropertyNameList);
-        }
-
-        /// <summary>
-        /// Checks the password that is passed to make sure it matches the current password
-        /// </summary>
-        /// <param name="lsPasswordToCheck">Password to check</param>
-        /// <param name="loUserPassword">Password entity with current password information</param>
-        /// <returns>true if matching, false if not matching</returns>
-        protected bool CheckPassword(string lsPasswordToCheck, MaxUserPasswordEntity loUserPassword)
-        {
-            bool lbR = loUserPassword.CheckPassword(lsPasswordToCheck);
-            MaxUserLogEntity loMaxUserLog = MaxUserLogEntity.Create();
-            if (lbR)
-            {
-                loMaxUserLog.Insert(
-                    loUserPassword.UserId,
-                    MaxUserLogEntity.LogEntryTypeLogin,
-                    "CheckPassword Succeeded");
-            }
-            else
-            {
-                loMaxUserLog.Insert(
-                    loUserPassword.UserId,
-                    MaxUserLogEntity.LogEntryTypePasswordFail,
-                    "CheckPassword failed using [" + lsPasswordToCheck + "]");
-            }
-
-            return lbR;
         }
 
         /// <summary>

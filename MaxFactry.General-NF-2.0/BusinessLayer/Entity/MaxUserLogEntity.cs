@@ -30,6 +30,7 @@
 // <change date="6/4/2015" author="Brian A. Lakstins" description="Initial creation">
 // <change date="12/2/2019" author="Brian A. Lakstins" description="Added process to archive logs after 30 days">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class. Use parent methods instead of repository.">
+// <change date="6/19/2024" author="Brian A. Lakstins" description="Add user related logging types.">
 // </changelog>
 #endregion
 
@@ -100,13 +101,23 @@ namespace MaxFactry.General.BusinessLayer
         /// <summary>
         /// Value for delete log entry type
         /// </summary>
-        public const int LogEntryTypeUserDelete = 9;
-        
-		/// <summary>
+        public const int LogEntryTypeUserDelete = 10;
+
+        /// <summary>
+        /// Value for adding a token for the user
+        /// </summary>
+        public const int LogEntryTypeUserAuthTokenInsert = 11;
+
+        /// <summary>
+        /// Value for adding an auth for a user
+        /// </summary>
+        public const int LogEntryTypeUserAuthInsert = 12;
+
+        /// <summary>
         /// Initializes a new instance of the MaxUserLogEntity class
-		/// </summary>
-		/// <param name="loData">object to hold data</param>
-		public MaxUserLogEntity(MaxData loData)
+        /// </summary>
+        /// <param name="loData">object to hold data</param>
+        public MaxUserLogEntity(MaxData loData)
 			: base(loData)
 		{
 		}

@@ -45,9 +45,9 @@ namespace MaxFactry.General.BusinessLayer
 	/// </summary>
 	public class MaxRoleRelationUserEntity : MaxBaseRelationGuidKeyEntity
 	{
-		/// <summary>
-        /// Initializes a new instance of the MaxRoleEntity class
-		/// </summary>
+        /// <summary>
+        /// Initializes a new instance of the MaxRoleRelationUserEntity class
+        /// </summary>
         /// <param name="loData">object to hold data</param>
         public MaxRoleRelationUserEntity(MaxData loData)
 			: base(loData)
@@ -55,7 +55,7 @@ namespace MaxFactry.General.BusinessLayer
 		}
 
         /// <summary>
-        /// Initializes a new instance of the MaxRoleEntity class
+        /// Initializes a new instance of the MaxRoleRelationUserEntity class
         /// </summary>
         /// <param name="loDataModelType">Type of data model.</param>
         public MaxRoleRelationUserEntity(Type loDataModelType)

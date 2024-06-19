@@ -29,6 +29,7 @@
 // <changelog>
 // <change date="11/3/2020" author="Brian A. Lakstins" description="Initial creation">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class. Use parent methods instead of repository.">
+// <change date="6/19/2024" author="Brian A. Lakstins" description="Add user related logging.  Add remote url property.">
 // </changelog>
 #endregion
 
@@ -186,6 +187,19 @@ namespace MaxFactry.General.BusinessLayer
             }
         }
 
+        public string RemoteUrl
+        {
+            get
+            {
+                return this.GetString(this.DataModel.RemoteUrl);
+            }
+
+            set
+            {
+                this.Set(this.DataModel.RemoteUrl, value);
+            }
+        }
+
         public bool IsExpired
         {
             get
@@ -318,6 +332,7 @@ namespace MaxFactry.General.BusinessLayer
                 MaxUserAuthTokenEntity loEntity = MaxUserAuthTokenEntity.Create();
                 if (loEntity.LoadRemote(lsTokenUri, lsClientId, lsClientSecret, lsScope, loRequestContent))
                 {
+                    loEntity.RemoteUrl = lsTokenUri;
                     loEntity.UserKey = lsUserKey;
                     loEntity.IsActive = true;
                     loEntity.Insert();
@@ -368,6 +383,7 @@ namespace MaxFactry.General.BusinessLayer
         public virtual bool LoadRemote(string lsTokenUri, string lsClientId, string lsClientSecret, string lsScope, MaxIndex loRequestContent)
         {
             string lsToken = MaxHttpLibrary.GetAccessToken(new Uri(lsTokenUri), lsClientId, lsClientSecret, lsScope);
+            this.RemoteUrl = lsTokenUri;
             bool lbR = this.MapResponse(lsToken);
             return lbR;
         }
@@ -399,6 +415,36 @@ namespace MaxFactry.General.BusinessLayer
                 this.Expiration = MaxConvertLibrary.ConvertToInt(typeof(object), loTokenIndex.GetValueString("expires_in"));
                 this.Token = loTokenIndex.GetValueString("access_token");
                 lbR = true;
+            }
+
+            return lbR;
+        }
+
+        public override bool Insert()
+        {
+            bool lbR = base.Insert();
+            Guid loUserId = Guid.Empty;
+            if (Guid.TryParse(this.UserKey, out loUserId) && loUserId != Guid.Empty)
+            {
+                MaxUserEntity loUser = MaxUserEntity.Create();
+                if (loUser.LoadByIdCache(loUserId))
+                {
+                    MaxUserLogEntity loMaxUserLog = MaxUserLogEntity.Create();
+                    if (lbR)
+                    {
+                        loMaxUserLog.Insert(
+                            loUserId,
+                            MaxUserLogEntity.LogEntryTypeUserAuthTokenInsert,
+                            this.GetType() + ".Insert() - succeeded");
+                    }
+                    else
+                    {
+                        loMaxUserLog.Insert(
+                            loUserId,
+                            MaxUserLogEntity.LogEntryTypeUserAuthTokenInsert,
+                            this.GetType() + ".Insert() - failed");
+                    }
+                }
             }
 
             return lbR;
