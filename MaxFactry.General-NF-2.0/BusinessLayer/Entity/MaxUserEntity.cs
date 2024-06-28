@@ -35,6 +35,7 @@
 // <change date="2/24/2021" author="Brian A. Lakstins" description="Update auth code storage">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class. Use parent methods instead of repository.">
 // <change date="6/19/2024" author="Brian A. Lakstins" description="Remove unneeded method.">
+// <change date="4/28/2024" author="Brian A. Lakstins" description="Integrate with roles.">
 // </changelog>
 #endregion
 
@@ -46,6 +47,8 @@ namespace MaxFactry.General.BusinessLayer
 	using MaxFactry.Base.DataLayer;
     using MaxFactry.General.DataLayer;
     using MaxFactry.Base.DataLayer.Library;
+    using System.Collections.Generic;
+    using System.Security.Cryptography;
 
     /// <summary>
     /// Entity used to manage information about users for the MaxSecurityProvider.
@@ -261,5 +264,45 @@ namespace MaxFactry.General.BusinessLayer
         {
             return false;
         }
-	}
+
+        public override MaxIndex MapIndex(params string[] laPropertyNameList)
+        {
+            MaxIndex loR = base.MapIndex(laPropertyNameList);
+            foreach (string lsPropertyName in laPropertyNameList)
+            {
+                if (lsPropertyName == "RoleIdSelectedList") 
+                {
+                    MaxRoleEntity loRoleEntity = MaxRoleEntity.Create();
+                    MaxEntityList loList = loRoleEntity.LoadAllByUserIdCache(this.Id);
+                    List<string> loRoleIdList = new List<string>();
+                    for (int lnE = 0; lnE < loList.Count; lnE++)
+                    {
+                        loRoleEntity = loList[lnE] as MaxRoleEntity;
+                        loRoleIdList.Add(loRoleEntity.Id.ToString());
+                    }
+
+                    loR.Add("RoleIdSelectedList", loRoleIdList.ToArray());
+                }
+            }
+
+            return loR;
+        }
+
+        public static List<MaxIndex> GetRoleList(Guid loId)
+        {
+            List<MaxIndex> loR = new List<MaxIndex>();
+            MaxRoleEntity loRoleEntity = MaxRoleEntity.Create();
+            MaxEntityList loList = loRoleEntity.LoadAllByUserIdCache(loId);
+            for (int lnE = 0; lnE < loList.Count; lnE++)
+            {
+                loRoleEntity = loList[lnE] as MaxRoleEntity;
+                loR.Add(loRoleEntity.MapIndex(
+                    loRoleEntity.GetPropertyName(() => loRoleEntity.Id),
+                    loRoleEntity.GetPropertyName(() => loRoleEntity.DataKey),
+                    loRoleEntity.GetPropertyName(() => loRoleEntity.RoleName)));
+            }
+
+            return loR;
+        }
+    }
 }

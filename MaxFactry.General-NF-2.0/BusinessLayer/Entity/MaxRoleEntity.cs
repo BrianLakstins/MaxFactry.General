@@ -34,6 +34,7 @@
 // <change date="1/16/2021" author="Brian A. Lakstins" description="Update definition of cache keys.">
 // <change date="2/19/2021" author="Brian A. Lakstins" description="Use standard methods to load relationships.">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class. Use parent methods instead of repository.">
+// <change date="4/28/2024" author="Brian A. Lakstins" description="Integrate with permissions.">
 // </changelog>
 #endregion
 
@@ -45,6 +46,8 @@ namespace MaxFactry.General.BusinessLayer
 	using MaxFactry.Base.DataLayer;
     using MaxFactry.General.DataLayer;
     using MaxFactry.Base.DataLayer.Library;
+    using System.Collections.Generic;
+    using System.Security.Cryptography;
 
     /// <summary>
     /// Entity used to manage information about users for the MaxSecurityProvider.
@@ -237,6 +240,48 @@ namespace MaxFactry.General.BusinessLayer
                     }
                 }
             }
+        }
+
+        public static List<MaxIndex> GetPermissionList(Guid loId)
+        {
+            List<MaxIndex> loR = new List<MaxIndex>();
+            MaxRoleRelationPermissionEntity loRelation = MaxRoleRelationPermissionEntity.Create();
+            MaxEntityList loRelationList = loRelation.LoadAllByRoleIdCache(loId);
+            for (int lnE = 0; lnE < loRelationList.Count; lnE++)
+            {
+                loRelation = loRelationList[lnE] as MaxRoleRelationPermissionEntity;
+                loR.Add(loRelation.MapIndex(
+                    loRelation.GetPropertyName(() => loRelation.Id),
+                    loRelation.GetPropertyName(() => loRelation.DataKey),
+                    loRelation.GetPropertyName(() => loRelation.Name),
+                    loRelation.GetPropertyName(() => loRelation.PermissionId),
+                    loRelation.GetPropertyName(() => loRelation.Permission)));
+            }
+
+            return loR;
+        }
+
+        public override MaxIndex MapIndex(params string[] laPropertyNameList)
+        {
+            MaxIndex loR = base.MapIndex(laPropertyNameList);
+            foreach (string lsPropertyName in laPropertyNameList)
+            {
+                if (lsPropertyName == "PermissionSelectedList")
+                {
+                    List<string> loPermissionList = new List<string>();
+                    MaxRoleRelationPermissionEntity loRelation = MaxRoleRelationPermissionEntity.Create();
+                    MaxEntityList loRelationList = loRelation.LoadAllByRoleIdCache(this.Id);
+                    for (int lnE = 0; lnE < loRelationList.Count; lnE++)
+                    {
+                        loRelation = loRelationList[lnE] as MaxRoleRelationPermissionEntity;
+                        loPermissionList.Add(loRelation.PermissionId.ToString() + loRelation.Permission.ToString());
+                    }
+
+                    loR.Add("PermissionSelectedList", loPermissionList.ToArray());
+                }
+            }
+
+            return loR;
         }
     }
 }
