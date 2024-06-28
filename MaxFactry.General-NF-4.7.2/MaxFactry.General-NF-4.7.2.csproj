@@ -67,6 +67,9 @@
     <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxRoleEntity.cs">
       <Link>BusinessLayer\Entity\MaxRoleEntity.cs</Link>
     </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxRoleRelationPermissionEntity.cs">
+      <Link>BusinessLayer\Entity\MaxRoleRelationPermissionEntity.cs</Link>
+    </Compile>
     <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxRoleRelationUserEntity.cs">
       <Link>BusinessLayer\Entity\MaxRoleRelationUserEntity.cs</Link>
     </Compile>
@@ -120,6 +123,9 @@
     </Compile>
     <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxRoleDataModel.cs">
       <Link>DataLayer\DataModel\MaxRoleDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxRoleRelationPermissionDataModel.cs">
+      <Link>DataLayer\DataModel\MaxRoleRelationPermissionDataModel.cs</Link>
     </Compile>
     <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxRoleRelationUserDataModel.cs">
       <Link>DataLayer\DataModel\MaxRoleRelationUserDataModel.cs</Link>

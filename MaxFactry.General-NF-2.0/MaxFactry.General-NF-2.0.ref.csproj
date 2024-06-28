@@ -47,6 +47,7 @@
     <Compile Include="BusinessLayer\Entity\MaxFileDownloadEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxPaymentCardEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxProfileIndexEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxRoleRelationPermissionEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxRoleRelationUserEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxRoleEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxUserAuthTokenEntity.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="DataLayer\DataModel\MaxPaymentCardDataModel.cs" />
     <Compile Include="DataLayer\DataModel\MaxProfileIndexDataModel.cs" />
     <Compile Include="DataLayer\DataModel\MaxRoleDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxRoleRelationPermissionDataModel.cs" />
     <Compile Include="DataLayer\DataModel\MaxRoleRelationUserDataModel.cs" />
     <Compile Include="DataLayer\DataModel\MaxUserAuthTokenDataModel.cs" />
     <Compile Include="DataLayer\DataModel\MaxUserAuthGrantDataModel.cs" />

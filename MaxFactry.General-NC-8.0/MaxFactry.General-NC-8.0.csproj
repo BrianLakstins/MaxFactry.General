@@ -19,6 +19,7 @@
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxPaymentCardEntity.cs" Link="BusinessLayer\Entity\MaxPaymentCardEntity.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxProfileIndexEntity.cs" Link="BusinessLayer\Entity\MaxProfileIndexEntity.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxRoleEntity.cs" Link="BusinessLayer\Entity\MaxRoleEntity.cs" />
+		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxRoleRelationPermissionEntity.cs" Link="BusinessLayer\Entity\MaxRoleRelationPermissionEntity.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxRoleRelationUserEntity.cs" Link="BusinessLayer\Entity\MaxRoleRelationUserEntity.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxUserAuthEntity.cs" Link="BusinessLayer\Entity\MaxUserAuthEntity.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxUserAuthGrantEntity.cs" Link="BusinessLayer\Entity\MaxUserAuthGrantEntity.cs" />
@@ -37,6 +38,7 @@
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxPaymentCardDataModel.cs" Link="DataLayer\Repository\DataModel\MaxPaymentCardDataModel.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxProfileIndexDataModel.cs" Link="DataLayer\Repository\DataModel\MaxProfileIndexDataModel.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxRoleDataModel.cs" Link="DataLayer\Repository\DataModel\MaxRoleDataModel.cs" />
+		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxRoleRelationPermissionDataModel.cs" Link="DataLayer\Repository\DataModel\MaxRoleRelationPermissionDataModel.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxRoleRelationUserDataModel.cs" Link="DataLayer\Repository\DataModel\MaxRoleRelationUserDataModel.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUserAuthDataModel.cs" Link="DataLayer\Repository\DataModel\MaxUserAuthDataModel.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUserAuthGrantDataModel.cs" Link="DataLayer\Repository\DataModel\MaxUserAuthGrantDataModel.cs" />
@@ -78,7 +80,7 @@
 		<Compile Include="..\MaxFactry.General-NF-2.0\PresentationLayer\Models\MaxUserViewModel.cs" Link="PresentationLayer\Models\MaxUserViewModel.cs" />
 	</ItemGroup>
 
-  <ItemGroup>
+	<ItemGroup>
 	  <Folder Include="BusinessLayer\Entity\" />
 	  <Folder Include="BusinessLayer\Structure\" />
 	  <Folder Include="DataLayer\DataModel\" />
