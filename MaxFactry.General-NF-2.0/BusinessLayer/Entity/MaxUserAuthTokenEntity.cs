@@ -423,8 +423,8 @@ namespace MaxFactry.General.BusinessLayer
         public override bool Insert()
         {
             bool lbR = base.Insert();
-            Guid loUserId = Guid.Empty;
-            if (Guid.TryParse(this.UserKey, out loUserId) && loUserId != Guid.Empty)
+            Guid loUserId = MaxConvertLibrary.ConvertToGuid(typeof(object), this.UserKey);
+            if (loUserId != Guid.Empty)
             {
                 MaxUserEntity loUser = MaxUserEntity.Create();
                 if (loUser.LoadByIdCache(loUserId))

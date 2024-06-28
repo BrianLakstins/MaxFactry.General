@@ -287,22 +287,5 @@ namespace MaxFactry.General.BusinessLayer
 
             return loR;
         }
-
-        public static List<MaxIndex> GetRoleList(Guid loId)
-        {
-            List<MaxIndex> loR = new List<MaxIndex>();
-            MaxRoleEntity loRoleEntity = MaxRoleEntity.Create();
-            MaxEntityList loList = loRoleEntity.LoadAllByUserIdCache(loId);
-            for (int lnE = 0; lnE < loList.Count; lnE++)
-            {
-                loRoleEntity = loList[lnE] as MaxRoleEntity;
-                loR.Add(loRoleEntity.MapIndex(
-                    loRoleEntity.GetPropertyName(() => loRoleEntity.Id),
-                    loRoleEntity.GetPropertyName(() => loRoleEntity.DataKey),
-                    loRoleEntity.GetPropertyName(() => loRoleEntity.RoleName)));
-            }
-
-            return loR;
-        }
     }
 }

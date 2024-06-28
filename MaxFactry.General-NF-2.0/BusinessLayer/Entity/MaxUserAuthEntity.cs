@@ -198,8 +198,8 @@ namespace MaxFactry.General.BusinessLayer
             this.Set(this.DataModel.ClientSecretHashSaltId, loSaltId);
             this.Set(this.DataModel.ClientSecretHash, this.Hash(loSaltId, this.ClientSecret));
             bool lbR = base.Insert();
-            Guid loUserId = Guid.Empty;
-            if (Guid.TryParse(this.UserKey, out loUserId) && loUserId != Guid.Empty)
+            Guid loUserId = MaxConvertLibrary.ConvertToGuid(typeof(object), this.UserKey);
+            if (loUserId != Guid.Empty)
             {
                 MaxUserLogEntity loMaxUserLog = MaxUserLogEntity.Create();
                 if (lbR)

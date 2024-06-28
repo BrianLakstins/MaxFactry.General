@@ -242,25 +242,6 @@ namespace MaxFactry.General.BusinessLayer
             }
         }
 
-        public static List<MaxIndex> GetPermissionList(Guid loId)
-        {
-            List<MaxIndex> loR = new List<MaxIndex>();
-            MaxRoleRelationPermissionEntity loRelation = MaxRoleRelationPermissionEntity.Create();
-            MaxEntityList loRelationList = loRelation.LoadAllByRoleIdCache(loId);
-            for (int lnE = 0; lnE < loRelationList.Count; lnE++)
-            {
-                loRelation = loRelationList[lnE] as MaxRoleRelationPermissionEntity;
-                loR.Add(loRelation.MapIndex(
-                    loRelation.GetPropertyName(() => loRelation.Id),
-                    loRelation.GetPropertyName(() => loRelation.DataKey),
-                    loRelation.GetPropertyName(() => loRelation.Name),
-                    loRelation.GetPropertyName(() => loRelation.PermissionId),
-                    loRelation.GetPropertyName(() => loRelation.Permission)));
-            }
-
-            return loR;
-        }
-
         public override MaxIndex MapIndex(params string[] laPropertyNameList)
         {
             MaxIndex loR = base.MapIndex(laPropertyNameList);
