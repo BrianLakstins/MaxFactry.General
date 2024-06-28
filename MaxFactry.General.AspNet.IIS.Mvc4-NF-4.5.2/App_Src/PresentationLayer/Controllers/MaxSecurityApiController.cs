@@ -36,6 +36,7 @@
 // <change date="1/19/2021" author="Brian A. Lakstins" description="Fix issue getting user by email address">
 // <change date="2/24/2021" author="Brian A. Lakstins" description="Update password reset process.">
 // <change date="6/19/2024" author="Brian A. Lakstins" description="Add user related logging.  Return configuration informaion on user requests.">
+// <change date="6/28/2024" author="Brian A. Lakstins" description="Add generic User and Role management.  Integrate permission management">
 // </changelog>
 #endregion
 
@@ -57,7 +58,6 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
     using MaxFactry.General.BusinessLayer;
     using MaxFactry.Base.DataLayer.Library;
     using System.Web.Security;
-    using System.Globalization;
 
     [MaxRequireHttps(Order = 1)]
     [System.Web.Http.AllowAnonymous]
@@ -241,6 +241,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             HttpStatusCode loStatus = HttpStatusCode.OK;
             var loResponseItem = new
             {
+                DataKey = "DataKey",
                 UserName = "UserName",
                 Email = "Email",
                 Id = "Id",
@@ -256,6 +257,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 loStatus = HttpStatusCode.Unauthorized;
                 var loRequestItem = new
                 {
+                    DataKey = "DataKey",
                     Id = "Id",
                     TokenType = "TokenType",
                     Expiration = "Expiration"
@@ -297,39 +299,43 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         }
                         else if (!loEntity.IsExpired)
                         {
-                            DateTime loExpirationDate = MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loEntity.ExpirationDate);
                             MaxIndex loItem = new MaxIndex();
+                            loItem.Add(loResponseItem.DataKey, loEntity.DataKey);
                             loItem.Add(loResponseItem.Id, loEntity.Id);
                             loItem.Add(loResponseItem.CreatedDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loEntity.CreatedDate));
-                            loItem.Add(loResponseItem.ExpirationDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loExpirationDate));
+                            loItem.Add(loResponseItem.ExpirationDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loEntity.ExpirationDate));
                             loR.ItemList.Add(loItem);
-                            if (loExpiration.AddHours(-12) < loEntity.ExpirationDate && loEntity.ExpirationDate < loExpiration.AddHours(12) && loEntity.TokenType == lsTokenType)
+                            if (null == loCurrentEntity)
+                            {
+                                loCurrentEntity = loEntity;
+                            }
+                            else if (loCurrentEntity.ExpirationDate < loEntity.ExpirationDate)
                             {
                                 loCurrentEntity = loEntity;
                             }
                         }
                     }
 
-                    if (Request.Method == HttpMethod.Post)
+                    if (Request.Method == HttpMethod.Post || null == loCurrentEntity)
                     {
-                        if (null == loCurrentEntity)
-                        {
-                            string lsToken = MaxUserAuthTokenEntity.GenerateToken(false);
-                            loCurrentEntity = MaxUserAuthTokenEntity.AddToken(lsToken, lsTokenType, loExpiration, loUser.ProviderUserKey.ToString(), Guid.Empty, Guid.Empty);
-                            loR.Item.Add(loResponseItem.AccessToken, loCurrentEntity.GetClientToken(lsToken));
-                            loR.Message.Success = "Token created.";
-                            loR.Item.Add(loResponseItem.UserName, loUser.UserName);
-                            loR.Item.Add(loResponseItem.Email, loUser.Email);
-                            loR.Item.Add(loResponseItem.Id, loCurrentEntity.Id);
-                            loR.Item.Add(loResponseItem.ExpiresIn, loCurrentEntity.Expiration);
-                            loR.Item.Add(loResponseItem.CreatedDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loCurrentEntity.CreatedDate));
-                            loR.Item.Add(loResponseItem.ExpirationDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loCurrentEntity.ExpirationDate));
-                        }
-                        else
-                        {
-                            loR.Message.Warning = "Token already exists with expiration date " + loCurrentEntity.ExpirationDate.ToString("o", CultureInfo.InvariantCulture);
-                        }
+                        string lsToken = MaxUserAuthTokenEntity.GenerateToken(false);
+                        loCurrentEntity = MaxUserAuthTokenEntity.AddToken(lsToken, lsTokenType, loExpiration, loUser.ProviderUserKey.ToString(), Guid.Empty, Guid.Empty);
+                        loR.Item.Add(loResponseItem.AccessToken, loCurrentEntity.GetClientToken(lsToken));
+                        loR.Message.Success = "Token created.";
+                        MaxIndex loItem = new MaxIndex();
+                        loItem.Add(loResponseItem.DataKey, loCurrentEntity.DataKey);
+                        loItem.Add(loResponseItem.Id, loCurrentEntity.Id);
+                        loItem.Add(loResponseItem.CreatedDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loCurrentEntity.CreatedDate));
+                        loItem.Add(loResponseItem.ExpirationDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loCurrentEntity.ExpirationDate));
+                        loR.ItemList.Add(loItem);
                     }
+
+                    loR.Item.Add(loResponseItem.UserName, loUser.UserName);
+                    loR.Item.Add(loResponseItem.Email, loUser.Email);
+                    loR.Item.Add(loResponseItem.Id, loCurrentEntity.Id);
+                    loR.Item.Add(loResponseItem.ExpiresIn, loCurrentEntity.Expiration);
+                    loR.Item.Add(loResponseItem.CreatedDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loCurrentEntity.CreatedDate));
+                    loR.Item.Add(loResponseItem.ExpirationDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loCurrentEntity.ExpirationDate));
                 }
             }
 
@@ -342,7 +348,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         /// <returns></returns>
         [HttpGet]
         [HttpOptions]
-        [ActionName("user")]
+        [ActionName("usercurrent")]
         public async Task<HttpResponseMessage> UserCurrent()
         {
             HttpStatusCode loStatus = HttpStatusCode.Unauthorized;
@@ -417,280 +423,37 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         }
 
         /// <summary>
+        /// CRUD template for an entity
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
         [HttpPost]
+        [HttpGet]
         [HttpPut]
         [HttpDelete]
         [HttpOptions]
         [ActionName("users")]
         public async Task<HttpResponseMessage> Users()
         {
-            HttpStatusCode loStatus = HttpStatusCode.Unauthorized;
-            var loResponseItem = new
-            {
-                RoleList = "RoleList",
-                UserName = "UserName",
-                Email = "Email",
-                Id = "Id",
-                LastPasswordChangedDate = "LastPasswordChangedDate",
-                Comment = "Comment",
-                LastActivityDate = "LastActivityDate",
-                LastLoginDate = "LastLoginDate",
-                PasswordQuestion = "PasswordQuestion",
-                IsPasswordResetNeeded = "IsPasswordResetNeeded"
-            };
+            MaxEntity loEntity = MaxUserEntity.Create();
+            MaxApiResponseViewModel loR = await this.Process(loEntity);
+            return this.GetResponseMessage(loR);
+        }
 
-            MaxApiResponseViewModel loR = GetResponse(loResponseItem);
-            if (this.Request.Method != HttpMethod.Options)
-            {
-                var loRequestItem = new
-                {
-                    UserName = "UserName",
-                    Id = "Id",
-                    Password = "Password",
-                    Email = "Email",
-                    Comment = "Comment",
-                    RoleListText = "RoleListText",
-                    IsPasswordResetNeeded = "IsPasswordResetNeeded"
-                };
-
-                MaxApiRequestViewModel loRequest = await this.GetRequest();
-                MembershipUser loUser = this.GetUser(loRequest);
-                if (null != loUser)
-                {
-                    loStatus = HttpStatusCode.Forbidden;
-                    List<string> loRoleList = new List<string>(Roles.GetRolesForUser(loUser.UserName));
-                    bool lbHasAccess = loRoleList.Contains("Admin - App") || loRoleList.Contains("Admin") || loRoleList.Contains("User Manager");
-                    if (lbHasAccess)
-                    {
-                        loStatus = HttpStatusCode.OK;
-                        string lsUserName = loRequest.Item.GetValueString(loRequestItem.UserName);
-                        Guid loUserId = MaxConvertLibrary.ConvertToGuid(typeof(object), loRequest.Item[loRequestItem.Id]);
-                        string lsEmail = loRequest.Item.GetValueString(loRequestItem.Email);
-                        MembershipUser loUserRequest = null;
-                        if (Guid.Empty != loUserId)
-                        {
-                            loR.Message.Log += "Loading for user providerkey of " + loUserId.ToString() + "\n";
-                            loUserRequest = Membership.GetUser(loUserId);
-                        }
-                        else if (!string.IsNullOrEmpty(lsUserName))
-                        {
-                            loR.Message.Log += "Loading for username of " + lsUserName + "\n";
-                            loUserRequest = Membership.GetUser(lsUserName);
-                            if (null == loUserRequest && !string.IsNullOrEmpty(lsEmail) && MaxBaseEmailEntity.IsValidEmail(lsEmail))
-                            {
-                                loR.Message.Log += "Loading for username of " + lsUserName + " failed.  Trying email address of " + lsEmail + "\n";
-                                lsUserName = Membership.GetUserNameByEmail(lsEmail);
-                                if (!string.IsNullOrEmpty(lsUserName))
-                                {
-                                    loUserRequest = Membership.GetUser(lsUserName);
-                                }
-                            }
-                        }
-                        else if (!string.IsNullOrEmpty(lsEmail) && MaxBaseEmailEntity.IsValidEmail(lsEmail))
-                        {
-                            loR.Message.Log += "Loading for email of " + lsEmail + "\n";
-                            lsUserName = Membership.GetUserNameByEmail(lsEmail);
-                            if (!string.IsNullOrEmpty(lsUserName))
-                            {
-                                loR.Message.Log += "Loading for username of " + lsUserName + "\n";
-                                loUserRequest = Membership.GetUser(lsUserName);
-                            }
-                        }
-
-                        if (this.Request.Method == HttpMethod.Get)
-                        {
-                            if (null != loUserRequest) //// Get a user 
-                            {
-                                //// Return a user and roles
-                                loR.Item.Add(loResponseItem.UserName, loUserRequest.UserName);
-                                loR.Item.Add(loResponseItem.Email, loUserRequest.Email);
-                                loR.Item.Add(loResponseItem.Id, MaxConvertLibrary.ConvertToString(typeof(object), loUserRequest.ProviderUserKey).ToLower());
-                                loR.Item.Add(loResponseItem.LastPasswordChangedDate, loUserRequest.LastPasswordChangedDate);
-                                loR.Item.Add(loResponseItem.Comment, loUserRequest.Comment);
-                                loR.Item.Add(loResponseItem.LastActivityDate, loUserRequest.LastActivityDate);
-                                loR.Item.Add(loResponseItem.LastLoginDate, loUserRequest.LastLoginDate);
-                                loR.Item.Add(loResponseItem.PasswordQuestion, loUserRequest.PasswordQuestion);
-                                if (loUserRequest is MaxMembershipUser)
-                                {
-                                    loR.Item.Add(loResponseItem.IsPasswordResetNeeded, ((MaxMembershipUser)loUserRequest).IsPasswordResetNeeded);
-                                }
-
-                                string[] laRole = Roles.GetRolesForUser(loUserRequest.UserName);
-                                loR.Item.Add(loResponseItem.RoleList, laRole);
-                            }
-                            else //// Get all users
-                            {
-                                MembershipUserCollection loUserList = Membership.GetAllUsers();
-                                SortedList<string, MembershipUser> loSortedList = new SortedList<string, MembershipUser>();
-                                foreach (MembershipUser loUserFromList in loUserList)
-                                {
-                                    loSortedList.Add(loUserFromList.UserName + loUserFromList.Email + loUserFromList.ProviderUserKey.ToString(), loUserFromList);
-                                }
-
-                                foreach (MembershipUser loUserFromList in loSortedList.Values)
-                                {
-                                    //// Return all users and roles
-                                    MaxIndex loItem = new MaxIndex();
-                                    loItem.Add(loResponseItem.UserName, loUserFromList.UserName);
-                                    loItem.Add(loResponseItem.Email, loUserFromList.Email);
-                                    loItem.Add(loResponseItem.Id, MaxConvertLibrary.ConvertToString(typeof(object), loUserFromList.ProviderUserKey).ToLower());
-                                    /* Don't get roles for all users because it requires one database query per user.
-                                    string[] laRole = Roles.GetRolesForUser(loUserFromList.UserName);
-                                    loItem.Add(loResponseItem.RoleList, laRole);
-                                    */
-                                    loR.ItemList.Add(loItem);
-                                }
-                            }
-                        }
-                        else if (this.Request.Method == HttpMethod.Post && null != loUserRequest)  //// Update a user
-                        {
-                            try
-                            {
-                                string lsRoleList = loRequest.Item.GetValueString(loRequestItem.RoleListText);
-                                string lsPassword = loRequest.Item.GetValueString(loRequestItem.Password);
-                                string lsComment = loRequest.Item.GetValueString(loRequestItem.Comment);
-                                bool lbIsPasswordResetNeeded = MaxConvertLibrary.ConvertToBoolean(typeof(object), loRequest.Item.GetValueString(loRequestItem.IsPasswordResetNeeded));
-                                bool lbNeedsUpdate = false;
-                                if (loUserRequest is MaxMembershipUser && ((MaxMembershipUser)loUserRequest).IsPasswordResetNeeded != lbIsPasswordResetNeeded)
-                                {
-                                    ((MaxMembershipUser)loUserRequest).IsPasswordResetNeeded = lbIsPasswordResetNeeded;
-                                    lbNeedsUpdate = true;
-                                }
-
-                                lsUserName = loRequest.Item.GetValueString(loRequestItem.UserName);
-                                if (!string.IsNullOrEmpty(lsEmail) && lsEmail.Length > 0 && loUserRequest.Email != lsEmail)
-                                {
-                                    loUserRequest.Email = lsEmail;
-                                    lbNeedsUpdate = true;
-                                }
-
-                                if (!string.IsNullOrEmpty(lsComment) && loUserRequest.Comment != lsComment)
-                                {
-                                    loUserRequest.Comment = lsComment;
-                                    lbNeedsUpdate = true;
-                                }
-
-                                if (lbNeedsUpdate)
-                                {
-                                    Membership.UpdateUser(loUserRequest);
-                                    loR.Message.Log += "User updated\n";
-                                }
-
-                                if (lsPassword.Length > 0)
-                                {
-                                    if (MaxMembershipUser.SetPassword(loUserRequest, lsPassword))
-                                    {
-                                        loR.Message.Log += "Password set\n";
-                                    }
-                                }
-
-                                loRoleList = new List<string>(Roles.GetRolesForUser(loUserRequest.UserName));
-                                List<string> loRoleNameList = new List<string>(Roles.GetAllRoles());
-                                if (!string.IsNullOrEmpty(lsRoleList))
-                                {
-                                    string[] laRoleNew = lsRoleList.Split(new char[] { ',' });
-                                    loRoleList = new List<string>(Roles.GetRolesForUser(loUserRequest.UserName));
-                                    foreach (string lsRole in laRoleNew)
-                                    {
-                                        if (!loRoleList.Contains(lsRole))
-                                        {
-                                            if (!loRoleNameList.Contains(lsRole))
-                                            {
-                                                Roles.CreateRole(lsRole);
-                                                loRoleNameList.Add(lsRole);
-                                            }
-
-                                            Roles.AddUserToRole(loUserRequest.UserName, lsRole);
-                                            loR.Message.Log += "Added user to role " + lsRole + "\n";
-                                        }
-                                        else
-                                        {
-                                            loRoleList.Remove(lsRole);
-                                        }
-                                    }
-                                }
-
-                                foreach (string lsRole in loRoleList)
-                                {
-                                    Roles.RemoveUserFromRole(loUserRequest.UserName, lsRole);
-                                    loR.Message.Log += "Removed user from role " + lsRole + "\n";
-                                }
-
-                                //// Return updated user and roles
-                                loR.Item.Add(loResponseItem.UserName, loUserRequest.UserName);
-                                loR.Item.Add(loResponseItem.Email, loUserRequest.Email);
-                                loR.Item.Add(loResponseItem.Id, MaxConvertLibrary.ConvertToString(typeof(object), loUserRequest.ProviderUserKey).ToLower());
-                                string[] laRole = Roles.GetRolesForUser(loUserRequest.UserName);
-                                loR.Item.Add(loResponseItem.RoleList, laRole);
-                                loR.Message.Success = "User updated.";
-                            }
-                            catch (Exception loE)
-                            {
-                                loR.Message.Error = "Exception updating a user: " + loE.Message;
-                                MaxLogLibrary.Log(new MaxLogEntryStructure("MaxSecurityApi", MaxEnumGroup.LogError, "Exception updating a user", loE));
-                            }
-                        }
-                        else if (Request.Method == HttpMethod.Put) //// Add a user
-                        {
-                            try
-                            {
-                                string lsRoleList = loRequest.Item.GetValueString(loRequestItem.RoleListText);
-                                string lsPassword = loRequest.Item.GetValueString(loRequestItem.Password);
-                                lsUserName = loRequest.Item.GetValueString(loRequestItem.UserName);
-                                MembershipUser loUserNew = Membership.CreateUser(lsUserName, lsPassword, lsEmail);
-                                loR.Message.Log += "Creating user " + lsUserName + "\n";
-                                string[] laRoleNew = lsRoleList.Split(new char[] { ',' });
-                                foreach (string lsRole in laRoleNew)
-                                {
-                                    if (!string.IsNullOrEmpty(lsRole))
-                                    {
-                                        Roles.AddUserToRole(loUserNew.UserName, lsRole);
-                                        loR.Message.Log += "Added user to role " + lsRole + "\n";
-                                    }
-                                }
-                                //// Return new user and roles
-                                loR.Item.Add(loResponseItem.UserName, loUserNew.UserName);
-                                loR.Item.Add(loResponseItem.Email, loUserNew.Email);
-                                loR.Item.Add(loResponseItem.Id, MaxConvertLibrary.ConvertToString(typeof(object), loUserNew.ProviderUserKey).ToLower());
-                                string[] laRole = Roles.GetRolesForUser(loUserNew.UserName);
-                                loR.Item.Add(loResponseItem.RoleList, laRole);
-                                loR.Message.Success = "User added.";
-                            }
-                            catch (Exception loE)
-                            {
-                                loR.Message.Error = "Exception adding a user: " + loE.Message;
-                                MaxLogLibrary.Log(new MaxLogEntryStructure("MaxSecurityApi", MaxEnumGroup.LogError, "Exception adding a user", loE));
-
-                            }
-                        }
-                        else if (Request.Method == HttpMethod.Delete) //// delete a user
-                        {
-                            try
-                            {
-                                if (null != loUserRequest)
-                                {
-                                    Membership.DeleteUser(loUserRequest.UserName);
-                                    loR.Message.Success = "User deleted.";
-                                }
-                            }
-                            catch (Exception loE)
-                            {
-                                loR.Message.Error = "Exception deleting a user: " + loE.Message;
-                                MaxLogLibrary.Log(new MaxLogEntryStructure("MaxSecurityApi", MaxEnumGroup.LogError, "Exception deleting a user", loE));
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                loStatus = HttpStatusCode.OK;
-            }
-
-            return this.GetResponseMessage(loR, loStatus);
+        /// <summary>
+        /// CRUD template for an entity
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [HttpGet]
+        [HttpPut]
+        [HttpDelete]
+        [HttpOptions]
+        [ActionName("userrole")]
+        public async Task<HttpResponseMessage> UserRole()
+        {
+            MaxEntity loEntity = MaxRoleEntity.Create();
+            MaxApiResponseViewModel loR = await this.Process(loEntity);
+            return this.GetResponseMessage(loR);
         }
 
         /// <summary>
@@ -1017,7 +780,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     {
                         loR.Message.Error = "The user is not logged in.";
                     }
-                } 
+                }
                 catch (Exception loE)
                 {
                     loR.Message.Error = "Exception changing password: " + loE.Message;
@@ -1031,5 +794,152 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
             return this.GetResponseMessage(loR, loStatus);
         }
+
+        protected override MaxApiResponseViewModel ProcessPost(MaxApiRequestViewModel loRequest, MaxEntity loEntity, MaxApiResponseViewModel loResponse)
+        {
+            MaxApiResponseViewModel loR = base.ProcessPost(loRequest, loEntity, loResponse);
+            if (loEntity is MaxUserEntity)
+            {
+                loR = this.ProcessUser(loRequest, loEntity as MaxUserEntity, loR);
+            }
+            else if (loEntity is MaxRoleEntity)
+            {
+                loR = this.ProcessRole(loRequest, loEntity as MaxRoleEntity, loR);
+            }
+
+            return loR;
+        }
+
+        protected override MaxApiResponseViewModel ProcessPut(MaxApiRequestViewModel loRequest, MaxEntity loEntity, MaxApiResponseViewModel loResponse)
+        {
+            MaxApiResponseViewModel loR = base.ProcessPut(loRequest, loEntity, loResponse);
+            if (loEntity is MaxUserEntity)
+            {
+                loR = this.ProcessUser(loRequest, loEntity as MaxUserEntity, loR);
+            }
+            else if (loEntity is MaxRoleEntity)
+            {
+                loR = this.ProcessRole(loRequest, loEntity as MaxRoleEntity, loR);
+            }
+
+            return loR;
+        }
+
+        protected MaxApiResponseViewModel ProcessUser(MaxApiRequestViewModel loRequest, MaxUserEntity loUser, MaxApiResponseViewModel loResponse)
+        {
+            MaxApiResponseViewModel loR = loResponse;
+            if (null != loR && null != loR.Item && loR.Item.Contains(loUser.GetPropertyName(() => loUser.Id)) && null != loRequest.Item && loRequest.Item.Contains("RoleIdSelectedList"))
+            {
+                string[] laRoleIdSelectedList = MaxConvertLibrary.DeserializeObject(loRequest.Item.GetValueString("RoleIdSelectedList"), typeof(string[])) as string[];
+                if (null != laRoleIdSelectedList)
+                {
+                    Guid loUserId = MaxConvertLibrary.ConvertToGuid(typeof(object), loR.Item.GetValueString(loUser.GetPropertyName(() => loUser.Id)));
+                    List<string> loRoleIdSelectedList = new List<string>(laRoleIdSelectedList);
+                    if (Guid.Empty != loUserId)
+                    {
+                        MaxRoleRelationUserEntity loRelation = MaxRoleRelationUserEntity.Create();
+                        MaxEntityList loRelationList = loRelation.LoadAllByUserIdCache(loUserId);
+                        for (int lnR = 0; lnR < loRelationList.Count; lnR++)
+                        {
+                            loRelation = loRelationList[lnR] as MaxRoleRelationUserEntity;
+                            if (loRoleIdSelectedList.Contains(loRelation.RoleId.ToString()))
+                            {
+                                loRoleIdSelectedList.Remove(loRelation.RoleId.ToString());
+                            }
+                            else
+                            {
+                                loRelation.Delete();
+                            }
+                        }
+
+                        foreach (string lsRoleId in loRoleIdSelectedList)
+                        {
+                            loRelation = MaxRoleRelationUserEntity.Create();
+                            loRelation.RoleId = MaxConvertLibrary.ConvertToGuid(typeof(object), lsRoleId);
+                            loRelation.UserId = loUserId;
+                            loRelation.Insert();
+                        }
+
+                        loR.Item.Add("RoleList", MaxUserEntity.GetRoleList(loUserId));
+                    }
+                }
+            }
+
+            return loR;
+        }
+
+        protected MaxApiResponseViewModel ProcessRole(MaxApiRequestViewModel loRequest, MaxRoleEntity loRole, MaxApiResponseViewModel loResponse)
+        {
+            MaxApiResponseViewModel loR = loResponse;
+            if (null != loR && null != loR.Item && loR.Item.Contains(loRole.GetPropertyName(() => loRole.Id)) && null != loRequest.Item && loRequest.Item.Contains("PermissionSelectedList"))
+            {
+                string[] laPermissionSelectedList = MaxConvertLibrary.DeserializeObject(loRequest.Item.GetValueString("PermissionSelectedList"), typeof(string[])) as string[];
+                if (null != laPermissionSelectedList)
+                {
+                    Guid loRoleId = MaxConvertLibrary.ConvertToGuid(typeof(object), loR.Item.GetValueString(loRole.GetPropertyName(() => loRole.Id)));
+                    List<string> loPermissionSelectedList = new List<string>(laPermissionSelectedList);
+                    if (Guid.Empty != loRoleId)
+                    {
+                        MaxRoleRelationPermissionEntity loRelation = MaxRoleRelationPermissionEntity.Create();
+                        MaxEntityList loRelationList = loRelation.LoadAllByRoleIdCache(loRoleId);
+                        for (int lnR = 0; lnR < loRelationList.Count; lnR++)
+                        {
+                            loRelation = loRelationList[lnR] as MaxRoleRelationPermissionEntity;
+                            string lsKey = loRelation.PermissionId.ToString() + loRelation.Permission.ToString();
+                            if (loPermissionSelectedList.Contains(lsKey))
+                            {
+                                loPermissionSelectedList.Remove(lsKey);
+                            }
+                            else
+                            {
+                                loRelation.Delete();
+                            }
+                        }
+
+                        foreach (string lsPermissionKey in loPermissionSelectedList)
+                        {
+                            loRelation = MaxRoleRelationPermissionEntity.Create();
+                            loRelation.PermissionId = MaxConvertLibrary.ConvertToGuid(typeof(object), lsPermissionKey.Substring(0, Guid.NewGuid().ToString().Length));
+                            loRelation.Permission = MaxConvertLibrary.ConvertToLong(typeof(object), lsPermissionKey.Substring(Guid.NewGuid().ToString().Length));
+                            loRelation.RoleId = loRoleId;
+                            loRelation.Insert();
+                        }
+
+                        loR.Item.Add("PermissionSelectedList", MaxRoleEntity.GetPermissionList(loRoleId));
+                    }
+                }
+            }
+
+            return loR;
+        }
+
+        /// <summary>
+        /// Gets the list of permissions related to this api
+        /// </summary>
+        /// <returns></returns>
+        protected override MaxIndex GetPermissionList()
+        {
+            MaxIndex loR = base.GetPermissionList();
+            var loResponseItem = new
+            {
+                DataKey = "DataKey",
+                Name = "Name",
+                DisplayName = "DisplayName"
+            };
+
+            MaxIndex loUserPermission = new MaxIndex();
+            loUserPermission.Add("DataKey", MaxRoleRelationPermissionEntity.GetPermissionId(MaxUserEntity.Create()));
+            loUserPermission.Add("Name", MaxUserEntity.Create().GetType().ToString());
+            loUserPermission.Add("DisplayName", "Users");
+            loR.Add(loUserPermission);
+
+            MaxIndex loRolePermission = new MaxIndex();
+            loRolePermission.Add("DataKey", MaxRoleRelationPermissionEntity.GetPermissionId(MaxRoleEntity.Create()));
+            loRolePermission.Add("Name", MaxRoleEntity.Create().GetType().ToString());
+            loRolePermission.Add("DisplayName", "Roles");
+            loR.Add(loRolePermission);
+
+            return loR;
+        } 
     }
 }

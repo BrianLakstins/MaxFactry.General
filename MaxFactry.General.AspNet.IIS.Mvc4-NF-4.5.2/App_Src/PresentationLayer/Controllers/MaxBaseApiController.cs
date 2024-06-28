@@ -50,6 +50,7 @@
 // <change date="7/9/2021" author="Brian A. Lakstins" description="Add array handling">
 // <change date="7/22/2021" author="Brian A. Lakstins" description="Add array handling when array of strings instead of object">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.  Updated to use DataKey.">
+// <change date="6/28/2024" author="Brian A. Lakstins" description="Add generic permission checking.">
 // </changelog>
 #endregion
 
@@ -75,7 +76,6 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
     using MaxFactry.Base.BusinessLayer;
     using MaxFactry.General.AspNet.PresentationLayer;
     using MaxFactry.General.BusinessLayer;
-    using System.Web.UI;
 
     /// <summary>
     /// Base class for any Api controller.
@@ -138,6 +138,177 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             {
                 MaxLogLibrary.Log(new MaxLogEntryStructure("MaxBaseApiController.StartProcess", MaxEnumGroup.LogError, "MaxBaseApiController.StartProcessEventHookLog: Error starting Process for [{Uri}][{lsProcess}][{lsContent}]", loE, loRequestUri.ToString(), lsProcess, lsContent));
             }
+        }
+
+        [HttpGet]
+        [HttpOptions]
+        [ActionName("permission")]
+        public async Task<HttpResponseMessage> Permission()
+        {
+            HttpStatusCode loStatus = HttpStatusCode.Unauthorized;
+            var loResponseItem = new
+            {
+                DataKey = "DataKey",
+                Name = "Name",
+                DisplayName = "DisplayName"
+            };
+
+            MaxApiResponseViewModel loR = GetResponse(loResponseItem);
+            if (this.Request.Method != HttpMethod.Options)
+            {
+                MaxApiRequestViewModel loRequest = await this.GetRequest();
+                MembershipUser loUser = this.GetUser(loRequest);
+                if (null != loUser)
+                {
+                    loStatus = HttpStatusCode.OK;
+                    try
+                    {
+                        MaxIndex loPermissionList = this.GetPermissionList();
+                        string[] laKey = loPermissionList.GetSortedKeyList();
+                        foreach (string lsKey in laKey)
+                        {
+                            MaxIndex loPermission = loPermissionList[lsKey] as MaxIndex;
+                            if (null != loPermission)
+                            {
+                                loR.ItemList.Add(loPermission);
+                            }
+                        }
+
+                        loR.Message.Success = "Got permission list";
+                    }
+                    catch (Exception loE)
+                    {
+                        loR.Message.Error = "Exception getting permission list: " + loE.Message;
+                        MaxLogLibrary.Log(new MaxLogEntryStructure("MaxBaseApi", MaxEnumGroup.LogError, "Exception getting permission list", loE));
+                    }
+                }
+            }
+            else
+            {
+                loStatus = HttpStatusCode.OK;
+            }
+
+            return this.GetResponseMessage(loR, loStatus);
+        }
+
+        [HttpGet]
+        [HttpOptions]
+        [ActionName("permissiontype")]
+        public async Task<HttpResponseMessage> PermissionType()
+        {
+            HttpStatusCode loStatus = HttpStatusCode.Unauthorized;
+            var loResponseItem = new
+            {
+                Name = "Name",
+                Permission = "Permission"
+            };
+
+            MaxApiResponseViewModel loR = GetResponse(loResponseItem);
+            if (this.Request.Method != HttpMethod.Options)
+            {
+                MaxApiRequestViewModel loRequest = await this.GetRequest();
+                MembershipUser loUser = this.GetUser(loRequest);
+                if (null != loUser)
+                {
+                    loStatus = HttpStatusCode.OK;
+                    try
+                    {
+                        int[] laPermssionType = new int[6] {
+                            (int)MaxEnumGroup.PermissionGroup,
+                            (int)MaxEnumGroup.PermissionSelect,
+                            (int)MaxEnumGroup.PermissionInsert,
+                            (int)MaxEnumGroup.PermissionUpdate,
+                            (int)MaxEnumGroup.PermissionDelete,
+                            (int)MaxEnumGroup.PermissionSelectInactive};
+
+                        foreach (int lnPermissionType in laPermssionType)
+                        {
+                            string lsName = MaxEnumGroup.GetName(typeof(MaxEnumGroup), lnPermissionType);
+                            MaxIndex loPermissionType = new MaxIndex();
+                            loPermissionType.Add(loResponseItem.Name, lsName);
+                            loPermissionType.Add(loResponseItem.Permission, lnPermissionType);
+                            loR.ItemList.Add(loPermissionType);
+                        }
+
+                        loR.Message.Success = "Got permission type list";
+                    }
+                    catch (Exception loE)
+                    {
+                        loR.Message.Error = "Exception getting permission type list: " + loE.Message;
+                        MaxLogLibrary.Log(new MaxLogEntryStructure("MaxBaseApi", MaxEnumGroup.LogError, "Exception getting permission type list", loE));
+                    }
+                }
+            }
+            else
+            {
+                loStatus = HttpStatusCode.OK;
+            }
+
+            return this.GetResponseMessage(loR, loStatus);
+        }
+
+        /// <summary>
+        /// Gets the list of permissions related to this api
+        ///            var loResponseItem = new
+        ///            {
+        ///                DataKey = "DataKey",
+        ///                Name = "Name",
+        ///                DisplayName = "DisplayName"
+        ///            };
+        /// </summary>
+        /// <returns></returns>
+        protected virtual MaxIndex GetPermissionList()
+        {
+            MaxIndex loR = new MaxIndex();
+            return loR;
+        }
+
+        /// <summary>
+        /// Checks the permission
+        /// </summary>
+        /// <param name="loRequest">Current request</param>
+        /// <param name="loEntity">Entity to check</param>
+        /// <param name="loId">Id to check</param>
+        /// <param name="lnPermission">Permission to make sure the user has</param>
+        /// <returns></returns>
+        protected virtual bool HasPermission(MaxApiRequestViewModel loRequest, MaxEntity loEntity, int lnPermission)
+        {
+            bool lbR = loRequest.RoleList.Contains("Admin - App") || loRequest.RoleList.Contains("Admin");
+            if (!lbR)
+            {
+                try
+                {
+                    if (null != loRequest.User && null != loRequest.RoleList && loRequest.RoleList.Count > 0)
+                    {
+                        string lsEntityName = loEntity.GetType().ToString();
+                        for (int lnR = 0; lnR < loRequest.RoleList.Count && !lbR; lnR++)
+                        {
+                            MaxEntityList loRoleRelationPermissionList = MaxRoleRelationPermissionEntity.Create().LoadAllByRoleNameCache(loRequest.RoleList[lnR]);
+                            if (null != loRoleRelationPermissionList && loRoleRelationPermissionList.Count > 0)
+                            {
+                                for (int lnE = 0; lnE < loRoleRelationPermissionList.Count && !lbR; lnE++)
+                                {
+                                    MaxRoleRelationPermissionEntity loRoleRelationPermissionEntity = loRoleRelationPermissionList[lnE] as MaxRoleRelationPermissionEntity;
+                                    if (loRoleRelationPermissionEntity.Name == lsEntityName)
+                                    {
+                                        if ((loRoleRelationPermissionEntity.Permission & lnPermission) > 0)
+                                        {
+                                            lbR = true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception loE)
+                {
+                    MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "HasPermission", MaxEnumGroup.LogError, "Exception checking permission", loE));
+                }
+
+            }
+
+            return lbR;
         }
 
         protected virtual HttpResponseMessage GetResponseMessage()
@@ -523,19 +694,6 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             return loR;
         }
 
-        /// <summary>
-        /// Checks the permission
-        /// </summary>
-        /// <param name="loRequest">Current request</param>
-        /// <param name="loEntity">Entity to check</param>
-        /// <param name="loId">Id to check</param>
-        /// <param name="lnPermission">Permission to make sure the user has</param>
-        /// <returns></returns>
-        protected virtual bool HasPermission(MaxApiRequestViewModel loRequest, MaxEntity loEntity, int lnPermission)
-        {
-            bool lbR = loRequest.RoleList.Contains("Admin - App") || loRequest.RoleList.Contains("Admin");
-            return lbR;
-        }
 
         /// <summary>
         /// Process an api call for an entity
@@ -646,116 +804,127 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 int lnEntityNum = -1;
                 while (lbValueFound || lnEntityNum <= 0)
                 {
-                    MaxEntity loEntityCopy = loEntity.GetType().GetMethod("Create").Invoke(null, null) as MaxEntity;
-                    bool lbMapProperties = true;
-                    lbValueFound = false;
-                    string lsDataKey = loRequest.GetDataKey(lnEntityNum);
-                    if (!string.IsNullOrEmpty(lsDataKey))
+                    Type loType = loEntity.GetType();
+                    MethodInfo loCreateMethod = loType.GetMethod("Create");
+                    while (null == loCreateMethod && null != loType.BaseType)
                     {
-                        lbMapProperties = false;
-                        if (loEntityCopy.LoadByDataKeyCache(lsDataKey))
-                        {
-                            lbMapProperties = true;
-                            lbValueFound = true;
-                        }
+                        loType = loType.BaseType;
+                        loCreateMethod = loType.GetMethod("Create");
                     }
 
-                    if (lbMapProperties)
+                    if (null != loCreateMethod)
                     {
-                        foreach (PropertyInfo loProperty in laProperty)
+                        MaxEntity loEntityCopy = loCreateMethod.Invoke(null, null) as MaxEntity;
+                        bool lbMapProperties = true;
+                        lbValueFound = false;
+                        string lsDataKey = loRequest.GetDataKey(lnEntityNum);
+                        if (!string.IsNullOrEmpty(lsDataKey))
                         {
-                            string lsPropertyNameKey = loProperty.Name.ToLowerInvariant();
-                            if (loEntityPropertyIndex.ContainsKey(lsPropertyNameKey))
+                            lbMapProperties = false;
+                            if (loEntityCopy.LoadByDataKeyCache(lsDataKey))
                             {
-                                string lsRequestFieldName = loEntityPropertyIndex[lsPropertyNameKey];
-                                bool lbHasValueCommon = null != loRequest.Item[lsRequestFieldName];
+                                lbMapProperties = true;
+                                lbValueFound = true;
+                            }
+                        }
 
-                                string lsValueCommon = loRequest.Item.GetValueString(lsRequestFieldName);
-                                if (lnEntityNum >= 0)
+                        if (lbMapProperties)
+                        {
+                            foreach (PropertyInfo loProperty in laProperty)
+                            {
+                                string lsPropertyNameKey = loProperty.Name.ToLowerInvariant();
+                                if (loEntityPropertyIndex.ContainsKey(lsPropertyNameKey))
                                 {
-                                    lsRequestFieldName += "[" + lnEntityNum.ToString() + "]";
-                                }
+                                    string lsRequestFieldName = loEntityPropertyIndex[lsPropertyNameKey];
+                                    bool lbHasValueCommon = null != loRequest.Item[lsRequestFieldName];
 
-                                bool lbHasValue = null != loRequest.Item[lsRequestFieldName];
+                                    string lsValueCommon = loRequest.Item.GetValueString(lsRequestFieldName);
+                                    if (lnEntityNum >= 0)
+                                    {
+                                        lsRequestFieldName += "[" + lnEntityNum.ToString() + "]";
+                                    }
 
-                                string lsValue = loRequest.Item.GetValueString(lsRequestFieldName);
-                                if (lbHasValue)
-                                {
-                                    lbValueFound = true;
-                                }
-                                else if (lbHasValueCommon)
-                                {
-                                    lsValue = lsValueCommon;
-                                }
+                                    bool lbHasValue = null != loRequest.Item[lsRequestFieldName];
 
-                                if ((lbHasValueCommon || lbHasValue) && loProperty.CanWrite)
-                                {
-                                    if (loProperty.PropertyType == typeof(double))
+                                    string lsValue = loRequest.Item.GetValueString(lsRequestFieldName);
+                                    if (lbHasValue)
                                     {
-                                        loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToDouble(typeof(object), lsValue));
+                                        lbValueFound = true;
                                     }
-                                    else if (loProperty.PropertyType == typeof(int))
+                                    else if (lbHasValueCommon)
                                     {
-                                        loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToInt(typeof(object), lsValue));
+                                        lsValue = lsValueCommon;
                                     }
-                                    else if (loProperty.PropertyType == typeof(bool))
+
+                                    if ((lbHasValueCommon || lbHasValue) && loProperty.CanWrite)
                                     {
-                                        loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToBoolean(typeof(object), lsValue));
-                                    }
-                                    else if (loProperty.PropertyType == typeof(string))
-                                    {
-                                        loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToString(typeof(object), lsValue));
-                                    }
-                                    else if (loProperty.PropertyType == typeof(Guid))
-                                    {
-                                        loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToGuid(typeof(object), lsValue));
-                                    }
-                                    else if (loProperty.PropertyType == typeof(DateTime))
-                                    {
-                                        DateTime loDateTime = MaxConvertLibrary.ConvertToDateTimeUtc(typeof(object), lsValue);
-                                        loProperty.SetValue(loEntityCopy, loDateTime);
-                                    }
-                                    else if (loProperty.PropertyType == typeof(MaxIndex))
-                                    {
-                                        MaxIndex loMaxIndex = MaxConvertLibrary.DeserializeObject(typeof(object), lsValue, typeof(MaxIndex)) as MaxIndex;
-                                        if (null != loMaxIndex)
+                                        if (loProperty.PropertyType == typeof(double))
                                         {
-                                            loProperty.SetValue(loEntityCopy, loMaxIndex);
+                                            loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToDouble(typeof(object), lsValue));
                                         }
-                                    }
-                                    else
-                                    {
-                                        loProperty.SetValue(loEntityCopy, lsValue);
+                                        else if (loProperty.PropertyType == typeof(int))
+                                        {
+                                            loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToInt(typeof(object), lsValue));
+                                        }
+                                        else if (loProperty.PropertyType == typeof(bool))
+                                        {
+                                            loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToBoolean(typeof(object), lsValue));
+                                        }
+                                        else if (loProperty.PropertyType == typeof(string))
+                                        {
+                                            loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToString(typeof(object), lsValue));
+                                        }
+                                        else if (loProperty.PropertyType == typeof(Guid))
+                                        {
+                                            loProperty.SetValue(loEntityCopy, MaxConvertLibrary.ConvertToGuid(typeof(object), lsValue));
+                                        }
+                                        else if (loProperty.PropertyType == typeof(DateTime))
+                                        {
+                                            DateTime loDateTime = MaxConvertLibrary.ConvertToDateTimeUtc(typeof(object), lsValue);
+                                            loProperty.SetValue(loEntityCopy, loDateTime);
+                                        }
+                                        else if (loProperty.PropertyType == typeof(MaxIndex))
+                                        {
+                                            MaxIndex loMaxIndex = MaxConvertLibrary.DeserializeObject(typeof(object), lsValue, typeof(MaxIndex)) as MaxIndex;
+                                            if (null != loMaxIndex)
+                                            {
+                                                loProperty.SetValue(loEntityCopy, loMaxIndex);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            loProperty.SetValue(loEntityCopy, lsValue);
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
 
-                    if (lbValueFound)
-                    {
-                        if (lnEntityNum == 0)
+                        if (lbValueFound)
                         {
-                            if (loR.Count == 1)
+                            if (lnEntityNum == 0)
                             {
-                                if (loEntity is MaxBaseIdEntity)
+                                if (loR.Count == 1)
                                 {
-                                    MaxBaseIdEntity loEntityBase = loR[0] as MaxBaseIdEntity;
-                                    if (null == loEntityBase || loEntityBase.Id == Guid.Empty)
+                                    if (loEntity is MaxBaseIdEntity)
+                                    {
+                                        MaxBaseIdEntity loEntityBase = loR[0] as MaxBaseIdEntity;
+                                        if (null == loEntityBase || loEntityBase.Id == Guid.Empty)
+                                        {
+                                            //// Reset to just include the list
+                                            loR = new MaxEntityList(loEntity.GetType());
+                                        }
+                                    }
+                                    else
                                     {
                                         //// Reset to just include the list
                                         loR = new MaxEntityList(loEntity.GetType());
                                     }
                                 }
-                                else
-                                {
-                                    //// Reset to just include the list
-                                    loR = new MaxEntityList(loEntity.GetType());
-                                }
                             }
-                        }
 
-                        loR.Add(loEntityCopy);
+                            loR.Add(loEntityCopy);
+                        }
                     }
 
                     lnEntityNum++;
@@ -768,55 +937,58 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         protected virtual MaxApiResponseViewModel ProcessPost(MaxApiRequestViewModel loRequest, MaxEntity loEntity, MaxApiResponseViewModel loResponse)
         {
             MaxApiResponseViewModel loR = loResponse;
-            //// Update
-            if (!this.HasPermission(loRequest, loEntity, (int)MaxEnumGroup.PermissionUpdate))
+            if (null != loRequest.RequestPropertyList && loRequest.RequestPropertyList.Length > 0)
             {
-                loR.Message.Error = "User does not have permission to update item.";
-                loR.Status = HttpStatusCode.Forbidden;
-            }
-            else
-            {
-                MaxEntityList loList = this.MapRequest(loEntity, loRequest);
-                int lnUpdatedCount = 0;
-                for (int lnE = 0; lnE < loList.Count; lnE++)
+                //// Update
+                if (!this.HasPermission(loRequest, loEntity, (int)MaxEnumGroup.PermissionUpdate))
                 {
-                    bool lbSaved = false;
-                    if (!string.IsNullOrEmpty(loList[lnE].DataKey))
-                    {
-                        lbSaved = loList[lnE].Update();
-                    }
-                    else if (loList[lnE] is MaxBaseIdEntity)
-                    {
-                        MaxBaseIdEntity loBaseIdEntity = loList[lnE] as MaxBaseIdEntity;
-                        if (Guid.Empty == loBaseIdEntity.Id)
-                        {
-                            lbSaved = loBaseIdEntity.Insert();
-                        }
-                        else
-                        {
-                            lbSaved = loBaseIdEntity.Update();
-                        }
-                    }
-                    else if (string.IsNullOrEmpty(loList[lnE].DataKey))
-                    {
-                        lbSaved = loList[lnE].Insert();
-                    }
-
-                    if (lbSaved)
-                    {
-                        lnUpdatedCount++;
-                        if (loList.Count == 1)
-                        {
-                            loR.Item = loList[lnE].MapIndex(loRequest.ResponsePropertyList);
-                        }
-                        else
-                        {
-                            loR.ItemList.Add(loList[lnE].MapIndex(loRequest.ResponsePropertyList));
-                        }
-                    }
+                    loR.Message.Error = "User does not have permission to update item.";
+                    loR.Status = HttpStatusCode.Forbidden;
                 }
+                else
+                {
+                    MaxEntityList loList = this.MapRequest(loEntity, loRequest);
+                    int lnUpdatedCount = 0;
+                    for (int lnE = 0; lnE < loList.Count; lnE++)
+                    {
+                        bool lbSaved = false;
+                        if (!string.IsNullOrEmpty(loList[lnE].DataKey))
+                        {
+                            lbSaved = loList[lnE].Update();
+                        }
+                        else if (loList[lnE] is MaxBaseIdEntity)
+                        {
+                            MaxBaseIdEntity loBaseIdEntity = loList[lnE] as MaxBaseIdEntity;
+                            if (Guid.Empty == loBaseIdEntity.Id)
+                            {
+                                lbSaved = loBaseIdEntity.Insert();
+                            }
+                            else
+                            {
+                                lbSaved = loBaseIdEntity.Update();
+                            }
+                        }
+                        else if (string.IsNullOrEmpty(loList[lnE].DataKey))
+                        {
+                            lbSaved = loList[lnE].Insert();
+                        }
 
-                loR.Message.Success = "Item Updated";
+                        if (lbSaved)
+                        {
+                            lnUpdatedCount++;
+                            if (loList.Count == 1)
+                            {
+                                loR.Item = loList[lnE].MapIndex(loRequest.ResponsePropertyList);
+                            }
+                            else
+                            {
+                                loR.ItemList.Add(loList[lnE].MapIndex(loRequest.ResponsePropertyList));
+                            }
+                        }
+                    }
+
+                    loR.Message.Success = "Item Updated";
+                }
             }
 
             return loR;
@@ -1038,42 +1210,53 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
             string lsPropertySort = loRequest.Item.GetValueString(loRequestPage.PropertySort);
             MaxIndex loFilter = this.GetFilter(loRequest, loEntity);
-            loEntity = loEntity.GetType().GetMethod("Create").Invoke(null, null) as MaxEntity;
-            if ((!string.IsNullOrEmpty(lsPropertySort) && lnPage > 0 && lnPageLength > 0) || loFilter.Count > 0)
+            Type loType = loEntity.GetType();
+            MethodInfo loCreateMethod = loType.GetMethod("Create");
+            while (null == loCreateMethod && null != loType.BaseType)
             {
-                MaxEntityList loList = loEntity.LoadAllByPageFilter(lnPage, lnPageLength, lsPropertySort, loFilter, loRequest.ResponsePropertyList);
-                loR.Page.Add(loResponsePage.Total, loList.Total);
-                for (int lnE = 0; lnE < loList.Count; lnE++)
-                {
-                    MaxEntity loListEntity = loList[lnE];
-                    MaxIndex loItem = loListEntity.MapIndex(loRequest.ResponsePropertyList);
-                    loR.ItemList.Add(loItem);
-                }
+                loType = loType.BaseType;
+                loCreateMethod = loType.GetMethod("Create");
             }
-            else
+
+            if (null != loCreateMethod)
             {
-                MaxEntityList loList = loEntity.LoadAllCache(loRequest.ResponsePropertyList);
-                SortedList<string, MaxEntity> loSortedList = new SortedList<string, MaxEntity>();
-                for (int lnE = 0; lnE < loList.Count; lnE++)
+                loEntity = loCreateMethod.Invoke(null, null) as MaxEntity;
+                if ((!string.IsNullOrEmpty(lsPropertySort) && lnPage > 0 && lnPageLength > 0) || loFilter.Count > 0)
                 {
-                    MaxEntity loListEntity = loList[lnE];
-                    if (loListEntity is MaxBaseIdEntity)
+                    MaxEntityList loList = loEntity.LoadAllByPageFilter(lnPage, lnPageLength, lsPropertySort, loFilter, loRequest.ResponsePropertyList);
+                    loR.Page.Add(loResponsePage.Total, loList.Total);
+                    for (int lnE = 0; lnE < loList.Count; lnE++)
                     {
-                        if (((MaxBaseIdEntity)loListEntity).IsActive || this.HasPermission(loRequest, loEntity, (int)MaxEnumGroup.PermissionSelectInactive))
+                        MaxEntity loListEntity = loList[lnE];
+                        MaxIndex loItem = loListEntity.MapIndex(loRequest.ResponsePropertyList);
+                        loR.ItemList.Add(loItem);
+                    }
+                }
+                else
+                {
+                    MaxEntityList loList = loEntity.LoadAllCache(loRequest.ResponsePropertyList);
+                    SortedList<string, MaxEntity> loSortedList = new SortedList<string, MaxEntity>();
+                    for (int lnE = 0; lnE < loList.Count; lnE++)
+                    {
+                        MaxEntity loListEntity = loList[lnE];
+                        if (loListEntity is MaxBaseIdEntity)
+                        {
+                            if (((MaxBaseIdEntity)loListEntity).IsActive || this.HasPermission(loRequest, loEntity, (int)MaxEnumGroup.PermissionSelectInactive))
+                            {
+                                loSortedList.Add(loListEntity.GetDefaultSortString(), loListEntity);
+                            }
+                        }
+                        else
                         {
                             loSortedList.Add(loListEntity.GetDefaultSortString(), loListEntity);
                         }
                     }
-                    else
-                    {
-                        loSortedList.Add(loListEntity.GetDefaultSortString(), loListEntity);
-                    }
-                }
 
-                foreach (string lsKey in loSortedList.Keys)
-                {
-                    MaxIndex loItem = loSortedList[lsKey].MapIndex(loRequest.ResponsePropertyList);
-                    loR.ItemList.Add(loItem);
+                    foreach (string lsKey in loSortedList.Keys)
+                    {
+                        MaxIndex loItem = loSortedList[lsKey].MapIndex(loRequest.ResponsePropertyList);
+                        loR.ItemList.Add(loItem);
+                    }
                 }
             }
 
