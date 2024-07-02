@@ -37,6 +37,7 @@
 // <change date="2/24/2021" author="Brian A. Lakstins" description="Update password reset process.">
 // <change date="6/19/2024" author="Brian A. Lakstins" description="Add user related logging.  Return configuration informaion on user requests.">
 // <change date="6/28/2024" author="Brian A. Lakstins" description="Add generic User and Role management.  Integrate permission management">
+// <change date="7/2/2024" author="Brian A. Lakstins" description="Use GetPermisison method from base to reduce code">
 // </changelog>
 #endregion
 
@@ -948,25 +949,8 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         protected override MaxIndex GetPermissionList()
         {
             MaxIndex loR = base.GetPermissionList();
-            var loResponseItem = new
-            {
-                DataKey = "DataKey",
-                Name = "Name",
-                DisplayName = "DisplayName"
-            };
-
-            MaxIndex loUserPermission = new MaxIndex();
-            loUserPermission.Add("DataKey", MaxRoleRelationPermissionEntity.GetPermissionId(MaxUserEntity.Create()));
-            loUserPermission.Add("Name", MaxUserEntity.Create().GetType().ToString());
-            loUserPermission.Add("DisplayName", "Users");
-            loR.Add(loUserPermission);
-
-            MaxIndex loRolePermission = new MaxIndex();
-            loRolePermission.Add("DataKey", MaxRoleRelationPermissionEntity.GetPermissionId(MaxRoleEntity.Create()));
-            loRolePermission.Add("Name", MaxRoleEntity.Create().GetType().ToString());
-            loRolePermission.Add("DisplayName", "Roles");
-            loR.Add(loRolePermission);
-
+            loR.Add(this.GetPermission(MaxUserEntity.Create(), "Users"));
+            loR.Add(this.GetPermission(MaxRoleEntity.Create(), "Roles"));
             return loR;
         } 
     }

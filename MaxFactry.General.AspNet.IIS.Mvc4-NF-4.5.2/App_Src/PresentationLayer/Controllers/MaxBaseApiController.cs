@@ -51,6 +51,7 @@
 // <change date="7/22/2021" author="Brian A. Lakstins" description="Add array handling when array of strings instead of object">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.  Updated to use DataKey.">
 // <change date="6/28/2024" author="Brian A. Lakstins" description="Add generic permission checking.">
+// <change date="7/2/2024" author="Brian A. Lakstins" description="Add method to get permission based on object and display name.">
 // </changelog>
 #endregion
 
@@ -247,6 +248,23 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             return this.GetResponseMessage(loR, loStatus);
         }
 
+        protected MaxIndex GetPermission(MaxEntity loEntity, string lsDisplayName)
+        {
+            var loResponseItem = new
+            {
+                DataKey = "DataKey",
+                Name = "Name",
+                DisplayName = "DisplayName"
+            };
+
+            MaxIndex loR = new MaxIndex();
+            loR.Add("DataKey", MaxRoleRelationPermissionEntity.GetPermissionId(loEntity));
+            loR.Add("Name", loEntity.GetType().ToString());
+            loR.Add("DisplayName", lsDisplayName);
+
+            return loR;
+        }
+
         /// <summary>
         /// Gets the list of permissions related to this api
         ///            var loResponseItem = new
@@ -280,7 +298,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 {
                     if (null != loRequest.User && null != loRequest.RoleList && loRequest.RoleList.Count > 0)
                     {
-                        string lsEntityName = loEntity.GetType().ToString();
+                        Guid loPermissionId = MaxRoleRelationPermissionEntity.GetPermissionId(loEntity);
                         for (int lnR = 0; lnR < loRequest.RoleList.Count && !lbR; lnR++)
                         {
                             MaxEntityList loRoleRelationPermissionList = MaxRoleRelationPermissionEntity.Create().LoadAllByRoleNameCache(loRequest.RoleList[lnR]);
@@ -289,7 +307,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                 for (int lnE = 0; lnE < loRoleRelationPermissionList.Count && !lbR; lnE++)
                                 {
                                     MaxRoleRelationPermissionEntity loRoleRelationPermissionEntity = loRoleRelationPermissionList[lnE] as MaxRoleRelationPermissionEntity;
-                                    if (loRoleRelationPermissionEntity.Name == lsEntityName)
+                                    if (loRoleRelationPermissionEntity.PermissionId == loPermissionId)
                                     {
                                         if ((loRoleRelationPermissionEntity.Permission & lnPermission) > 0)
                                         {
