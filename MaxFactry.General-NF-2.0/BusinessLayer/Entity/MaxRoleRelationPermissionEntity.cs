@@ -28,6 +28,7 @@
 #region Change Log
 // <changelog>
 // <change date="6/28/2024" author="Brian A. Lakstins" description="Initial creation">
+// <change date="7/10/2024" author="Brian A. Lakstins" description="Use a string for permission id">
 // </changelog>
 #endregion
 
@@ -131,13 +132,13 @@ namespace MaxFactry.General.BusinessLayer
         /// </summary>
         /// <param name="loObject">object to use to get Guid</param>
         /// <returns>Guid Id based on object type</returns>
-        public static Guid GetPermissionId(object loObject)
+        public static Guid GetPermissionId(string lsName)
         {
             Guid loR = Guid.Empty;
             try
             {
                 MD5 loMD5 = MD5.Create();
-                byte[] laHash = loMD5.ComputeHash(Encoding.UTF8.GetBytes(loObject.GetType().ToString()));
+                byte[] laHash = loMD5.ComputeHash(Encoding.UTF8.GetBytes(lsName));
                 loR = new Guid(laHash);
             }
             catch (Exception loE)

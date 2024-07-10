@@ -35,6 +35,7 @@
 // <change date="2/19/2021" author="Brian A. Lakstins" description="Use standard methods to load relationships.">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class. Use parent methods instead of repository.">
 // <change date="4/28/2024" author="Brian A. Lakstins" description="Integrate with permissions.">
+// <change date="7/10/2024" author="Brian A. Lakstins" description="Rename variable to better reflect what it is">
 // </changelog>
 #endregion
 
@@ -247,7 +248,7 @@ namespace MaxFactry.General.BusinessLayer
             MaxIndex loR = base.MapIndex(laPropertyNameList);
             foreach (string lsPropertyName in laPropertyNameList)
             {
-                if (lsPropertyName == "PermissionSelectedList")
+                if (lsPropertyName == "PermissionKeySelectedList")
                 {
                     List<string> loPermissionList = new List<string>();
                     MaxRoleRelationPermissionEntity loRelation = MaxRoleRelationPermissionEntity.Create();
@@ -258,7 +259,7 @@ namespace MaxFactry.General.BusinessLayer
                         loPermissionList.Add(loRelation.PermissionId.ToString() + loRelation.Permission.ToString());
                     }
 
-                    loR.Add("PermissionSelectedList", loPermissionList.ToArray());
+                    loR.Add("PermissionKeySelectedList", loPermissionList.ToArray());
                 }
             }
 

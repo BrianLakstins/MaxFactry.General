@@ -38,6 +38,7 @@
 // <change date="6/19/2024" author="Brian A. Lakstins" description="Add user related logging.  Return configuration informaion on user requests.">
 // <change date="6/28/2024" author="Brian A. Lakstins" description="Add generic User and Role management.  Integrate permission management">
 // <change date="7/2/2024" author="Brian A. Lakstins" description="Use GetPermisison method from base to reduce code">
+// <change date="7/10/2024" author="Brian A. Lakstins" description="Include permissions with roles">
 // </changelog>
 #endregion
 
@@ -404,8 +405,20 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                             loR.Item.Add(loResponseItem.IsPasswordResetNeeded, ((MaxMembershipUser)loUser).IsPasswordResetNeeded);
                         }
 
-                        string[] laRole = Roles.GetRolesForUser(loUser.UserName);
-                        loR.Item.Add(loResponseItem.RoleList, laRole);
+                        List<MaxIndex> loRoleIndexList = new List<MaxIndex>();
+                        MaxEntityList loRoleList = MaxRoleEntity.Create().LoadAllByUserIdCache(MaxConvertLibrary.ConvertToGuid(typeof(object), loUser.ProviderUserKey));
+                        for (int lnR = 0; lnR < loRoleList.Count; lnR++) 
+                        {
+                            MaxRoleEntity loRole = loRoleList[lnR] as MaxRoleEntity;
+                            MaxIndex loRoleIndex = loRole.MapIndex(
+                                loRole.GetPropertyName(() => loRole.DataKey),
+                                loRole.GetPropertyName(() => loRole.RoleName),
+                                loRole.GetPropertyName(() => loRole.Id),
+                                "PermissionKeySelectedList");
+                            loRoleIndexList.Add(loRoleIndex);
+                        }
+
+                        loR.Item.Add(loResponseItem.RoleList, loRoleIndexList);
                         loR.Message.Success = "Got current user information";
                     }
                     catch (Exception loE)
@@ -599,8 +612,20 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                             loR.Item.Add(loResponseItem.IsPasswordResetNeeded, ((MaxMembershipUser)loUser).IsPasswordResetNeeded);
                         }
 
-                        string[] laRole = Roles.GetRolesForUser(loUser.UserName);
-                        loR.Item.Add(loResponseItem.RoleList, laRole);
+                        List<MaxIndex> loRoleIndexList = new List<MaxIndex>();
+                        MaxEntityList loRoleList = MaxRoleEntity.Create().LoadAllByUserIdCache(MaxConvertLibrary.ConvertToGuid(typeof(object), loUser.ProviderUserKey));
+                        for (int lnR = 0; lnR < loRoleList.Count; lnR++)
+                        {
+                            MaxRoleEntity loRole = loRoleList[lnR] as MaxRoleEntity;
+                            MaxIndex loRoleIndex = loRole.MapIndex(
+                                loRole.GetPropertyName(() => loRole.DataKey),
+                                loRole.GetPropertyName(() => loRole.RoleName),
+                                loRole.GetPropertyName(() => loRole.Id),
+                                "PermissionKeySelectedList");
+                            loRoleIndexList.Add(loRoleIndex);
+                        }
+
+                        loR.Item.Add(loResponseItem.RoleList, loRoleIndexList);
                     }
                 }
                 catch (Exception loE)
@@ -886,9 +911,9 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         protected MaxApiResponseViewModel ProcessRole(MaxApiRequestViewModel loRequest, MaxRoleEntity loRole, MaxApiResponseViewModel loResponse)
         {
             MaxApiResponseViewModel loR = loResponse;
-            if (null != loR && null != loR.Item && loR.Item.Contains(loRole.GetPropertyName(() => loRole.Id)) && null != loRequest.Item && loRequest.Item.Contains("PermissionSelectedList"))
+            if (null != loR && null != loR.Item && loR.Item.Contains(loRole.GetPropertyName(() => loRole.Id)) && null != loRequest.Item && loRequest.Item.Contains("PermissionKeySelectedList"))
             {
-                string[] laPermissionSelectedList = MaxConvertLibrary.DeserializeObject(loRequest.Item.GetValueString("PermissionSelectedList"), typeof(string[])) as string[];
+                string[] laPermissionSelectedList = MaxConvertLibrary.DeserializeObject(loRequest.Item.GetValueString("PermissionKeySelectedList"), typeof(string[])) as string[];
                 if (null != laPermissionSelectedList)
                 {
                     Guid loRoleId = MaxConvertLibrary.ConvertToGuid(typeof(object), loR.Item.GetValueString(loRole.GetPropertyName(() => loRole.Id)));
@@ -922,7 +947,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
                         foreach (string lsRequestProperty in loRequest.RequestPropertyList)
                         {
-                            if (lsRequestProperty == "PermissionSelectedList" || lsRequestProperty == typeof(MaxRoleEntity).ToString() + ".PermissionSelectedList")
+                            if (lsRequestProperty == "PermissionKeySelectedList" || lsRequestProperty == typeof(MaxRoleEntity).ToString() + ".PermissionKeySelectedList")
                             {
                                 List<string> loPermissionList = new List<string>();
                                 loRelationList = loRelation.LoadAllByRoleIdCache(loRoleId);
@@ -932,7 +957,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                     loPermissionList.Add(loRelation.PermissionId.ToString() + loRelation.Permission.ToString());
                                 }
 
-                                loR.Item.Add("PermissionSelectedList", loPermissionList.ToArray());
+                                loR.Item.Add("PermissionKeySelectedList", loPermissionList.ToArray());
                             }
                         }
                     }
