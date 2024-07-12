@@ -132,13 +132,13 @@ namespace MaxFactry.General.BusinessLayer
         /// </summary>
         /// <param name="loObject">object to use to get Guid</param>
         /// <returns>Guid Id based on object type</returns>
-        public static Guid GetPermissionId(string lsName)
+        public static Guid GetPermissionId(string lsKey)
         {
             Guid loR = Guid.Empty;
             try
             {
                 MD5 loMD5 = MD5.Create();
-                byte[] laHash = loMD5.ComputeHash(Encoding.UTF8.GetBytes(lsName));
+                byte[] laHash = loMD5.ComputeHash(Encoding.UTF8.GetBytes(lsKey));
                 loR = new Guid(laHash);
             }
             catch (Exception loE)
@@ -152,23 +152,25 @@ namespace MaxFactry.General.BusinessLayer
         public static MaxIndex GetPermission(object loObject, string lsDisplayName)
         {
             MaxIndex loR = new MaxIndex();
-            string lsName = loObject.GetType().ToString();
-            string lsType = "MaxEntity";
+            string lsKey = loObject.GetType().ToString();
+            string lsName = lsKey;
+            string lsType = "Object";
             if (loObject is string)
             {
-                lsName = loObject as string;
-                if (lsName.Contains(":"))
+                lsKey = loObject as string;
+                if (lsKey.Contains(":"))
                 {
-                    string[] laName = lsName.Split(':');
-                    if (laName.Length == 2)
+                    string[] laKey = lsKey.Split(':');
+                    if (laKey.Length == 2)
                     {
-                        lsType = laName[0];
+                        lsType = laKey[0];
+                        lsName = laKey[1];
                     }
                 }
             }
 
             loR.Add("Type", lsType);
-            loR.Add("DataKey", MaxRoleRelationPermissionEntity.GetPermissionId(lsName));
+            loR.Add("DataKey", MaxRoleRelationPermissionEntity.GetPermissionId(lsKey));
             loR.Add("Name", lsName);
             loR.Add("DisplayName", lsDisplayName);
             return loR;
