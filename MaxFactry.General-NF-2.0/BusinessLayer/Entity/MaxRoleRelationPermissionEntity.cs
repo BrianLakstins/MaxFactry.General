@@ -149,6 +149,31 @@ namespace MaxFactry.General.BusinessLayer
             return loR;
         }
 
+        public static MaxIndex GetPermission(object loObject, string lsDisplayName)
+        {
+            MaxIndex loR = new MaxIndex();
+            string lsName = loObject.GetType().ToString();
+            string lsType = "MaxEntity";
+            if (loObject is string)
+            {
+                lsName = loObject as string;
+                if (lsName.Contains(":"))
+                {
+                    string[] laName = lsName.Split(':');
+                    if (laName.Length == 2)
+                    {
+                        lsType = laName[0];
+                    }
+                }
+            }
+
+            loR.Add("Type", lsType);
+            loR.Add("DataKey", MaxRoleRelationPermissionEntity.GetPermissionId(lsName));
+            loR.Add("Name", lsName);
+            loR.Add("DisplayName", lsDisplayName);
+            return loR;
+        }
+
         protected override string GetDataName(MaxDataModel loDataModel, string lsPropertyName)
         {
 #if net4_52 || netcore2_1
