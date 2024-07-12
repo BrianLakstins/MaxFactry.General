@@ -974,8 +974,8 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         protected override MaxIndex GetPermissionList()
         {
             MaxIndex loR = base.GetPermissionList();
-            loR.Add(this.GetPermission(MaxUserEntity.Create(), "Users"));
-            loR.Add(this.GetPermission(MaxRoleEntity.Create(), "Roles"));
+            loR.Add(MaxRoleRelationPermissionEntity.GetPermission(MaxUserEntity.Create(), "Users"));
+            loR.Add(MaxRoleRelationPermissionEntity.GetPermission(MaxRoleEntity.Create(), "Roles"));
             return loR;
         } 
     }

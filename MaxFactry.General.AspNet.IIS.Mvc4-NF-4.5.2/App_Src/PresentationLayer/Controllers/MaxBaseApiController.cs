@@ -249,42 +249,6 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             return this.GetResponseMessage(loR, loStatus);
         }
 
-        protected MaxIndex GetPermission(object loObject, string lsDisplayName)
-        {
-            var loResponseItem = new
-            {
-                DataKey = "DataKey",
-                Name = "Name",
-                DisplayName = "DisplayName",
-                Type = "Type"
-            };
-
-            MaxIndex loR = new MaxIndex();
-            string lsName = loObject.GetType().ToString();
-            if (loObject is string)
-            {
-                lsName = loObject as string;
-                if (lsName.Contains(":"))
-                {
-                    string[] laName = lsName.Split(':');
-                    if (laName.Length == 2)
-                    {
-                        loR.Add(loResponseItem.Type, laName[0]);
-                        lsName = laName[1];
-                    }
-                }
-            }
-            else if (loObject is MaxEntity)
-            {
-                loR.Add(loResponseItem.Type, "MaxEntity");
-            }
-
-            loR.Add(loResponseItem.DataKey, MaxRoleRelationPermissionEntity.GetPermissionId(lsName));
-            loR.Add(loResponseItem.Name, lsName);
-            loR.Add(loResponseItem.DisplayName, lsDisplayName);
-            return loR;
-        }
-
         /// <summary>
         /// Gets the list of permissions related to this api
         ///            var loResponseItem = new
