@@ -39,6 +39,7 @@
 // <change date="6/28/2024" author="Brian A. Lakstins" description="Add generic User and Role management.  Integrate permission management">
 // <change date="7/2/2024" author="Brian A. Lakstins" description="Use GetPermisison method from base to reduce code">
 // <change date="7/10/2024" author="Brian A. Lakstins" description="Include permissions with roles">
+// <change date="7/16/2024" author="Brian A. Lakstins" description="Set some attributes based on time.">
 // </changelog>
 #endregion
 
@@ -553,7 +554,13 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                 if (lbIsValid)
                                 {
                                     MaxFactry.General.AspNet.IIS.MaxAppLibrary.SignIn(lsUserCheck);
-
+                                    Guid loUserId = MaxConvertLibrary.ConvertToGuid(typeof(object), loUser.ProviderUserKey);
+                                    MaxUserEntity loMaxUser = MaxUserEntity.Create();
+                                    if (loMaxUser.LoadByIdCache(loUserId))
+                                    {
+                                        loMaxUser.SetAttribute("LastIISSignIn", DateTime.UtcNow);
+                                        loMaxUser.Update();
+                                    }
                                 }
                                 else
                                 {
@@ -667,6 +674,12 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                             loUserId,
                             MaxUserLogEntity.LogEntryTypeLogout,
                             this.GetType() + ".Logout()");
+                        MaxUserEntity loMaxUser = MaxUserEntity.Create();
+                        if (loMaxUser.LoadByIdCache(loUserId))
+                        {
+                            loMaxUser.SetAttribute("LastLogout", DateTime.UtcNow);
+                            loMaxUser.Update();
+                        }
                     }
                 }
 

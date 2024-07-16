@@ -36,6 +36,7 @@
 // <change date="12/10/2020" author="Brian A. Lakstins" description="Generate email content in Model">
 // <change date="10/10/2023" author="Brian A. Lakstins" description="Added OAuth2 Login integration">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.  Updated to use DataKey.">
+// <change date="7/16/2024" author="Brian A. Lakstins" description="Add some user logging.  Set some attributes based on time.">
 // </changelog>
 #endregion
 
@@ -93,6 +94,15 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     if (loModel.ValidateUser())
                     {
                         MaxFactry.General.AspNet.IIS.MaxAppLibrary.SignIn(loModel.UserName);
+                        MaxUserEntity loMaxUser = MaxUserEntity.Create();
+                        MaxEntityList loMaxUserList = loMaxUser.LoadAllByUsernameCache(loModel.UserName);
+                        if (loMaxUserList.Count == 1)
+                        {
+                            loMaxUser = loMaxUserList[0] as MaxUserEntity;
+                            loMaxUser.SetAttribute("LastIISSignIn", DateTime.UtcNow);
+                            loMaxUser.Update();
+                        }
+
                         if (!string.IsNullOrEmpty(loModel.ReturnUrl))
                         {
                             return this.Redirect(loModel.ReturnUrl);
@@ -186,6 +196,13 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         if (!Request.IsAuthenticated)
                         {
                             MaxFactry.General.AspNet.IIS.MaxAppLibrary.SignIn(loUser.UserName);
+                            Guid loUserId = MaxConvertLibrary.ConvertToGuid(typeof(object), loUser.ProviderUserKey);
+                            MaxUserEntity loMaxUser = MaxUserEntity.Create();
+                            if (loMaxUser.LoadByIdCache(loUserId))
+                            {
+                                loMaxUser.SetAttribute("LastIISSignIn", DateTime.UtcNow);
+                                loMaxUser.Update();
+                            }
                         }
 
                         if (!string.IsNullOrEmpty(loModel.ReturnUrl))
@@ -714,6 +731,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
                             MaxUserEntity loUser = MaxUserEntity.Create();
                             MaxEntityList loList = loUser.LoadAllByUsernameCache(lsUserName);
+                            MaxUserLogEntity loUserLog = MaxUserLogEntity.Create();
                             if (loList.Count == 0)
                             {
                                 loList = loUser.LoadAllByEmailCache(lsEmail);
@@ -726,17 +744,20 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                         if (loUser.UserName.Length == lsUserName.Length &&
                                             loUser.UserName.StartsWith("OAuth2"))
                                         {
+                                            loUserLog.Insert(loUser.Id, MaxUserLogEntity.LogEntryTypeLogin, "Logged in using OAuth2");
                                             lbIsOAuth2User = true;
                                         }
                                     }
 
                                     if (!lbIsOAuth2User)
                                     {
+                                        loUserLog.Insert(loUser.Id, MaxUserLogEntity.LogEntryTypeOther, "Changed from username [" + loUser.UserName + "]");
                                         loUser.UserName = lsUserName;
                                         loUser.Update();
                                     }
                                     else
                                     {
+                                        loUserLog.Insert(loUser.Id, MaxUserLogEntity.LogEntryTypeOther, "Attempted to create another OAuth2 account with email [" + lsEmail + "]");
                                         throw new Exception("User with this email is already taken by another OAuth2 user.");
                                     }
                                 }
@@ -753,11 +774,28 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
                                 //// Log the user on
                                 MaxFactry.General.AspNet.IIS.MaxAppLibrary.SignIn(lsUserName);
+                                MaxUserEntity loMaxUser = MaxUserEntity.Create();
+                                MaxEntityList loMaxUserList = loMaxUser.LoadAllByUsernameCache(lsUserName);
+                                if (loMaxUserList.Count == 1)
+                                {
+                                    loMaxUser = loMaxUserList[0] as MaxUserEntity;
+                                    loMaxUser.SetAttribute("LastIISSignIn", DateTime.UtcNow);
+                                    loMaxUser.Update();
+                                }
                             }
                             else if (loList.Count == 1)
                             {
+                                loUserLog.Insert(loUser.Id, MaxUserLogEntity.LogEntryTypeLogin, "Logged in using OAuth2");
                                 //// Log the user on
                                 MaxFactry.General.AspNet.IIS.MaxAppLibrary.SignIn(lsUserName);
+                                MaxUserEntity loMaxUser = MaxUserEntity.Create();
+                                MaxEntityList loMaxUserList = loMaxUser.LoadAllByUsernameCache(lsUserName);
+                                if (loMaxUserList.Count == 1)
+                                {
+                                    loMaxUser = loMaxUserList[0] as MaxUserEntity;
+                                    loMaxUser.SetAttribute("LastIISSignIn", DateTime.UtcNow);
+                                    loMaxUser.Update();
+                                }
                             }
                             else
                             {
