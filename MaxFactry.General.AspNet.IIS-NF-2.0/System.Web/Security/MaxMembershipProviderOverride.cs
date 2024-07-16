@@ -41,6 +41,7 @@
 // <change date="6/9/2021" author="Brian A. Lakstins" description="Only log user being online once per 5 minutes">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
 // <change date="6/19/2024" author="Brian A. Lakstins" description="Add user related logging.  Updates to removal of an unneeded method.">
+// <change date="7/16/2024" author="Brian A. Lakstins" description="Set some attributes based on time.">
 // </changelog>
 #endregion
 
@@ -395,6 +396,8 @@ namespace System.Web.Security
                             loMaxUser.Id,
                             MaxUserLogEntity.LogEntryTypePasswordChange,
                             this.GetType() + ".ChangePassword(string username, string oldPassword, string newPassword)");
+                        loMaxUser.SetAttribute("LastChangePassword", DateTime.UtcNow);
+                        loMaxUser.Update();
                         return true;
                     }
 				}
@@ -461,6 +464,8 @@ namespace System.Web.Security
                         loMaxUser.Id,
                         MaxUserLogEntity.LogEntryTypePasswordChange,
                         this.GetType() + ".ResetPassword(string username, string answer)");
+                    loMaxUser.SetAttribute("LastResetPassword", DateTime.UtcNow);
+                    loMaxUser.Update();
                     return lsPassword;
                 }
 			}
@@ -546,6 +551,8 @@ namespace System.Web.Security
                     loMaxUser.Id,
                     MaxUserLogEntity.LogEntryTypeLogin,
                     this.GetType() + ".ValidateUser(string username, string password) - succeeded");
+                loMaxUser.SetAttribute("LastValidateUser", DateTime.UtcNow);
+                loMaxUser.Update();
             }
 
             return lbR;
@@ -605,6 +612,8 @@ namespace System.Web.Security
                             MaxUserLogEntity.LogEntryTypeActivity,
                             this.GetType() + ".GetUser(object providerUserKey, bool userIsOnline)");
                         MaxCacheRepository.Set(this.GetType(), lsKey, DateTime.UtcNow.Ticks.ToString());
+                        loMaxUser.SetAttribute("LastGetUserByKey", DateTime.UtcNow);
+                        loMaxUser.Update();
                     }
                 }
 
@@ -643,8 +652,11 @@ namespace System.Web.Security
                             MaxUserLogEntity.LogEntryTypeActivity,
                             this.GetType() + ".GetUser(string username, bool userIsOnline)");
                         MaxCacheRepository.Set(this.GetType(), lsKey, DateTime.UtcNow.Ticks.ToString());
+                        loMaxUser.SetAttribute("LastGetUserByUsername", DateTime.UtcNow);
+                        loMaxUser.Update();
+
                     }
-				}
+                }
 
 				return this.GetUserDetails(loMaxUser);
 			}
