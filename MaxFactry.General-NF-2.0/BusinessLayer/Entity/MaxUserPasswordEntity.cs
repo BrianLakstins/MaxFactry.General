@@ -34,6 +34,7 @@
 // <change date="1/16/2021" author="Brian A. Lakstins" description="Update definition of cache keys.">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.  Add Id entry for salt.  Use parent methods instead of repository.">
 // <change date="6/19/2024" author="Brian A. Lakstins" description="Add user related logging.">
+// <change date="7/16/2024" author="Brian A. Lakstins" description="Set some attributes based on time.">
 // </changelog>
 #endregion
 
@@ -328,20 +329,28 @@ namespace MaxFactry.General.BusinessLayer
                 }
             }
 
-            MaxUserLogEntity loMaxUserLog = MaxUserLogEntity.Create();
-            if (lbR)
+            MaxUserEntity loMaxUser = MaxUserEntity.Create();
+            if (loMaxUser.LoadByIdCache(this.UserId))
             {
-                loMaxUserLog.Insert(
-                    this.UserId,
-                    MaxUserLogEntity.LogEntryTypeLogin,
-                    this.GetType() + ".CheckPassword(string lsPassword) - succeeded");
-            }
-            else
-            {
-                loMaxUserLog.Insert(
-                    this.UserId,
-                    MaxUserLogEntity.LogEntryTypePasswordFail,
-                    this.GetType() + ".CheckPassword(string lsPassword) - failed");
+                MaxUserLogEntity loMaxUserLog = MaxUserLogEntity.Create();
+                if (lbR)
+                {
+                    loMaxUserLog.Insert(
+                        this.UserId,
+                        MaxUserLogEntity.LogEntryTypeLogin,
+                        this.GetType() + ".CheckPassword(string lsPassword) - succeeded");
+                    loMaxUser.SetAttribute("LastCheckPasswordSucceed", DateTime.UtcNow);
+                }
+                else
+                {
+                    loMaxUserLog.Insert(
+                        this.UserId,
+                        MaxUserLogEntity.LogEntryTypePasswordFail,
+                        this.GetType() + ".CheckPassword(string lsPassword) - failed");
+                    loMaxUser.SetAttribute("LastCheckPasswordFail", DateTime.UtcNow);
+                }
+
+                loMaxUser.Update();
             }
 
             return lbR;
