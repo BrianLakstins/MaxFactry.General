@@ -54,6 +54,7 @@
 // <change date="7/2/2024" author="Brian A. Lakstins" description="Add method to get permission based on object and display name.">
 // <change date="7/10/2024" author="Brian A. Lakstins" description="Add ability for any type of permission.">
 // <change date="7/29/2024" author="Brian A. Lakstins" description="Seperate out single item and list handling.">
+// <change date="7/30/2024" author="Brian A. Lakstins" description="Fix property name issue.">
 // </changelog>
 #endregion
 
@@ -848,7 +849,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
                                 if ((lbHasValueCommon || lbHasValue) && loProperty.CanWrite)
                                 {
-                                    loEntityIndex.Add(lsPropertyNameKey, lsValue);
+                                    loEntityIndex.Add(loProperty.Name, lsValue);
                                 }
                             }
                         }                        
