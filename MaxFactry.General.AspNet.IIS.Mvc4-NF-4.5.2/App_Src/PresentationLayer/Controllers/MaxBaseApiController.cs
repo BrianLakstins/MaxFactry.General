@@ -55,7 +55,7 @@
 // <change date="7/10/2024" author="Brian A. Lakstins" description="Add ability for any type of permission.">
 // <change date="7/29/2024" author="Brian A. Lakstins" description="Seperate out single item and list handling.">
 // <change date="7/30/2024" author="Brian A. Lakstins" description="Fix property name issue.">
-// <change date="7/31/2024" author="Brian A. Lakstins" description="Fix not loading by DataKey.  Update property name mapping.">
+// <change date="7/31/2024" author="Brian A. Lakstins" description="Fix not loading by DataKey.  Update property name mapping.  Fix including common value with list.">
 // </changelog>
 #endregion
 
@@ -880,12 +880,23 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                         if (loRequestPropertyIndex.ContainsKey(lsPropertyNameKey))
                                         {
                                             string lsRequestFieldName = loRequestPropertyIndex[lsPropertyNameKey];
+                                            bool lbHasValueCommon = null != loRequest.Item[lsRequestFieldName];
+
+                                            string lsValueCommon = loRequest.Item.GetValueString(lsRequestFieldName);
                                             bool lbHasValue = null != loListEntityIndex[lsRequestFieldName];
                                             string lsValue = loListEntityIndex.GetValueString(lsRequestFieldName);
                                             if (lbHasValue)
                                             {
-                                                loEntityIndex.Add(loEntityProperty.Name, lsValue);
                                                 lbValueFound = true;
+                                            }
+                                            else if (lbHasValueCommon)
+                                            {
+                                                lsValue = lsValueCommon;
+                                            }
+
+                                            if (lbHasValueCommon || lbHasValue)
+                                            {
+                                                loEntityIndex.Add(loEntityProperty.Name, lsValue);
                                             }
                                         }
                                     }
@@ -1091,7 +1102,6 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
             return loR;
         }
-
 
         protected virtual MaxApiResponseViewModel ProcessPost(MaxApiRequestViewModel loRequest, MaxEntity loEntity, MaxApiResponseViewModel loResponse)
         {
