@@ -40,6 +40,7 @@
 // <change date="7/2/2024" author="Brian A. Lakstins" description="Use GetPermisison method from base to reduce code">
 // <change date="7/10/2024" author="Brian A. Lakstins" description="Include permissions with roles">
 // <change date="7/16/2024" author="Brian A. Lakstins" description="Set some attributes based on time.">
+// <change date="8/26/2024" author="Brian A. Lakstins" description="Updated for changes to base class.">
 // </changelog>
 #endregion
 
@@ -267,12 +268,11 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 };
 
                 MaxApiRequestViewModel loRequest = await this.GetRequest();
-                MembershipUser loUser = this.GetUser(loRequest);
-                if (null != loUser)
+                if (null != loRequest.User)
                 {
                     loStatus = HttpStatusCode.OK;
                     MaxUserAuthTokenEntity loEntity = MaxUserAuthTokenEntity.Create();
-                    MaxEntityList loList = loEntity.LoadAllActiveByUserKeyCache(loUser.ProviderUserKey.ToString());
+                    MaxEntityList loList = loEntity.LoadAllActiveByUserKeyCache(loRequest.User.ProviderUserKey.ToString());
                     string lsTokenType = "Bearer";
                     DateTime loExpiration = DateTime.UtcNow.AddYears(1);
                     if (loRequest.Item.Contains(loRequestItem.TokenType))
@@ -322,7 +322,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     if (Request.Method == HttpMethod.Post || null == loCurrentEntity)
                     {
                         string lsToken = MaxUserAuthTokenEntity.GenerateToken(false);
-                        loCurrentEntity = MaxUserAuthTokenEntity.AddToken(lsToken, lsTokenType, loExpiration, loUser.ProviderUserKey.ToString(), Guid.Empty, Guid.Empty);
+                        loCurrentEntity = MaxUserAuthTokenEntity.AddToken(lsToken, lsTokenType, loExpiration, loRequest.User.ProviderUserKey.ToString(), Guid.Empty, Guid.Empty);
                         loR.Item.Add(loResponseItem.AccessToken, loCurrentEntity.GetClientToken(lsToken));
                         loR.Message.Success = "Token created.";
                         MaxIndex loItem = new MaxIndex();
@@ -333,8 +333,8 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         loR.ItemList.Add(loItem);
                     }
 
-                    loR.Item.Add(loResponseItem.UserName, loUser.UserName);
-                    loR.Item.Add(loResponseItem.Email, loUser.Email);
+                    loR.Item.Add(loResponseItem.UserName, loRequest.User.UserName);
+                    loR.Item.Add(loResponseItem.Email, loRequest.User.Email);
                     loR.Item.Add(loResponseItem.Id, loCurrentEntity.Id);
                     loR.Item.Add(loResponseItem.ExpiresIn, loCurrentEntity.Expiration);
                     loR.Item.Add(loResponseItem.CreatedDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loCurrentEntity.CreatedDate));
@@ -385,29 +385,28 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         loConfiguration.GetPropertyName(() => loConfiguration.EnablePasswordRetrieval)
                     ));
 
-                MembershipUser loUser = this.GetUser(loRequest);
-                if (null != loUser)
+                if (null != loRequest.User)
                 {
                     loStatus = HttpStatusCode.OK;
                     try
                     {
                         //// Return a user and roles
-                        loR.Item.Add(loResponseItem.UserName, loUser.UserName);
-                        loR.Item.Add(loResponseItem.Email, loUser.Email);
-                        loR.Item.Add(loResponseItem.Id, MaxConvertLibrary.ConvertToString(typeof(object), loUser.ProviderUserKey).ToLower());
-                        loR.Item.Add(loResponseItem.LastPasswordChangedDate, loUser.LastPasswordChangedDate);
-                        loR.Item.Add(loResponseItem.Comment, loUser.Comment);
-                        loR.Item.Add(loResponseItem.LastActivityDate, loUser.LastActivityDate);
-                        loR.Item.Add(loResponseItem.LastLoginDate, loUser.LastLoginDate);
-                        loR.Item.Add(loResponseItem.PasswordQuestion, loUser.PasswordQuestion);
+                        loR.Item.Add(loResponseItem.UserName, loRequest.User.UserName);
+                        loR.Item.Add(loResponseItem.Email, loRequest.User.Email);
+                        loR.Item.Add(loResponseItem.Id, MaxConvertLibrary.ConvertToString(typeof(object), loRequest.User.ProviderUserKey).ToLower());
+                        loR.Item.Add(loResponseItem.LastPasswordChangedDate, loRequest.User.LastPasswordChangedDate);
+                        loR.Item.Add(loResponseItem.Comment, loRequest.User.Comment);
+                        loR.Item.Add(loResponseItem.LastActivityDate, loRequest.User.LastActivityDate);
+                        loR.Item.Add(loResponseItem.LastLoginDate, loRequest.User.LastLoginDate);
+                        loR.Item.Add(loResponseItem.PasswordQuestion, loRequest.User.PasswordQuestion);
 
-                        if (loUser is MaxMembershipUser)
+                        if (loRequest.User is MaxMembershipUser)
                         {
-                            loR.Item.Add(loResponseItem.IsPasswordResetNeeded, ((MaxMembershipUser)loUser).IsPasswordResetNeeded);
+                            loR.Item.Add(loResponseItem.IsPasswordResetNeeded, ((MaxMembershipUser)loRequest.User).IsPasswordResetNeeded);
                         }
 
                         List<MaxIndex> loRoleIndexList = new List<MaxIndex>();
-                        MaxEntityList loRoleList = MaxRoleEntity.Create().LoadAllByUserIdCache(MaxConvertLibrary.ConvertToGuid(typeof(object), loUser.ProviderUserKey));
+                        MaxEntityList loRoleList = MaxRoleEntity.Create().LoadAllByUserIdCache(MaxConvertLibrary.ConvertToGuid(typeof(object), loRequest.User.ProviderUserKey));
                         for (int lnR = 0; lnR < loRoleList.Count; lnR++) 
                         {
                             MaxRoleEntity loRole = loRoleList[lnR] as MaxRoleEntity;
@@ -663,11 +662,10 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             if (this.Request.Method != HttpMethod.Options)
             {
                 MaxApiRequestViewModel loRequest = await this.GetRequest();
-                MembershipUser loUser = this.GetUser(loRequest);
-                if (null != loUser)
+                if (null != loRequest.User)
                 {
                     Guid loUserId = Guid.Empty;
-                    if (Guid.TryParse(loUser.ProviderUserKey.ToString(), out loUserId) && loUserId != Guid.Empty)
+                    if (Guid.TryParse(loRequest.User.ProviderUserKey.ToString(), out loUserId) && loUserId != Guid.Empty)
                     {
                         MaxUserLogEntity loMaxUserLog = MaxUserLogEntity.Create();
                         loMaxUserLog.Insert(
@@ -834,31 +832,31 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             return this.GetResponseMessage(loR, loStatus);
         }
 
-        protected override MaxApiResponseViewModel ProcessPost(MaxApiRequestViewModel loRequest, MaxEntity loEntity, MaxApiResponseViewModel loResponse)
+        protected override MaxApiResponseViewModel ProcessPost(MaxApiRequestViewModel loRequest, MaxEntity loOriginalEntity, MaxEntity loMappedEntity, MaxEntityList loMappedEntityList, MaxApiResponseViewModel loResponse)
         {
-            MaxApiResponseViewModel loR = base.ProcessPost(loRequest, loEntity, loResponse);
-            if (loEntity is MaxUserEntity)
+            MaxApiResponseViewModel loR = base.ProcessPost(loRequest, loOriginalEntity, loMappedEntity, loMappedEntityList, loResponse);
+            if (loMappedEntity is MaxUserEntity)
             {
-                loR = this.ProcessUser(loRequest, loEntity as MaxUserEntity, loR);
+                loR = this.ProcessUser(loRequest, loMappedEntity as MaxUserEntity, loR);
             }
-            else if (loEntity is MaxRoleEntity)
+            else if (loMappedEntity is MaxRoleEntity)
             {
-                loR = this.ProcessRole(loRequest, loEntity as MaxRoleEntity, loR);
+                loR = this.ProcessRole(loRequest, loMappedEntity as MaxRoleEntity, loR);
             }
 
             return loR;
         }
 
-        protected override MaxApiResponseViewModel ProcessPut(MaxApiRequestViewModel loRequest, MaxEntity loEntity, MaxApiResponseViewModel loResponse)
+        protected override MaxApiResponseViewModel ProcessPut(MaxApiRequestViewModel loRequest, MaxEntity loMappedEntity, MaxEntityList loMappedList, MaxApiResponseViewModel loResponse)
         {
-            MaxApiResponseViewModel loR = base.ProcessPut(loRequest, loEntity, loResponse);
-            if (loEntity is MaxUserEntity)
+            MaxApiResponseViewModel loR = base.ProcessPut(loRequest, loMappedEntity, loMappedList, loResponse);
+            if (loMappedEntity is MaxUserEntity)
             {
-                loR = this.ProcessUser(loRequest, loEntity as MaxUserEntity, loR);
+                loR = this.ProcessUser(loRequest, loMappedEntity as MaxUserEntity, loR);
             }
-            else if (loEntity is MaxRoleEntity)
+            else if (loMappedEntity is MaxRoleEntity)
             {
-                loR = this.ProcessRole(loRequest, loEntity as MaxRoleEntity, loR);
+                loR = this.ProcessRole(loRequest, loMappedEntity as MaxRoleEntity, loR);
             }
 
             return loR;
