@@ -57,6 +57,7 @@
 // <change date="7/30/2024" author="Brian A. Lakstins" description="Fix property name issue.">
 // <change date="7/31/2024" author="Brian A. Lakstins" description="Fix not loading by DataKey.  Update property name mapping.  Fix including common value with list.">
 // <change date="8/26/2024" author="Brian A. Lakstins" description="Updated request processing to have both original and mapped entities.  Removed unneeded methods.">
+// <change date="8/29/2024" author="Brian A. Lakstins" description="Updated exception logging for processing api requests">
 // </changelog>
 #endregion
 
@@ -710,12 +711,22 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 try
                 {
                     MaxApiRequestViewModel loRequest = await this.GetRequest();
-                    loR = this.ProcessRequest(loRequest, loEntity);                    
+                    try
+                    {
+                        loR = this.ProcessRequest(loRequest, loEntity);
+                    }
+                    catch (Exception loE)
+                    {
+                        MaxLogEntryStructure loLogEntry = new MaxLogEntryStructure(this.GetType(), "Process", MaxEnumGroup.LogCritical, "Exception during processing request {Request}", loE, loRequest);
+                        MaxLogLibrary.Log(loLogEntry);
+                        loR.Message.Error = "Exception during processing request (" + loE.Message + ")";
+                    }
                 }
                 catch (Exception loE)
                 {
-                    loR.Message.Error = "Exception during processing (" + loE.Message + ")";
-                    MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "Process", MaxEnumGroup.LogCritical, loR.Message.Error, loE));
+                    MaxLogEntryStructure loLogEntry = new MaxLogEntryStructure(this.GetType(), "Process", MaxEnumGroup.LogCritical, "Exception during getting request", loE);                    
+                    MaxLogLibrary.Log(loLogEntry);
+                    loR.Message.Error = "Exception during getting request (" + loE.Message + ")";
                 }
             }
 
