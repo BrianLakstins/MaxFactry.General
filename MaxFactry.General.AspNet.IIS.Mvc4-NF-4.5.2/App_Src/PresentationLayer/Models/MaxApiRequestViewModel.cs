@@ -116,12 +116,9 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
         public MaxIndex Item { get; set; }
 
-        public HttpRequestMessage Request
+        public HttpRequestMessage GetRequestMessage()
         {
-            get
-            {
-                return _oRequest;
-            }
+            return _oRequest;
         }
 
         public List<string> RoleList
