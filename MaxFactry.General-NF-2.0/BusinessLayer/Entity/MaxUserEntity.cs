@@ -36,6 +36,7 @@
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class. Use parent methods instead of repository.">
 // <change date="6/19/2024" author="Brian A. Lakstins" description="Remove unneeded method.">
 // <change date="4/28/2024" author="Brian A. Lakstins" description="Integrate with roles.">
+// <change date="9/16/2024" author="Brian A. Lakstins" description="Making sure Propertlist is not null.">
 // </changelog>
 #endregion
 
@@ -268,20 +269,23 @@ namespace MaxFactry.General.BusinessLayer
         public override MaxIndex MapIndex(params string[] laPropertyNameList)
         {
             MaxIndex loR = base.MapIndex(laPropertyNameList);
-            foreach (string lsPropertyName in laPropertyNameList)
+            if (null != laPropertyNameList)
             {
-                if (lsPropertyName == "RoleIdSelectedList") 
+                foreach (string lsPropertyName in laPropertyNameList)
                 {
-                    MaxRoleEntity loRoleEntity = MaxRoleEntity.Create();
-                    MaxEntityList loList = loRoleEntity.LoadAllByUserIdCache(this.Id);
-                    List<string> loRoleIdList = new List<string>();
-                    for (int lnE = 0; lnE < loList.Count; lnE++)
+                    if (lsPropertyName == "RoleIdSelectedList")
                     {
-                        loRoleEntity = loList[lnE] as MaxRoleEntity;
-                        loRoleIdList.Add(loRoleEntity.Id.ToString());
-                    }
+                        MaxRoleEntity loRoleEntity = MaxRoleEntity.Create();
+                        MaxEntityList loList = loRoleEntity.LoadAllByUserIdCache(this.Id);
+                        List<string> loRoleIdList = new List<string>();
+                        for (int lnE = 0; lnE < loList.Count; lnE++)
+                        {
+                            loRoleEntity = loList[lnE] as MaxRoleEntity;
+                            loRoleIdList.Add(loRoleEntity.Id.ToString());
+                        }
 
-                    loR.Add("RoleIdSelectedList", loRoleIdList.ToArray());
+                        loR.Add("RoleIdSelectedList", loRoleIdList.ToArray());
+                    }
                 }
             }
 

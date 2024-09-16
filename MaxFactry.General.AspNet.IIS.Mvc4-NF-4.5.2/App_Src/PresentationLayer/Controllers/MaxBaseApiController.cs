@@ -58,6 +58,7 @@
 // <change date="7/31/2024" author="Brian A. Lakstins" description="Fix not loading by DataKey.  Update property name mapping.  Fix including common value with list.">
 // <change date="8/26/2024" author="Brian A. Lakstins" description="Updated request processing to have both original and mapped entities.  Removed unneeded methods.">
 // <change date="8/29/2024" author="Brian A. Lakstins" description="Updated exception logging for processing api requests">
+// <change date="9/16/2024" author="Brian A. Lakstins" description="Add a way to update attributeindex values">
 // </changelog>
 #endregion
 
@@ -1037,7 +1038,25 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
                         if ((lbHasValueCommon || lbHasValue) && loProperty.CanWrite)
                         {
-                            loR.SetValue(loProperty, lsValue);
+                            if (loR is MaxBaseEntity && loProperty.Name == "AttributeIndex")
+                            {
+                                MaxIndex loAttributeIndex = MaxConvertLibrary.DeserializeObject(lsValue, typeof(MaxIndex)) as MaxIndex;
+                                if (loAttributeIndex != null)
+                                {
+                                    string[] laKey = loAttributeIndex.GetSortedKeyList();
+                                    foreach (string lsKey in laKey)
+                                    {
+                                        if (!lsKey.StartsWith("_"))
+                                        {
+                                            ((MaxBaseEntity)loR).SetAttribute(lsKey, loAttributeIndex.GetValueString(lsKey));
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                loR.SetValue(loProperty, lsValue);
+                            }
                         }
                     }
                 }

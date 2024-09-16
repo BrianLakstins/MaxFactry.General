@@ -36,6 +36,7 @@
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class. Use parent methods instead of repository.">
 // <change date="4/28/2024" author="Brian A. Lakstins" description="Integrate with permissions.">
 // <change date="7/10/2024" author="Brian A. Lakstins" description="Rename variable to better reflect what it is">
+// <change date="9/16/2024" author="Brian A. Lakstins" description="Making sure Propertlist is not null.">
 // </changelog>
 #endregion
 
@@ -246,20 +247,23 @@ namespace MaxFactry.General.BusinessLayer
         public override MaxIndex MapIndex(params string[] laPropertyNameList)
         {
             MaxIndex loR = base.MapIndex(laPropertyNameList);
-            foreach (string lsPropertyName in laPropertyNameList)
+            if (null != laPropertyNameList)
             {
-                if (lsPropertyName == "PermissionKeySelectedList")
+                foreach (string lsPropertyName in laPropertyNameList)
                 {
-                    List<string> loPermissionList = new List<string>();
-                    MaxRoleRelationPermissionEntity loRelation = MaxRoleRelationPermissionEntity.Create();
-                    MaxEntityList loRelationList = loRelation.LoadAllByRoleIdCache(this.Id);
-                    for (int lnE = 0; lnE < loRelationList.Count; lnE++)
+                    if (lsPropertyName == "PermissionKeySelectedList")
                     {
-                        loRelation = loRelationList[lnE] as MaxRoleRelationPermissionEntity;
-                        loPermissionList.Add(loRelation.PermissionId.ToString() + loRelation.Permission.ToString());
-                    }
+                        List<string> loPermissionList = new List<string>();
+                        MaxRoleRelationPermissionEntity loRelation = MaxRoleRelationPermissionEntity.Create();
+                        MaxEntityList loRelationList = loRelation.LoadAllByRoleIdCache(this.Id);
+                        for (int lnE = 0; lnE < loRelationList.Count; lnE++)
+                        {
+                            loRelation = loRelationList[lnE] as MaxRoleRelationPermissionEntity;
+                            loPermissionList.Add(loRelation.PermissionId.ToString() + loRelation.Permission.ToString());
+                        }
 
-                    loR.Add("PermissionKeySelectedList", loPermissionList.ToArray());
+                        loR.Add("PermissionKeySelectedList", loPermissionList.ToArray());
+                    }
                 }
             }
 

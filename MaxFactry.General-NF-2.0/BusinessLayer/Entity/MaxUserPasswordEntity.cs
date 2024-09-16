@@ -35,6 +35,7 @@
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.  Add Id entry for salt.  Use parent methods instead of repository.">
 // <change date="6/19/2024" author="Brian A. Lakstins" description="Add user related logging.">
 // <change date="7/16/2024" author="Brian A. Lakstins" description="Set some attributes based on time.">
+// <change date="9/16/2024" author="Brian A. Lakstins" description="Use underscore to designate attributes that are internal">
 // </changelog>
 #endregion
 
@@ -339,7 +340,7 @@ namespace MaxFactry.General.BusinessLayer
                         this.UserId,
                         MaxUserLogEntity.LogEntryTypeLogin,
                         this.GetType() + ".CheckPassword(string lsPassword) - succeeded");
-                    loMaxUser.SetAttribute("LastCheckPasswordSucceed", DateTime.UtcNow);
+                    loMaxUser.SetAttribute("_LastCheckPasswordSucceed", DateTime.UtcNow);
                 }
                 else
                 {
@@ -347,7 +348,7 @@ namespace MaxFactry.General.BusinessLayer
                         this.UserId,
                         MaxUserLogEntity.LogEntryTypePasswordFail,
                         this.GetType() + ".CheckPassword(string lsPassword) - failed");
-                    loMaxUser.SetAttribute("LastCheckPasswordFail", DateTime.UtcNow);
+                    loMaxUser.SetAttribute("_LastCheckPasswordFail", DateTime.UtcNow);
                 }
 
                 loMaxUser.Update();

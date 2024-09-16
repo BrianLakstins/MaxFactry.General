@@ -37,6 +37,7 @@
 // <change date="10/10/2023" author="Brian A. Lakstins" description="Added OAuth2 Login integration">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.  Updated to use DataKey.">
 // <change date="7/16/2024" author="Brian A. Lakstins" description="Add some user logging.  Set some attributes based on time.">
+// <change date="9/16/2024" author="Brian A. Lakstins" description="Use underscore to designate attributes that are internal">
 // </changelog>
 #endregion
 
@@ -99,7 +100,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         if (loMaxUserList.Count == 1)
                         {
                             loMaxUser = loMaxUserList[0] as MaxUserEntity;
-                            loMaxUser.SetAttribute("LastIISSignIn", DateTime.UtcNow);
+                            loMaxUser.SetAttribute("_LastIISSignIn", DateTime.UtcNow);
                             loMaxUser.Update();
                         }
 
@@ -200,7 +201,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                             MaxUserEntity loMaxUser = MaxUserEntity.Create();
                             if (loMaxUser.LoadByIdCache(loUserId))
                             {
-                                loMaxUser.SetAttribute("LastIISSignIn", DateTime.UtcNow);
+                                loMaxUser.SetAttribute("_LastIISSignIn", DateTime.UtcNow);
                                 loMaxUser.Update();
                             }
                         }
@@ -779,7 +780,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                 if (loMaxUserList.Count == 1)
                                 {
                                     loMaxUser = loMaxUserList[0] as MaxUserEntity;
-                                    loMaxUser.SetAttribute("LastIISSignIn", DateTime.UtcNow);
+                                    loMaxUser.SetAttribute("_LastIISSignIn", DateTime.UtcNow);
                                     loMaxUser.Update();
                                 }
                             }
@@ -793,7 +794,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                 if (loMaxUserList.Count == 1)
                                 {
                                     loMaxUser = loMaxUserList[0] as MaxUserEntity;
-                                    loMaxUser.SetAttribute("LastIISSignIn", DateTime.UtcNow);
+                                    loMaxUser.SetAttribute("_LastIISSignIn", DateTime.UtcNow);
                                     loMaxUser.Update();
                                 }
                             }

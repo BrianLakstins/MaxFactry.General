@@ -396,7 +396,7 @@ namespace System.Web.Security
                             loMaxUser.Id,
                             MaxUserLogEntity.LogEntryTypePasswordChange,
                             this.GetType() + ".ChangePassword(string username, string oldPassword, string newPassword)");
-                        loMaxUser.SetAttribute("LastChangePassword", DateTime.UtcNow);
+                        loMaxUser.SetAttribute("_LastChangePassword", DateTime.UtcNow);
                         loMaxUser.Update();
                         return true;
                     }
@@ -464,7 +464,7 @@ namespace System.Web.Security
                         loMaxUser.Id,
                         MaxUserLogEntity.LogEntryTypePasswordChange,
                         this.GetType() + ".ResetPassword(string username, string answer)");
-                    loMaxUser.SetAttribute("LastResetPassword", DateTime.UtcNow);
+                    loMaxUser.SetAttribute("_LastResetPassword", DateTime.UtcNow);
                     loMaxUser.Update();
                     return lsPassword;
                 }
@@ -551,7 +551,7 @@ namespace System.Web.Security
                     loMaxUser.Id,
                     MaxUserLogEntity.LogEntryTypeLogin,
                     this.GetType() + ".ValidateUser(string username, string password) - succeeded");
-                loMaxUser.SetAttribute("LastValidateUser", DateTime.UtcNow);
+                loMaxUser.SetAttribute("_LastValidateUser", DateTime.UtcNow);
                 loMaxUser.Update();
             }
 
@@ -612,7 +612,7 @@ namespace System.Web.Security
                             MaxUserLogEntity.LogEntryTypeActivity,
                             this.GetType() + ".GetUser(object providerUserKey, bool userIsOnline)");
                         MaxCacheRepository.Set(this.GetType(), lsKey, DateTime.UtcNow.Ticks.ToString());
-                        loMaxUser.SetAttribute("LastGetUserByKey", DateTime.UtcNow);
+                        loMaxUser.SetAttribute("_LastGetUserByKey", DateTime.UtcNow);
                         loMaxUser.Update();
                     }
                 }
@@ -652,7 +652,7 @@ namespace System.Web.Security
                             MaxUserLogEntity.LogEntryTypeActivity,
                             this.GetType() + ".GetUser(string username, bool userIsOnline)");
                         MaxCacheRepository.Set(this.GetType(), lsKey, DateTime.UtcNow.Ticks.ToString());
-                        loMaxUser.SetAttribute("LastGetUserByUsername", DateTime.UtcNow);
+                        loMaxUser.SetAttribute("_LastGetUserByUsername", DateTime.UtcNow);
                         loMaxUser.Update();
 
                     }

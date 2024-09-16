@@ -31,6 +31,7 @@
 // <change date="2/24/2021" author="Brian A. Lakstins" description="Add password reset method.">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
 // <change date="6/19/2024" author="Brian A. Lakstins" description="Update user related logging.">
+// <change date="9/16/2024" author="Brian A. Lakstins" description="Adding methods to access entities">
 // </changelog>
 #endregion
 
@@ -335,6 +336,21 @@ namespace System.Web.Security
             {
                 return this._oMaxUser.UserName;
             }
+        }
+
+        public MaxUserEntity GetUser()
+        {
+            return this._oMaxUser;
+        }
+
+        public MembershipProvider GetProvider()
+        {
+            return this._oMembership;
+        }
+
+        public MaxEntityList GetLogList()
+        {
+            return this.UserLogList;
         }
 
         public static bool SetPassword(MembershipUser loUser, string lsPassword)

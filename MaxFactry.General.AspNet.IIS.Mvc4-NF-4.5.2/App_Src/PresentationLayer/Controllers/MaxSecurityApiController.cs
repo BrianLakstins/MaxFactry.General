@@ -41,6 +41,7 @@
 // <change date="7/10/2024" author="Brian A. Lakstins" description="Include permissions with roles">
 // <change date="7/16/2024" author="Brian A. Lakstins" description="Set some attributes based on time.">
 // <change date="8/26/2024" author="Brian A. Lakstins" description="Updated for changes to base class.">
+// <change date="9/16/2024" author="Brian A. Lakstins" description="Add a way to get properties of the user">
 // </changelog>
 #endregion
 
@@ -390,6 +391,16 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     loStatus = HttpStatusCode.OK;
                     try
                     {
+                        if (loRequest.User is MaxMembershipUser)
+                        {
+                            MaxIndex loUserIndex = ((MaxMembershipUser)loRequest.User).GetUser().MapIndex(loRequest.ResponsePropertyList);
+                            string[] laKey = loUserIndex.GetSortedKeyList();
+                            foreach (string lsKey in laKey)
+                            {
+                                loR.Item.Add(lsKey, loUserIndex[lsKey]);
+                            }
+                        }
+
                         //// Return a user and roles
                         loR.Item.Add(loResponseItem.UserName, loRequest.User.UserName);
                         loR.Item.Add(loResponseItem.Email, loRequest.User.Email);
@@ -557,7 +568,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                     MaxUserEntity loMaxUser = MaxUserEntity.Create();
                                     if (loMaxUser.LoadByIdCache(loUserId))
                                     {
-                                        loMaxUser.SetAttribute("LastIISSignIn", DateTime.UtcNow);
+                                        loMaxUser.SetAttribute("_LastIISSignIn", DateTime.UtcNow);
                                         loMaxUser.Update();
                                     }
                                 }
@@ -604,6 +615,16 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
                     if (null != loUser && !string.IsNullOrEmpty(loUser.UserName))
                     {
+                        if (loUser is MaxMembershipUser)
+                        {
+                            MaxIndex loUserIndex = ((MaxMembershipUser)loUser).GetUser().MapIndex(loRequest.ResponsePropertyList);
+                            string[] laKey = loUserIndex.GetSortedKeyList();
+                            foreach (string lsKey in laKey)
+                            {
+                                loR.Item.Add(lsKey, loUserIndex[lsKey]);
+                            }
+                        }
+
                         //// Return logged in user
                         loR.Item.Add(loResponseItem.Id, MaxConvertLibrary.ConvertToString(typeof(object), loUser.ProviderUserKey).ToLower());
                         loR.Item.Add(loResponseItem.Email, loUser.Email);
@@ -675,7 +696,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         MaxUserEntity loMaxUser = MaxUserEntity.Create();
                         if (loMaxUser.LoadByIdCache(loUserId))
                         {
-                            loMaxUser.SetAttribute("LastLogout", DateTime.UtcNow);
+                            loMaxUser.SetAttribute("_LastLogout", DateTime.UtcNow);
                             loMaxUser.Update();
                         }
                     }
