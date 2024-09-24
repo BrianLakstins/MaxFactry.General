@@ -59,6 +59,7 @@
 // <change date="8/26/2024" author="Brian A. Lakstins" description="Updated request processing to have both original and mapped entities.  Removed unneeded methods.">
 // <change date="8/29/2024" author="Brian A. Lakstins" description="Updated exception logging for processing api requests">
 // <change date="9/16/2024" author="Brian A. Lakstins" description="Add a way to update attributeindex values">
+// <change date="9/24/2024" author="Brian A. Lakstins" description="Update sorting and filtering">
 // </changelog>
 #endregion
 
@@ -1247,53 +1248,56 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         string[] laValue = loQuery.GetValues(lsName);
                         foreach (string lsValue in laValue)
                         {
-                            if (loR.Count > 0)
+                            if (!string.IsNullOrEmpty(lsValue))
                             {
-                                MaxIndex loFilterPartPrevious = loR[loR.Count - 1] as MaxIndex;
-                                if (!loFilterPartPrevious.Contains("Condition"))
+                                if (loR.Count > 0)
                                 {
-                                    loFilterPartPrevious.Add("EndGroup", 1);
+                                    MaxIndex loFilterPartPrevious = loR[loR.Count - 1] as MaxIndex;
+                                    if (!loFilterPartPrevious.Contains("Condition"))
+                                    {
+                                        loFilterPartPrevious.Add("EndGroup", 1);
+                                    }
                                 }
-                            }
 
-                            if (lsValue.Contains("\t"))
-                            {
-                                string[] laPartValue = lsValue.Split(new char[] { '\t' });
-                                for (int lnPV = 0; lnPV < laPartValue.Length; lnPV++)
+                                if (lsValue.Contains("\t"))
+                                {
+                                    string[] laPartValue = lsValue.Split(new char[] { '\t' });
+                                    for (int lnPV = 0; lnPV < laPartValue.Length; lnPV++)
+                                    {
+                                        MaxIndex loFilterPart = new MaxIndex();
+                                        loFilterPart.Add("Name", lsName);
+                                        loFilterPart.Add("Operator", "=");
+                                        loFilterPart.Add("Value", laPartValue[lnPV]);
+                                        loFilterPart.Add("Condition", "OR");
+                                        if (lnPV == 0)
+                                        {
+                                            loFilterPart.Add("StartGroup", 1);
+                                        }
+                                        else if (lnPV == laPartValue.Length - 1)
+                                        {
+                                            if (lsName == loQuery.Keys[loQuery.Keys.Count - 1])
+                                            {
+                                                loFilterPart.Add("Condition", "");
+                                            }
+                                            else
+                                            {
+                                                loFilterPart.Add("Condition", "AND");
+                                                loFilterPart.Add("EndGroup", 1);
+                                            }
+                                        }
+
+                                        loR.Add(loFilterPart);
+                                    }
+                                }
+                                else
                                 {
                                     MaxIndex loFilterPart = new MaxIndex();
+                                    loFilterPart.Add("StartGroup", 1);
                                     loFilterPart.Add("Name", lsName);
                                     loFilterPart.Add("Operator", "=");
-                                    loFilterPart.Add("Value", laPartValue[lnPV]);
-                                    loFilterPart.Add("Condition", "OR");
-                                    if (lnPV == 0)
-                                    {
-                                        loFilterPart.Add("StartGroup", 1);
-                                    }
-                                    else if (lnPV == laPartValue.Length - 1)
-                                    {
-                                        if (lsName == loQuery.Keys[loQuery.Keys.Count - 1])
-                                        {
-                                            loFilterPart.Add("Condition", "");
-                                        }
-                                        else
-                                        {
-                                            loFilterPart.Add("Condition", "AND");
-                                            loFilterPart.Add("EndGroup", 1);
-                                        }
-                                    }
-
+                                    loFilterPart.Add("Value", lsValue);
                                     loR.Add(loFilterPart);
                                 }
-                            }
-                            else
-                            {
-                                MaxIndex loFilterPart = new MaxIndex();
-                                loFilterPart.Add("StartGroup", 1);
-                                loFilterPart.Add("Name", lsName);
-                                loFilterPart.Add("Operator", "=");
-                                loFilterPart.Add("Value", lsValue);
-                                loR.Add(loFilterPart);
                             }
                         }
                     }
@@ -1349,6 +1353,32 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 {
                     MaxEntityList loList = loEntityCopy.LoadAllByPageFilter(lnPage, lnPageLength, lsPropertySort, loFilter, loRequest.ResponsePropertyList);
                     loR.Page.Add(loResponsePage.Total, loList.Total);
+                    List<string> loDataNameList = new List<string>(loEntity.GetData().DataModel.DataNameList);
+                    if (!loDataNameList.Contains(lsPropertySort))
+                    {
+                        //// TODO: Take into account multiple properties separated by commas and "asc" and "desc" suffixes
+                        PropertyInfo loProperty = loEntityCopy.GetType().GetProperty(lsPropertySort);
+                        if (null != loProperty && loList.Total > lnPageLength && (lnPage > 1 || loList.Count > lnPageLength))
+                        {
+                            SortedList<string, MaxEntity> loSortedList = new SortedList<string, MaxEntity>();
+                            for (int lnE = 0; lnE < loList.Count; lnE++)
+                            {
+                                MaxEntity loListEntity = loList[lnE];
+                                string lsValue = MaxConvertLibrary.ConvertToSortString(typeof(object), loProperty.GetValue(loListEntity));
+                                loSortedList.Add(lsValue + '-' + loListEntity.DataKey, loListEntity);
+                            }
+
+                            loList = new MaxEntityList(loEntityCopy.GetType());
+                            for (int lnL = 0; lnL < loSortedList.Values.Count; lnL++)
+                            {
+                                if (lnPageLength <= 0 || ((lnPage - 1) * lnPageLength <= lnL && lnL < lnPage * lnPageLength))
+                                {
+                                    loList.Add(loSortedList.Values[lnL]);
+                                }
+                            }
+                        }
+                    }
+
                     for (int lnE = 0; lnE < loList.Count; lnE++)
                     {
                         MaxEntity loListEntity = loList[lnE];
