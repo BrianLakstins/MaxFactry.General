@@ -38,6 +38,7 @@
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.  Updated to use DataKey.">
 // <change date="7/16/2024" author="Brian A. Lakstins" description="Add some user logging.  Set some attributes based on time.">
 // <change date="9/16/2024" author="Brian A. Lakstins" description="Use underscore to designate attributes that are internal">
+// <change date="10/23/2024" author="Brian A. Lakstins" description="Handle redirect url with query string">
 // </changelog>
 #endregion
 
@@ -807,7 +808,15 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                             loEntity.Update();
                             if (!string.IsNullOrEmpty(loEntity.RedirectUri))
                             {
-                                return this.Redirect(loEntity.RedirectUri);
+                                string lsRedirectUrl = loEntity.RedirectUri;
+                                if (loEntity.RedirectUri.Contains("ReturnUrl="))
+                                {
+                                    string[] laRedirectUri = loEntity.RedirectUri.Split(new string[] { "ReturnUrl=" }, StringSplitOptions.None);
+                                    lsRedirectUrl = laRedirectUri[0] + "ReturnUrl=" + HttpUtility.UrlEncode(laRedirectUri[1]);
+
+                                }
+
+                                return this.Redirect(lsRedirectUrl);
                             }
                         }
                     }
