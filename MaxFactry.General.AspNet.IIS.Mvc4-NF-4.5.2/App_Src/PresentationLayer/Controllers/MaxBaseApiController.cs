@@ -726,7 +726,13 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
                     if (!string.IsNullOrEmpty(loR.Message.Error))
                     {
-                        MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "Process", MaxEnumGroup.LogError, "Error message for processing {Request} for entity type {Type}.  This is the error: {Error}", loRequest, loEntity.GetType(), loR.Message.Error));
+                        string lsUserName = "Unknown";
+                        if (loRequest.User != null)
+                        {
+                            lsUserName = loRequest.User.UserName + "<" + loRequest.User.Email + ">";
+                        }
+
+                        MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "Process", MaxEnumGroup.LogError, "Error message for processing {Request} from user {UserName} for entity type {Type}.  This is the error: {Error}", loRequest, lsUserName, loEntity.GetType(), loR.Message.Error));
                     }
                 }
                 catch (Exception loE)
@@ -749,6 +755,8 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 loR.Status = HttpStatusCode.Forbidden;
                 if (loRequest.User == null)
                 {
+                    loR.Message.Error = string.Empty;
+                    loR.Message.Warning = "User needs to be logged in to access this item type.";
                     loR.Status = HttpStatusCode.Unauthorized;
                 }
             }
