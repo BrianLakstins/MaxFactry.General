@@ -31,6 +31,7 @@
 // <change date="12/19/2020" author="Brian A. Lakstins" description="Add accesstoken to help in checking security for a user">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.  Restructing to use DataKey">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Updated to not use default value for DataKey.  Only use if specified.">
+// <change date="11/6/2024" author="Brian A. Lakstins" description="Updated token integration">
 // </changelog>
 #endregion
 
@@ -138,6 +139,30 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             }
         }
 
+        public MaxUserAuthTokenEntity Token
+        {
+            get
+            {
+                MaxUserAuthTokenEntity loR = null;
+                string lsClientToken = this.AccessToken;
+                if (null != this._oRequest.Headers.Authorization && this._oRequest.Headers.Authorization.Scheme == "Bearer")
+                {
+                    lsClientToken = this._oRequest.Headers.Authorization.Parameter;
+                }
+
+                if (!string.IsNullOrEmpty(lsClientToken))
+                {
+                    MaxUserAuthTokenEntity loUserAuthToken = MaxUserAuthTokenEntity.GetByToken(lsClientToken);
+                    if (null != loUserAuthToken && loUserAuthToken.IsActive && loUserAuthToken.TokenType == "Bearer" && DateTime.UtcNow < loUserAuthToken.CreatedDate.AddSeconds(loUserAuthToken.Expiration))
+                    {
+                        loR = loUserAuthToken;
+                    }
+                }
+
+                return loR;
+            }
+        }
+
         public MembershipUser User
         {
             get
@@ -145,23 +170,10 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 if (null == this._oUser)
                 {
                     this._oUser = Membership.GetUser();
-                    if (null == this._oUser)
+                    if (null == this._oUser && null != this.Token)
                     {
-                        string lsClientToken = this.AccessToken;
-                        if (null != this._oRequest.Headers.Authorization && this._oRequest.Headers.Authorization.Scheme == "Bearer")
-                        {
-                            lsClientToken = this._oRequest.Headers.Authorization.Parameter;
-                        }
-
-                        if (!string.IsNullOrEmpty(lsClientToken))
-                        {
-                            MaxUserAuthTokenEntity loTokenEntity = MaxUserAuthTokenEntity.GetByToken(lsClientToken);
-                            if (null != loTokenEntity && loTokenEntity.IsActive && loTokenEntity.TokenType == "Bearer" && DateTime.UtcNow < loTokenEntity.CreatedDate.AddSeconds(loTokenEntity.Expiration))
-                            {
-                                Guid loUserId = MaxConvertLibrary.ConvertToGuid(typeof(object), loTokenEntity.UserKey);
-                                this._oUser = Membership.GetUser(loUserId);
-                            }
-                        }
+                        Guid loUserId = MaxConvertLibrary.ConvertToGuid(typeof(object), this.Token.UserKey);
+                        this._oUser = Membership.GetUser(loUserId);
                     }
                 }
 

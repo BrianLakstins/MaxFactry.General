@@ -42,6 +42,7 @@
 // <change date="7/16/2024" author="Brian A. Lakstins" description="Set some attributes based on time.">
 // <change date="8/26/2024" author="Brian A. Lakstins" description="Updated for changes to base class.">
 // <change date="9/16/2024" author="Brian A. Lakstins" description="Add a way to get properties of the user">
+// <change date="11/6/2024" author="Brian A. Lakstins" description="Updated token integration">
 // </changelog>
 #endregion
 
@@ -503,7 +504,8 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 LastLoginDate = "LastLoginDate",
                 PasswordQuestion = "PasswordQuestion",
                 IsPasswordResetNeeded = "IsPasswordResetNeeded",
-                UserConfiguration = "UserConfiguration"
+                UserConfiguration = "UserConfiguration",
+                Token = "Token"
             };
 
             MaxApiResponseViewModel loR = GetResponse(loResponseItem);
@@ -653,6 +655,17 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         }
 
                         loR.Item.Add(loResponseItem.RoleList, loRoleIndexList);
+                    } 
+                    else if (null != loRequest.User && null != loRequest.Token)
+                    {
+                        loR.Item.Add(loResponseItem.Id, MaxConvertLibrary.ConvertToString(typeof(object), loRequest.User.ProviderUserKey).ToLower());
+                        loR.Item.Add(loResponseItem.UserName, loRequest.User.UserName);
+                        loR.Item.Add(loResponseItem.Token, loRequest.Token.MapIndex(
+                            loRequest.Token.GetPropertyName(() => loRequest.Token.DataKey),
+                            loRequest.Token.GetPropertyName(() => loRequest.Token.ExpirationDate),
+                            loRequest.Token.GetPropertyName(() => loRequest.Token.TokenType),
+                            loRequest.Token.GetPropertyName(() => loRequest.Token.CreatedDate)
+                            ));
                     }
                 }
                 catch (Exception loE)
