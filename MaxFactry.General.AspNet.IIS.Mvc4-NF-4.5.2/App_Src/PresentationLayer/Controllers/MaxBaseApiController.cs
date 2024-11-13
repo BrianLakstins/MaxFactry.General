@@ -60,6 +60,7 @@
 // <change date="8/29/2024" author="Brian A. Lakstins" description="Updated exception logging for processing api requests">
 // <change date="9/16/2024" author="Brian A. Lakstins" description="Add a way to update attributeindex values">
 // <change date="9/24/2024" author="Brian A. Lakstins" description="Update sorting and filtering">
+// <change date="11/13/2024" author="Brian A. Lakstins" description="Add Entity as an arguement for getting the response">
 // </changelog>
 #endregion
 
@@ -392,6 +393,34 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             loR.Content = new StringContent(lsContent);
             loR.Content.Headers.Remove("Content-Type");
             loR.Content.Headers.Add("Content-Type", "text/json");
+            MaxLogLibrary.ClearRecent();
+            return loR;
+        }
+
+        protected virtual HttpResponseMessage GetResponseMessage(MaxApiResponseViewModel loReturn, MaxEntity loEntity)
+        {
+            HttpResponseMessage loR = this.GetResponseMessage();
+            if (loReturn.Status == HttpStatusCode.OK && 
+                this.Request.Method == HttpMethod.Get && 
+                loEntity is MaxBaseIdFileEntity &&
+                ((MaxBaseIdFileEntity)loEntity).Id != Guid.Empty &&
+                null != ((MaxBaseIdFileEntity)loEntity).Content)
+            {
+                loR = new HttpResponseMessage(HttpStatusCode.OK);
+                loR.Content = new StreamContent(((MaxBaseIdFileEntity)loEntity).Content);
+                loR.Content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("inline");
+                loR.Content.Headers.ContentDisposition.FileName = ((MaxBaseIdFileEntity)loEntity).ContentName;
+                loR.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(((MaxBaseIdFileEntity)loEntity).MimeType);
+            }
+            else
+            {
+                loR.StatusCode = loReturn.Status;
+                string lsContent = MaxConvertLibrary.SerializeObjectToString(typeof(object), loReturn);
+                loR.Content = new StringContent(lsContent);
+                loR.Content.Headers.Remove("Content-Type");
+                loR.Content.Headers.Add("Content-Type", "text/json");
+            }
+
             MaxLogLibrary.ClearRecent();
             return loR;
         }
