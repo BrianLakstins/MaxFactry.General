@@ -57,14 +57,14 @@
     <Reference Include="JWT, Version=10.0.0.0, Culture=neutral, PublicKeyToken=6f98bca0f40f2ecf, processorArchitecture=MSIL">
       <HintPath>..\..\_nuget\JWT.10.1.1\lib\net40\JWT.dll</HintPath>
     </Reference>
-    <Reference Include="MaxFactry.Base-NF-4.5.2, Version=1.0.24.25, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
-      <HintPath>..\..\_nuget\MaxFactry.Base.1.0.24.25\lib\net452\MaxFactry.Base-NF-4.5.2.dll</HintPath>
+    <Reference Include="MaxFactry.Base-NF-4.5.2, Version=1.0.24.26, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\MaxFactry.Base.1.0.24.26\lib\net452\MaxFactry.Base-NF-4.5.2.dll</HintPath>
     </Reference>
     <Reference Include="MaxFactry.Core-NF-4.5.2, Version=1.0.24.25, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
       <HintPath>..\..\_nuget\MaxFactry.Core.1.0.24.25\lib\net452\MaxFactry.Core-NF-4.5.2.dll</HintPath>
     </Reference>
-    <Reference Include="MaxFactry.General-NF-4.5.2, Version=1.0.24.25, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
-      <HintPath>..\..\_nuget\MaxFactry.General.1.0.24.25\lib\net452\MaxFactry.General-NF-4.5.2.dll</HintPath>
+    <Reference Include="MaxFactry.General-NF-4.5.2, Version=1.0.24.31, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\MaxFactry.General.1.0.24.31\lib\net452\MaxFactry.General-NF-4.5.2.dll</HintPath>
     </Reference>
     <Reference Include="MaxFactry.General.AspNet-NF-4.5.2, Version=1.0.24.25, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
       <HintPath>..\..\_nuget\MaxFactry.General.AspNet.1.0.24.25\lib\net452\MaxFactry.General.AspNet-NF-4.5.2.dll</HintPath>
