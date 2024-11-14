@@ -254,7 +254,8 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 AccessToken = "AccessToken",
                 ExpiresIn = "ExpiresIn",
                 CreatedDate = "CreatedDate",
-                ExpirationDate = "ExpirationDate"
+                ExpirationDate = "ExpirationDate",
+                LastUsedDate = "LastUsedDate"
             };
 
             MaxApiResponseViewModel loR = GetResponse(loResponseItem);
@@ -309,6 +310,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                             loItem.Add(loResponseItem.Id, loEntity.Id);
                             loItem.Add(loResponseItem.CreatedDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loEntity.CreatedDate));
                             loItem.Add(loResponseItem.ExpirationDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loEntity.ExpirationDate));
+                            loItem.Add(loResponseItem.LastUsedDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loEntity.LastUsedDate));
                             loR.ItemList.Add(loItem);
                             if (null == loCurrentEntity)
                             {
@@ -332,6 +334,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         loItem.Add(loResponseItem.Id, loCurrentEntity.Id);
                         loItem.Add(loResponseItem.CreatedDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loCurrentEntity.CreatedDate));
                         loItem.Add(loResponseItem.ExpirationDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loCurrentEntity.ExpirationDate));
+                        loItem.Add(loResponseItem.LastUsedDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loCurrentEntity.LastUsedDate));
                         loR.ItemList.Add(loItem);
                     }
 
@@ -341,6 +344,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     loR.Item.Add(loResponseItem.ExpiresIn, loCurrentEntity.Expiration);
                     loR.Item.Add(loResponseItem.CreatedDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loCurrentEntity.CreatedDate));
                     loR.Item.Add(loResponseItem.ExpirationDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loCurrentEntity.ExpirationDate));
+                    loR.Item.Add(loResponseItem.LastUsedDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loCurrentEntity.LastUsedDate));
                 }
             }
 
@@ -664,7 +668,8 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                             loRequest.Token.GetPropertyName(() => loRequest.Token.DataKey),
                             loRequest.Token.GetPropertyName(() => loRequest.Token.ExpirationDate),
                             loRequest.Token.GetPropertyName(() => loRequest.Token.TokenType),
-                            loRequest.Token.GetPropertyName(() => loRequest.Token.CreatedDate)
+                            loRequest.Token.GetPropertyName(() => loRequest.Token.CreatedDate),
+                            loRequest.Token.GetPropertyName(() => loRequest.Token.LastUsedDate)
                             ));
                     }
                 }
