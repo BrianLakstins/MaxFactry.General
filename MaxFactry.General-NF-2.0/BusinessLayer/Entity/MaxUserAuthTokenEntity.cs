@@ -30,6 +30,7 @@
 // <change date="11/3/2020" author="Brian A. Lakstins" description="Initial creation">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class. Use parent methods instead of repository.">
 // <change date="6/19/2024" author="Brian A. Lakstins" description="Add user related logging.  Add remote url property.">
+// <change date="11/14/2024" author="Brian A. Lakstins" description="Track last used date for the token">
 // </changelog>
 #endregion
 
@@ -200,6 +201,24 @@ namespace MaxFactry.General.BusinessLayer
             }
         }
 
+        public DateTime LastUsedDate
+        {
+            get
+            {
+                if (null != this.Get(this.DataModel.LastUsedDate))
+                {
+                    return this.GetDateTime(this.DataModel.LastUsedDate);
+                }
+
+                return this.CreatedDate;
+            }
+
+            set
+            {
+                this.Set(this.DataModel.LastUsedDate, value);
+            }
+        }
+
         public bool IsExpired
         {
             get
@@ -266,6 +285,8 @@ namespace MaxFactry.General.BusinessLayer
                 string lsTokenHash = GetTokenHash(laTokenText[1]);
                 if (loR.LoadByIdCache(loTokenId) && loR.TokenHash == lsTokenHash)
                 {
+                    loR.LastUsedDate = DateTime.UtcNow;
+                    loR.Update();
                     return loR;
                 }
             }

@@ -32,6 +32,7 @@
 // <change date="3/20/2024" author="Brian A. Lakstins" description="Happy birthday to my mom.  Sara Jean Lakstins (Cartwright) - 3/20/1944 to 3/14/2019.">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Change parent class.">
 // <change date="6/19/2024" author="Brian A. Lakstins" description="Add remote url field.">
+// <change date="11/14/2024" author="Brian A. Lakstins" description="Add last used field.">
 // </changelog>
 #endregion
 
@@ -92,6 +93,11 @@ namespace MaxFactry.General.DataLayer
         public readonly string RemoteUrl = "RemoteUrl";
 
         /// <summary>
+        /// Last time this was used
+        /// </summary>
+        public readonly string LastUsedDate = "LastUsedDate";
+
+        /// <summary>
         /// Initializes a new instance of the MaxUserAuthTokenDataModel class.
         /// </summary>
         public MaxUserAuthTokenDataModel() : base()
@@ -108,6 +114,7 @@ namespace MaxFactry.General.DataLayer
 			this.AddNullable(this.TokenResult, typeof(MaxLongString));
 			this.AddAttribute(this.TokenResult, "IsEncrypted", "true");
             this.AddNullable(this.RemoteUrl, typeof(string));
+			this.AddNullable(this.LastUsedDate, typeof(DateTime));
 
             this.RepositoryProviderType = typeof(MaxFactry.General.DataLayer.Provider.MaxGeneralRepositoryDefaultProvider);
             this.RepositoryType = typeof(MaxGeneralRepository);
