@@ -43,6 +43,7 @@
 // <change date="8/26/2024" author="Brian A. Lakstins" description="Updated for changes to base class.">
 // <change date="9/16/2024" author="Brian A. Lakstins" description="Add a way to get properties of the user">
 // <change date="11/6/2024" author="Brian A. Lakstins" description="Updated token integration">
+// <change date="11/19/2026" author="Brian A. Lakstins" description="Allow a user with proper permission to set a users's password">
 // </changelog>
 #endregion
 
@@ -777,7 +778,34 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     }
                     else if (this.Request.Method == HttpMethod.Post)
                     {
-                        loR.Message.Error = loModel.TryResetPassword();
+                        if (this.HasPermission(loRequest, MaxUserEntity.Create(), (int)MaxEnumGroup.PermissionUpdate))
+                        {
+                            MembershipUser loResetUser = Membership.GetUser(loModel.UserName);
+                            if (MaxMembershipUser.SetPassword(loResetUser, loModel.Password))
+                            {
+                                loR.Message.Error = string.Empty;
+                                MaxUserEntity loUser = MaxUserEntity.Create();
+                                string lsDataKey = loResetUser.ProviderUserKey.ToString();
+                                if (loUser.LoadByDataKeyCache(lsDataKey))
+                                {
+                                    loUser.IsPasswordResetNeeded = true;
+                                    loUser.Update();
+                                }
+                            }
+                            else
+                            {
+                                loR.Message.Error = "There was an unknown error changing the password.";
+                                if (Membership.MinRequiredPasswordLength > loModel.Password.Length)
+                                {
+                                    loR.Message.Error = "Minimum password length is " + Membership.MinRequiredPasswordLength;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            loR.Message.Error = loModel.TryResetPassword();
+                        }
+
                         if (loR.Message.Error.Length == 0)
                         {
                             loR.Message.Success = "The password was reset";
