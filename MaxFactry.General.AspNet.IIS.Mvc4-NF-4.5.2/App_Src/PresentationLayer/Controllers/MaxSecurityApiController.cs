@@ -43,7 +43,8 @@
 // <change date="8/26/2024" author="Brian A. Lakstins" description="Updated for changes to base class.">
 // <change date="9/16/2024" author="Brian A. Lakstins" description="Add a way to get properties of the user">
 // <change date="11/6/2024" author="Brian A. Lakstins" description="Updated token integration">
-// <change date="11/19/2026" author="Brian A. Lakstins" description="Allow a user with proper permission to set a users's password">
+// <change date="11/19/2025" author="Brian A. Lakstins" description="Allow a user with proper permission to set a users's password">
+// <change date="1/27/2025" author="Brian A. Lakstins" description="Add auth type when logging in">
 // </changelog>
 #endregion
 
@@ -576,6 +577,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                     if (loMaxUser.LoadByIdCache(loUserId))
                                     {
                                         loMaxUser.SetAttribute("_LastIISSignIn", DateTime.UtcNow);
+                                        loMaxUser.SetAttribute("_AuthType", "Login-Api");
                                         loMaxUser.Update();
                                     }
                                 }

@@ -40,6 +40,7 @@
 // <change date="9/16/2024" author="Brian A. Lakstins" description="Use underscore to designate attributes that are internal">
 // <change date="10/23/2024" author="Brian A. Lakstins" description="Handle redirect url with query string">
 // <change date="11/5/2024" author="Brian A. Lakstins" description="Changed stored username format">
+// <change date="1/27/2025" author="Brian A. Lakstins" description="Add auth type when logging in">
 // </changelog>
 #endregion
 
@@ -103,6 +104,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         {
                             loMaxUser = loMaxUserList[0] as MaxUserEntity;
                             loMaxUser.SetAttribute("_LastIISSignIn", DateTime.UtcNow);
+                            loMaxUser.SetAttribute("_AuthType", "Login");
                             loMaxUser.Update();
                         }
 
@@ -204,6 +206,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                             if (loMaxUser.LoadByIdCache(loUserId))
                             {
                                 loMaxUser.SetAttribute("_LastIISSignIn", DateTime.UtcNow);
+                                loMaxUser.SetAttribute("_AuthType", "Signup");
                                 loMaxUser.Update();
                             }
                         }
@@ -772,6 +775,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                     loMaxUser = loMaxUserList[0] as MaxUserEntity;
                                     loMaxUser.SetAttribute("_LastOAuth2EmailSignIn", DateTime.UtcNow);
                                     loMaxUser.SetAttribute("_LastIISSignIn", DateTime.UtcNow);
+                                    loMaxUser.SetAttribute("_AuthType", "OAuth2Email");
                                     loMaxUser.Update();
                                 }
                             }
@@ -787,6 +791,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                     loMaxUser = loMaxUserList[0] as MaxUserEntity;
                                     loMaxUser.SetAttribute("_LastOAuth2UsernameSignIn", DateTime.UtcNow);
                                     loMaxUser.SetAttribute("_LastIISSignIn", DateTime.UtcNow);
+                                    loMaxUser.SetAttribute("_AuthType", "OAuth2Username");
                                     loMaxUser.Update();
                                 }
                             }
