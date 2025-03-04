@@ -61,6 +61,7 @@
 // <change date="9/16/2024" author="Brian A. Lakstins" description="Add a way to update attributeindex values">
 // <change date="9/24/2024" author="Brian A. Lakstins" description="Update sorting and filtering">
 // <change date="11/13/2024" author="Brian A. Lakstins" description="Add Entity as an arguement for getting the response">
+// <change date="3/4/2025" author="Brian A. Lakstins" description="Handle null data key different from empty data key">
 // </changelog>
 #endregion
 
@@ -852,7 +853,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                 }
                             }
 
-                            if ((string.IsNullOrEmpty(lsDataKey) || this.Request.Method == HttpMethod.Delete || this.Request.Method == HttpMethod.Put) && loR.ItemList.Count == 0)
+                            if ((null == lsDataKey || this.Request.Method == HttpMethod.Delete || this.Request.Method == HttpMethod.Put) && loR.ItemList.Count == 0)
                             {
                                 //// Load list
                                 if (!this.HasPermission(loRequest, loEntity, (int)MaxEnumGroup.PermissionSelect))

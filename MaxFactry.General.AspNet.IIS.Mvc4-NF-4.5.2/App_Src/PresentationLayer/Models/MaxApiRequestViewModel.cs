@@ -32,6 +32,7 @@
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.  Restructing to use DataKey">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Updated to not use default value for DataKey.  Only use if specified.">
 // <change date="11/6/2024" author="Brian A. Lakstins" description="Updated token integration">
+// <change date="3/4/2025" author="Brian A. Lakstins" description="Return null data key when no data key is in the request">
 // </changelog>
 #endregion
 
@@ -67,8 +68,8 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
         public string GetDataKey(int lnNum)
         {
-            string lsR = string.Empty;
-            if (lnNum < 0)
+            string lsR = null;
+            if (lnNum < 0 && this.Item.Contains(_sDataKey))
             {
                 lsR = this.Item.GetValueString(_sDataKey);
             }
@@ -79,7 +80,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
             if (string.IsNullOrEmpty(lsR))
             {
-                if (lnNum < 0)
+                if (lnNum < 0 && this.Item.Contains(_sId))
                 {
                     lsR = this.Item.GetValueString(_sId);
                 }
