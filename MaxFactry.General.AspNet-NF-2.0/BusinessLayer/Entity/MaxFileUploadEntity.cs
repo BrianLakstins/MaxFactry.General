@@ -33,6 +33,7 @@
 // <change date="1/16/2021" author="Brian A. Lakstins" description="Update definition of cache keys.">
 // <change date="3/15/2021" author="Brian A. Lakstins" description="Allow external mime type">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
+// <change date="3/22/2025" author="Brian A. Lakstins" description="Make sure Name is set when inserting.">
 // </changelog>
 #endregion
 
@@ -253,6 +254,22 @@ namespace MaxFactry.General.AspNet.BusinessLayer
             if (string.IsNullOrEmpty(this.MimeType))
             {
                 this.MimeType = this.GetMimeType();
+            }
+
+            if (string.IsNullOrEmpty(this.Name))
+            {
+                if (!string.IsNullOrEmpty(this.UploadName))
+                {
+                    this.Name = this.UploadName;
+                }
+                else if (!string.IsNullOrEmpty(this.FileName))
+                {
+                    this.Name = this.FileName;
+                }
+                else if (!string.IsNullOrEmpty(this.ContentName))
+                {
+                    this.Name = this.ContentName;
+                }   
             }
 
             return base.Insert();
