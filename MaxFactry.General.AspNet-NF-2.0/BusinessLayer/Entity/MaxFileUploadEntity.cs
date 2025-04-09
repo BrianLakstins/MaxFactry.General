@@ -34,6 +34,7 @@
 // <change date="3/15/2021" author="Brian A. Lakstins" description="Allow external mime type">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
 // <change date="3/22/2025" author="Brian A. Lakstins" description="Make sure Name is set when inserting.">
+// <change date="4/9/2025" author="Brian A. Lakstins" description="Override SetInitial and SetProperties instead of Insert and Update.">
 // </changelog>
 #endregion
 
@@ -242,13 +243,8 @@ namespace MaxFactry.General.AspNet.BusinessLayer
             return false;
         }
 
-        public override bool Insert()
+        protected override void SetProperties()
         {
-            if (null == this.UploadName || this.UploadName.Length.Equals(0))
-            {
-                this.UploadName = this.Name;
-            }
-
             this.ContentName = this.FileName;
             this.ContentType = this.GetMimeType();
             if (string.IsNullOrEmpty(this.MimeType))
@@ -256,6 +252,12 @@ namespace MaxFactry.General.AspNet.BusinessLayer
                 this.MimeType = this.GetMimeType();
             }
 
+            base.SetProperties();
+        }
+
+        protected override void SetInitial()
+        {
+            base.SetInitial();
             if (string.IsNullOrEmpty(this.Name))
             {
                 if (!string.IsNullOrEmpty(this.UploadName))
@@ -269,19 +271,14 @@ namespace MaxFactry.General.AspNet.BusinessLayer
                 else if (!string.IsNullOrEmpty(this.ContentName))
                 {
                     this.Name = this.ContentName;
-                }   
+                }
             }
 
-            return base.Insert();
-        }
-
-        public override bool Update()
-        {
-            this.ContentName = this.FileName;
-            this.ContentType = this.GetMimeType();
-            this.MimeType = this.GetMimeType();
-            return base.Update();
-        }      
+            if (null == this.UploadName || this.UploadName.Length.Equals(0))
+            {
+                this.UploadName = this.Name;
+            }
+        }  
 
         public string GetContentURLCache(string lsName)
         {

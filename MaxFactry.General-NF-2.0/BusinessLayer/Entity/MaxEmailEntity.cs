@@ -31,6 +31,7 @@
 // <change date="9/17/2020" author="Brian A. Lakstins" description="Add loading by relation">
 // <change date="5/18/2021" author="Brian A. Lakstins" description="remove loading by relation since in base class">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
+// <change date="4/9/2025" author="Brian A. Lakstins" description="Use Insert instead of Insert(Guid)">
 // </changelog>
 #endregion
 
@@ -92,10 +93,10 @@ namespace MaxFactry.General.BusinessLayer
         /// </summary>
         /// <param name="loId">Id for the new record</param>
         /// <returns>true if inserted.  False if cannot be inserted.</returns>
-        public override bool Insert(Guid loId)
+        public override bool Insert()
         {
             this.ArchiveCreatedOver30();
-            bool lbR = base.Insert(loId);
+            bool lbR = base.Insert();
             return lbR;
         }
 
