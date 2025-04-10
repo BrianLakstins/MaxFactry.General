@@ -35,6 +35,7 @@
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
 // <change date="3/22/2025" author="Brian A. Lakstins" description="Make sure Name is set when inserting.">
 // <change date="4/9/2025" author="Brian A. Lakstins" description="Override SetInitial and SetProperties instead of Insert and Update.">
+// <change date="4/10/2025" author="Brian A. Lakstins" description="Tweak SetInitial and SetProperties.">
 // </changelog>
 #endregion
 
@@ -245,11 +246,19 @@ namespace MaxFactry.General.AspNet.BusinessLayer
 
         protected override void SetProperties()
         {
-            this.ContentName = this.FileName;
-            this.ContentType = this.GetMimeType();
-            if (string.IsNullOrEmpty(this.MimeType))
+            if (null == this.MimeType || this.MimeType.Length.Equals(0))
             {
-                this.MimeType = this.GetMimeType();
+                this.MimeType = this.GetMimeType(this.FileName);
+            }
+
+            if (null == this.ContentName || this.ContentName.Length.Equals(0))
+            {
+                this.ContentName = this.FileName;
+            }
+
+            if (null == this.ContentType || this.ContentType.Length.Equals(0))
+            {
+                this.ContentType = this.GetMimeType(this.ContentName);
             }
 
             base.SetProperties();
@@ -258,17 +267,17 @@ namespace MaxFactry.General.AspNet.BusinessLayer
         protected override void SetInitial()
         {
             base.SetInitial();
-            if (string.IsNullOrEmpty(this.Name))
+            if (null == this.Name || this.Name.Length.Equals(0))
             {
-                if (!string.IsNullOrEmpty(this.UploadName))
+                if (null != this.UploadName && this.UploadName.Length > 0)
                 {
                     this.Name = this.UploadName;
                 }
-                else if (!string.IsNullOrEmpty(this.FileName))
+                else if (null != this.FileName && this.FileName.Length > 0)
                 {
                     this.Name = this.FileName;
                 }
-                else if (!string.IsNullOrEmpty(this.ContentName))
+                else if (null != this.ContentName && this.ContentName.Length > 0)
                 {
                     this.Name = this.ContentName;
                 }
