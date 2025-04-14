@@ -62,6 +62,7 @@
 // <change date="9/24/2024" author="Brian A. Lakstins" description="Update sorting and filtering">
 // <change date="11/13/2024" author="Brian A. Lakstins" description="Add Entity as an arguement for getting the response">
 // <change date="3/4/2025" author="Brian A. Lakstins" description="Handle null data key different from empty data key">
+// <change date="4/14/2025" author="Brian A. Lakstins" description="Load through POST without also updating.">
 // </changelog>
 #endregion
 
@@ -1143,30 +1144,28 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             else
             {
                 lbIsSuccess = false;
-                if (!string.IsNullOrEmpty(loMappedEntity.DataKey))
+                if (null != loRequest.RequestPropertyList && loRequest.ResponsePropertyList.Length > 0)
                 {
-                    lbIsSuccess = loMappedEntity.Update();
-                }
-                else if (loMappedEntity is MaxBaseIdEntity)
-                {
-                    MaxBaseIdEntity loBaseIdEntity = loMappedEntity as MaxBaseIdEntity;
-                    if (Guid.Empty == loBaseIdEntity.Id)
+                    if (!string.IsNullOrEmpty(loMappedEntity.DataKey))
                     {
-                        lbIsSuccess = loBaseIdEntity.Insert();
+                        lbIsSuccess = loMappedEntity.Update();
                     }
-                    else
+                    else if (loMappedEntity is MaxBaseIdEntity)
                     {
-                        lbIsSuccess = loBaseIdEntity.Update();
+                        MaxBaseIdEntity loBaseIdEntity = loMappedEntity as MaxBaseIdEntity;
+                        if (Guid.Empty == loBaseIdEntity.Id)
+                        {
+                            lbIsSuccess = loBaseIdEntity.Insert();
+                        }
+                        else
+                        {
+                            lbIsSuccess = loBaseIdEntity.Update();
+                        }
                     }
-                }
-                else if (string.IsNullOrEmpty(loMappedEntity.DataKey))
-                {
-                    lbIsSuccess = loMappedEntity.Insert();
-                }
-
-                if (lbIsSuccess)
-                {
-                    loR.Item = loMappedEntity.MapIndex(loRequest.ResponsePropertyList);
+                    else if (string.IsNullOrEmpty(loMappedEntity.DataKey))
+                    {
+                        lbIsSuccess = loMappedEntity.Insert();
+                    }
                 }
             }
 
@@ -1177,6 +1176,10 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 {
                     loR.Message.Success = "Items Updated";
                 }
+            }
+            else if (null == loRequest.RequestPropertyList || loRequest.ResponsePropertyList.Length == 0)
+            {
+                loR.Message.Success = "Item Loaded";
             }
             else
             {
