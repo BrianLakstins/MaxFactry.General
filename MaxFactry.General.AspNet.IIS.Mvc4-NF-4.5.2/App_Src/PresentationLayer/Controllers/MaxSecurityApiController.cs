@@ -45,6 +45,7 @@
 // <change date="11/6/2024" author="Brian A. Lakstins" description="Updated token integration">
 // <change date="11/19/2025" author="Brian A. Lakstins" description="Allow a user with proper permission to set a users's password">
 // <change date="1/27/2025" author="Brian A. Lakstins" description="Add auth type when logging in">
+// <change date="4/22/2025" author="Brian A. Lakstins" description="Use Login with GET to get current user">
 // </changelog>
 #endregion
 
@@ -354,107 +355,6 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         }
 
         /// <summary>
-        /// Gets the current logged in user
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [HttpOptions]
-        [ActionName("usercurrent")]
-        public async Task<HttpResponseMessage> UserCurrent()
-        {
-            HttpStatusCode loStatus = HttpStatusCode.Unauthorized;
-            var loResponseItem = new
-            {
-                UserName = "UserName",
-                Email = "Email",
-                Id = "Id",
-                RoleList = "RoleList",
-                LastPasswordChangedDate = "LastPasswordChangedDate",
-                Comment = "Comment",
-                LastActivityDate = "LastActivityDate",
-                LastLoginDate = "LastLoginDate",
-                PasswordQuestion = "PasswordQuestion",
-                IsPasswordResetNeeded = "IsPasswordResetNeeded",
-                UserConfiguration = "UserConfiguration"
-            };
-
-            MaxApiResponseViewModel loR = GetResponse(loResponseItem);
-            if (this.Request.Method != HttpMethod.Options)
-            {
-                MaxApiRequestViewModel loRequest = await this.GetRequest();
-                MaxUserConfigurationEntity loConfiguration = MaxUserConfigurationEntity.Create().GetCurrent();
-                loR.Item.Add(loResponseItem.UserConfiguration, loConfiguration.MapIndex(
-                        loConfiguration.GetPropertyName(() => loConfiguration.OnlineWindowDuration),
-                        loConfiguration.GetPropertyName(() => loConfiguration.MinRequiredNonAlphanumericCharacters),
-                        loConfiguration.GetPropertyName(() => loConfiguration.MinRequiredPasswordLength),
-                        loConfiguration.GetPropertyName(() => loConfiguration.PasswordStrengthRegularExpression),
-                        loConfiguration.GetPropertyName(() => loConfiguration.ApplicationName),
-                        loConfiguration.GetPropertyName(() => loConfiguration.EnablePasswordReset),
-                        loConfiguration.GetPropertyName(() => loConfiguration.EnablePasswordRetrieval)
-                    ));
-
-                if (null != loRequest.User)
-                {
-                    loStatus = HttpStatusCode.OK;
-                    try
-                    {
-                        if (loRequest.User is MaxMembershipUser)
-                        {
-                            MaxIndex loUserIndex = ((MaxMembershipUser)loRequest.User).GetUser().MapIndex(loRequest.ResponsePropertyList);
-                            string[] laKey = loUserIndex.GetSortedKeyList();
-                            foreach (string lsKey in laKey)
-                            {
-                                loR.Item.Add(lsKey, loUserIndex[lsKey]);
-                            }
-                        }
-
-                        //// Return a user and roles
-                        loR.Item.Add(loResponseItem.UserName, loRequest.User.UserName);
-                        loR.Item.Add(loResponseItem.Email, loRequest.User.Email);
-                        loR.Item.Add(loResponseItem.Id, MaxConvertLibrary.ConvertToString(typeof(object), loRequest.User.ProviderUserKey).ToLower());
-                        loR.Item.Add(loResponseItem.LastPasswordChangedDate, loRequest.User.LastPasswordChangedDate);
-                        loR.Item.Add(loResponseItem.Comment, loRequest.User.Comment);
-                        loR.Item.Add(loResponseItem.LastActivityDate, loRequest.User.LastActivityDate);
-                        loR.Item.Add(loResponseItem.LastLoginDate, loRequest.User.LastLoginDate);
-                        loR.Item.Add(loResponseItem.PasswordQuestion, loRequest.User.PasswordQuestion);
-
-                        if (loRequest.User is MaxMembershipUser)
-                        {
-                            loR.Item.Add(loResponseItem.IsPasswordResetNeeded, ((MaxMembershipUser)loRequest.User).IsPasswordResetNeeded);
-                        }
-
-                        List<MaxIndex> loRoleIndexList = new List<MaxIndex>();
-                        MaxEntityList loRoleList = MaxRoleEntity.Create().LoadAllByUserIdCache(MaxConvertLibrary.ConvertToGuid(typeof(object), loRequest.User.ProviderUserKey));
-                        for (int lnR = 0; lnR < loRoleList.Count; lnR++) 
-                        {
-                            MaxRoleEntity loRole = loRoleList[lnR] as MaxRoleEntity;
-                            MaxIndex loRoleIndex = loRole.MapIndex(
-                                loRole.GetPropertyName(() => loRole.DataKey),
-                                loRole.GetPropertyName(() => loRole.RoleName),
-                                loRole.GetPropertyName(() => loRole.Id),
-                                "PermissionKeySelectedList");
-                            loRoleIndexList.Add(loRoleIndex);
-                        }
-
-                        loR.Item.Add(loResponseItem.RoleList, loRoleIndexList);
-                        loR.Message.Success = "Got current user information";
-                    }
-                    catch (Exception loE)
-                    {
-                        loR.Message.Error = "Exception getting user info: " + loE.Message;
-                        MaxLogLibrary.Log(new MaxLogEntryStructure("MaxSecurityApi", MaxEnumGroup.LogError, "Exception getting user info", loE));
-                    }
-                }
-            }
-            else
-            {
-                loStatus = HttpStatusCode.OK;
-            }
-
-            return this.GetResponseMessage(loR.Item, loStatus);
-        }
-
-        /// <summary>
         /// CRUD template for an entity
         /// </summary>
         /// <returns></returns>
@@ -538,7 +438,8 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 MaxApiRequestViewModel loRequest = await this.GetRequest();
                 try
                 {
-                    MembershipUser loUser = Membership.GetUser();
+                    bool lbIsValid = false;
+                    MembershipUser loUser = loRequest.User;
                     if (this.Request.Method == HttpMethod.Post)
                     {
                         string lsUserName = loRequest.Item.GetValueString(loRequestItem.UserName);
@@ -552,7 +453,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                             }
 
                             string lsUserCheck = lsUserName;
-                            bool lbIsValid = Membership.ValidateUser(lsUserCheck, lsPassword);
+                            lbIsValid = Membership.ValidateUser(lsUserCheck, lsPassword);
                             if (!lbIsValid && !string.IsNullOrEmpty(lsEmail) && MaxBaseEmailEntity.IsValidEmail(lsEmail))
                             {
                                 lsUserCheck = Membership.GetUserNameByEmail(lsEmail);
@@ -568,11 +469,12 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
                             if (!string.IsNullOrEmpty(lsUserCheck))
                             {
-                                loUser = Membership.GetUser(lsUserCheck);
+                                MembershipUser loUserCheck = Membership.GetUser(lsUserCheck);
                                 if (lbIsValid)
                                 {
+                                    loUser = loUserCheck;
                                     MaxFactry.General.AspNet.IIS.MaxAppLibrary.SignIn(lsUserCheck);
-                                    Guid loUserId = MaxConvertLibrary.ConvertToGuid(typeof(object), loUser.ProviderUserKey);
+                                    Guid loUserId = MaxConvertLibrary.ConvertToGuid(typeof(object), loUserCheck.ProviderUserKey);
                                     MaxUserEntity loMaxUser = MaxUserEntity.Create();
                                     if (loMaxUser.LoadByIdCache(loUserId))
                                     {
@@ -584,11 +486,11 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                 else
                                 {
                                     loR.Message.Error = "A matching username or password was not found.";
-                                    if (null != loUser)
+                                    if (null != loUserCheck)
                                     {
                                         try
                                         {
-                                            string lsPasswordCurrent = loUser.GetPassword();
+                                            string lsPasswordCurrent = loUserCheck.GetPassword();
                                             if (string.IsNullOrEmpty(lsPasswordCurrent))
                                             {
                                                 loR.Message.Error = "Password needs to be reset.";
@@ -603,8 +505,6 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                             }
                                         }
                                     }
-
-                                    loUser = null;
                                 }
                             }
                             else
@@ -662,19 +562,17 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         }
 
                         loR.Item.Add(loResponseItem.RoleList, loRoleIndexList);
-                    } 
-                    else if (null != loRequest.User && null != loRequest.Token)
-                    {
-                        loR.Item.Add(loResponseItem.Id, MaxConvertLibrary.ConvertToString(typeof(object), loRequest.User.ProviderUserKey).ToLower());
-                        loR.Item.Add(loResponseItem.UserName, loRequest.User.UserName);
-                        loR.Item.Add(loResponseItem.Token, loRequest.Token.MapIndex(
-                            loRequest.Token.GetPropertyName(() => loRequest.Token.DataKey),
-                            loRequest.Token.GetPropertyName(() => loRequest.Token.ExpirationDate),
-                            loRequest.Token.GetPropertyName(() => loRequest.Token.TokenType),
-                            loRequest.Token.GetPropertyName(() => loRequest.Token.CreatedDate),
-                            loRequest.Token.GetPropertyName(() => loRequest.Token.LastUsedDate)
-                            ));
-                    }
+                        if (null != loRequest.Token)
+                        {
+                            loR.Item.Add(loResponseItem.Token, loRequest.Token.MapIndex(
+                                loRequest.Token.GetPropertyName(() => loRequest.Token.DataKey),
+                                loRequest.Token.GetPropertyName(() => loRequest.Token.ExpirationDate),
+                                loRequest.Token.GetPropertyName(() => loRequest.Token.TokenType),
+                                loRequest.Token.GetPropertyName(() => loRequest.Token.CreatedDate),
+                                loRequest.Token.GetPropertyName(() => loRequest.Token.LastUsedDate)
+                                ));
+                        }
+                    }                     
                 }
                 catch (Exception loE)
                 {
