@@ -63,6 +63,7 @@
 // <change date="11/13/2024" author="Brian A. Lakstins" description="Add Entity as an arguement for getting the response">
 // <change date="3/4/2025" author="Brian A. Lakstins" description="Handle null data key different from empty data key">
 // <change date="4/14/2025" author="Brian A. Lakstins" description="Load through POST without also updating.">
+// <change date="4/29/2025" author="Brian A. Lakstins" description="Consider and update successful if any updates on a list succeed.">
 // </changelog>
 #endregion
 
@@ -1111,34 +1112,43 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             bool lbIsSuccess = false;
             if (loMappedEntityList.Count > 0)
             {
+                lbIsSuccess = false;
                 for (int lnE = 0; lnE < loMappedEntityList.Count; lnE++)
                 {
-                    lbIsSuccess = false;
                     if (!string.IsNullOrEmpty(loMappedEntityList[lnE].DataKey))
                     {
-                        lbIsSuccess = loMappedEntityList[lnE].Update();
+                        if (loMappedEntityList[lnE].Update())
+                        {
+                            lbIsSuccess = true;
+                        }
                     }
                     else if (loMappedEntityList[lnE] is MaxBaseIdEntity)
                     {
                         MaxBaseIdEntity loBaseIdEntity = loMappedEntityList[lnE] as MaxBaseIdEntity;
                         if (Guid.Empty == loBaseIdEntity.Id)
                         {
-                            lbIsSuccess = loBaseIdEntity.Insert();
+                            if (loBaseIdEntity.Insert())
+                            {
+                                lbIsSuccess = true;
+                            }
                         }
                         else
                         {
-                            lbIsSuccess = loBaseIdEntity.Update();
+                            if (loBaseIdEntity.Update())
+                            {
+                                lbIsSuccess = true;
+                            }
                         }
                     }
                     else if (string.IsNullOrEmpty(loMappedEntityList[lnE].DataKey))
                     {
-                        lbIsSuccess = loMappedEntityList[lnE].Insert();
+                        if (loMappedEntityList[lnE].Insert())
+                        {
+                            lbIsSuccess = true;
+                        }
                     }
 
-                    if (lbIsSuccess)
-                    {
-                        loR.ItemList.Add(loMappedEntityList[lnE].MapIndex(loRequest.ResponsePropertyList));
-                    }
+                    loR.ItemList.Add(loMappedEntityList[lnE].MapIndex(loRequest.ResponsePropertyList));
                 }
             }
             else
