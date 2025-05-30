@@ -43,7 +43,7 @@ namespace MaxFactry.General.DataLayer
     /// <summary>
     /// Data model for the password information associated with the MaxSecurityProvider.
     /// </summary>
-    public class MaxUserPasswordDataModel : MaxBaseDataModel
+    public class MaxUserPasswordDataModel : MaxBaseGuidKeyDataModel
 	{
         /// <summary>
         /// Random salt value used to encrypt password
@@ -82,9 +82,9 @@ namespace MaxFactry.General.DataLayer
 		{
             this.SetDataStorageName("MaxSecurityUserPassword");
             this.RemoveType(this.CreatedDate);
-            this.AddKey(this.CreatedDate, typeof(DateTime));
-            this.AddKey(this.EncryptionSaltId, typeof(Guid));
-			this.AddKey(this.UserId, typeof(Guid));
+            this.AddType(this.CreatedDate, typeof(DateTime));
+            this.AddType(this.EncryptionSaltId, typeof(Guid));
+			this.AddType(this.UserId, typeof(Guid));
 			this.AddType(this.Password, typeof(string));
 			this.AddType(this.PasswordFormat, typeof(int));
 			this.AddNullable(this.PasswordQuestion, typeof(string));

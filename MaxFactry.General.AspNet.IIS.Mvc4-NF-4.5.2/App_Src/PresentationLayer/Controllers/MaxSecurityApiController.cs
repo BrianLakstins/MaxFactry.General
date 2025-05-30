@@ -498,7 +498,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                         }
                                         catch (Exception loE)
                                         {
-                                            if (loE.Message != "Password retrieval is disabled")
+                                            if (loE.Message != "Password retrieval is disabled" && loE.Message != "Password is hashed and cannot be retrieved.")
                                             {
                                                 loR.Message.Error = "Exception logging in a user: " + loE.Message;
                                                 MaxLogLibrary.Log(new MaxLogEntryStructure("MaxSecurityApi", MaxEnumGroup.LogError, "Exception logging in a user", loE));

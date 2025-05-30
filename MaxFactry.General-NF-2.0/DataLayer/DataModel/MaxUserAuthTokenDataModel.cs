@@ -108,11 +108,11 @@ namespace MaxFactry.General.DataLayer
 			this.AddNullable(this.UserAuthGrantId, typeof(Guid));
 			this.AddNullable(this.TokenHash, typeof(string));
 			this.AddNullable(this.Token, typeof(string));
-            this.AddAttribute(this.Token, "IsEncrypted", "true");
+            this.AddAttribute(this.Token, AttributeIsEncrypted, "true");
             this.AddNullable(this.Expiration, typeof(int));
 			this.AddNullable(this.TokenType, typeof(string));
 			this.AddNullable(this.TokenResult, typeof(MaxLongString));
-			this.AddAttribute(this.TokenResult, "IsEncrypted", "true");
+			this.AddAttribute(this.TokenResult, AttributeIsEncrypted, "true");
             this.AddNullable(this.RemoteUrl, typeof(string));
 			this.AddNullable(this.LastUsedDate, typeof(DateTime));
 

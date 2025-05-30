@@ -172,6 +172,7 @@ namespace MaxFactry.Module.File.Mvc4.PresentationLayer
             else
             {
                 string lsCancelAction = "VirtualTextFile";
+                loModel.IsActive = true;
                 ActionResult loResult = this.Edit(loModel, uoProcess, lsCancelAction);
                 if (loResult is ViewResult)
                 {

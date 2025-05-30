@@ -67,9 +67,10 @@ namespace MaxFactry.General.DataLayer
 		public MaxUserLogDataModel() : base()
 		{
             this.SetDataStorageName("MaxSecurityUserLog");
-            this.AddAttribute(this.CreatedDate, "IsPrimaryKey", "true");
-            this.AddKey(this.UserId, typeof(Guid));
-			this.AddType(this.LogEntryType, typeof(int));
+            this.AddStorageKey(this.UserId, typeof(Guid));
+			this.AddAttribute(this.UserId, AttributeIsDataKey, "true");
+            this.AddAttribute(this.CreatedDate, AttributeIsDataKey, "true");
+            this.AddDataKey(this.LogEntryType, typeof(int));
 			this.AddType(this.Comment, typeof(string));
             this.RepositoryProviderType = typeof(MaxFactry.General.DataLayer.Provider.MaxSecurityRepositoryDefaultProvider);
             this.RepositoryType = typeof(MaxSecurityRepository);

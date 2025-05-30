@@ -52,7 +52,7 @@ namespace MaxFactry.General.BusinessLayer
 	/// <summary>
     /// Entity used to manage information about passwords for the MaxSecurityProvider.
 	/// </summary>
-	public class MaxUserPasswordEntity : MaxBaseEntity
+	public class MaxUserPasswordEntity : MaxBaseGuidKeyEntity
 	{
 		/// <summary>
 		/// Value for clear password format.
@@ -132,7 +132,13 @@ namespace MaxFactry.General.BusinessLayer
         {
             get
             {
-                return this.GetGuid(this.DataModel.EncryptionSaltId);
+                Guid loR = this.GetGuid(this.DataModel.EncryptionSaltId);
+                if (loR == Guid.Empty)
+                {
+                    loR = this.Id;
+                }
+
+                return loR;
             }
         }
 
@@ -258,7 +264,7 @@ namespace MaxFactry.General.BusinessLayer
                         loR = loEntity;
                         ldLatest = loEntity.CreatedDate;
                     }
-                    else
+                    else 
                     {
                         loEntity.IsActive = false;
                         loEntity.Update();

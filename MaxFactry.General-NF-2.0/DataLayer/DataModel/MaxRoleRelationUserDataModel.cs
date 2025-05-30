@@ -56,6 +56,7 @@ namespace MaxFactry.General.DataLayer
 			this.RemoveType(this.RelationType);
 			this.RemoveType(this.RelativeOrder);
             this.RemoveType(this.OptionFlagList);
+            this.RemoveType(this.IsActive);
         }
     }
 }
