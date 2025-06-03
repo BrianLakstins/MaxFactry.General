@@ -130,23 +130,31 @@ namespace MaxFactry.General.BusinessLayer
         /// <returns>True if successful.</returns>
         public bool DeleteByRoleName(string lsRoleName)
         {
-            bool lbR = true;
+            bool lbR = false;
             MaxEntityList loList = this.LoadAllByRoleCache(lsRoleName);
-            for (int lnE = 0; lnE < loList.Count; lnE++)
+            if (loList.Count > 0)
             {
-                MaxRoleEntity loEntity = loList[lnE] as MaxRoleEntity;
-                MaxEntityList loRelationList = MaxRoleRelationUserEntity.Create().LoadAllByRoleIdCache(loEntity.Id);
-                for (int lnR = 0; lnR < loRelationList.Count; lnR++)
+                lbR = true;
+                for (int lnE = 0; lnE < loList.Count; lnE++)
                 {
-                    if (lbR)
+                    MaxRoleEntity loEntity = loList[lnE] as MaxRoleEntity;
+                    MaxEntityList loRelationList = MaxRoleRelationUserEntity.Create().LoadAllByRoleIdCache(loEntity.Id);
+                    bool lbIsRelationDeleted = true;
+                    for (int lnR = 0; lnR < loRelationList.Count; lnR++)
                     {
-                        lbR = loRelationList[lnR].Delete();
+                        if (!loRelationList[lnR].Delete())
+                        {
+                            lbIsRelationDeleted = false;
+                        }
                     }
-                }
 
-                if (lbR)
-                {
-                    lbR = loEntity.Delete();
+                    if (lbIsRelationDeleted)
+                    {
+                        if (!loEntity.Delete())
+                        {
+                            lbR = false;
+                        }
+                    }
                 }
             }
 

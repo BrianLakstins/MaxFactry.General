@@ -48,7 +48,7 @@ namespace MaxFactry.General.DataLayer
         public MaxUserIndexDataModel()
             : base()
 		{
-            this.SetDataStorageName("MaxCoreUserIndex");
+            this.SetDataStorageName("MaxUserIndex");
         }
 	}
 }

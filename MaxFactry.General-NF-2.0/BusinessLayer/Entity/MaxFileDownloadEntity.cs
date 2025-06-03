@@ -166,7 +166,7 @@ namespace MaxFactry.General.BusinessLayer
                     catch (Exception loE)
                     {
                         //// Stream content could not be converted to string content.
-                        MaxLogLibrary.Log(new MaxLogEntryStructure(MaxEnumGroup.LogError, "Error converting stream to string for MaxFileDownload {Id}", loE, this.Id));
+                        MaxLogLibrary.Log(new MaxLogEntryStructure(MaxEnumGroup.LogError, "Error converting stream to string for MaxFileDownload", loE));
                     }
                 }
 
@@ -343,7 +343,7 @@ namespace MaxFactry.General.BusinessLayer
                                 MaxFileDownloadEntity loEntity = MaxFileDownloadEntity.Create();
                                 loEntity.ContentDate = MaxConvertLibrary.ConvertToDateTime(typeof(object), loItem.GetValueString("ContentDate"));
                                 loEntity.ContentName = loItem.GetValueString("ContentName");
-                                loEntity.SetId(new Guid(loItem.GetValueString("Id")));
+                                //loEntity.SetId(new Guid(loItem.GetValueString("Id")));
                                 loR.Add(loEntity);
                             }
                         }

@@ -85,23 +85,5 @@ namespace MaxFactry.General.BusinessLayer
                 typeof(MaxProfileIndexEntity),
                 typeof(MaxProfileIndexDataModel)) as MaxProfileIndexEntity;
         }
-
-        public virtual int ArchiveLastUpdatedOver90()
-        {
-            int lnR = 0;
-            //// Prevent running archive process more than once per 24 hours
-            if (this.CanProcessArchive(new TimeSpan(24, 0, 0)))
-            {
-                lnR = this.Archive(DateTime.MinValue, DateTime.UtcNow.AddDays(-90), false);
-            }
-
-            return lnR;
-        }
-
-        public override bool Insert()
-        {
-            //this.ArchiveLastUpdatedOver90();
-            return base.Insert();
-        }
     }
 }

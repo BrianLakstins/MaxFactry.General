@@ -114,7 +114,7 @@ namespace MaxFactry.General.BusinessLayer
                     catch (Exception loE)
                     {
                         //// Stream content could not be converted to string content.
-                        MaxLogLibrary.Log(new MaxLogEntryStructure(MaxEnumGroup.LogError, "Error converting stream to string for MaxFile {Id}", loE, this.Id));
+                        MaxLogLibrary.Log(new MaxLogEntryStructure(MaxEnumGroup.LogError, "Error converting stream to string for MaxFile", loE));
                     }
                 }
 

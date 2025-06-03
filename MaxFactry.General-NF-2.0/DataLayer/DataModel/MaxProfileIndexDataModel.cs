@@ -50,13 +50,7 @@ namespace MaxFactry.General.DataLayer
         public MaxProfileIndexDataModel()
             : base()
 		{
-            this.RemoveType(this.StorageKey);
-            this.SetDataStorageName("MaxCoreProfileIndex");
-        }
-
-        public MaxProfileIndexDataModel(string lsStorageName) : this()
-        {
-            this.SetDataStorageName(lsStorageName);
+            this.SetDataStorageName("MaxProfileIndex");
         }
 	}
 }
