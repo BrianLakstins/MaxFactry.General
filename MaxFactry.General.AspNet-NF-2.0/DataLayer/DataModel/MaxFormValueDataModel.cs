@@ -29,6 +29,7 @@
 // <changelog>
 // <change date="1/23/2015" author="Brian A. Lakstins" description="Initial Release">
 // <change date="5/24/2020" author="Brian A. Lakstins" description="Add constructor used for archive process">
+// <change date="6/4/2025" author="Brian A. Lakstins" description="Update base class">
 // </changelog>
 #endregion
 
@@ -41,7 +42,7 @@ namespace MaxFactry.General.AspNet.DataLayer
 	/// <summary>
     /// Data model for server variables collection web sites.
 	/// </summary>
-	public class MaxFormValueDataModel : MaxBaseIdDataModel
+	public class MaxFormValueDataModel : MaxBaseGuidKeyDataModel
 	{
 		/// <summary>
 		/// The Id of the object these server variables are related to.

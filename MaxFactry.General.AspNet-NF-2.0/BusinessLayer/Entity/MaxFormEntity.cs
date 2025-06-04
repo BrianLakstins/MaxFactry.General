@@ -32,6 +32,7 @@
 // <change date="5/31/2020" author="Brian A. Lakstins" description="Update archive process to use created date and make sure all form values are archived before archiving the form">
 // <change date="3/1/2021" author="Brian A. Lakstins" description="Turn off archive because it requires loading all.">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
+// <change date="6/4/2025" author="Brian A. Lakstins" description="Update base class">
 // </changelog>
 #endregion
 
@@ -47,7 +48,7 @@ namespace MaxFactry.General.AspNet.BusinessLayer
     /// <summary>
     /// Entity to represent virtual text file in a web site.
     /// </summary>
-    public class MaxFormEntity : MaxBaseIdEntity
+    public class MaxFormEntity : MaxBaseGuidKeyEntity
     {
         /// <summary>
         /// Initializes a new instance of the MaxVirtualTextFileEntity class
@@ -117,75 +118,7 @@ namespace MaxFactry.General.AspNet.BusinessLayer
 
         public virtual MaxEntityList LoadAllByRelationId(Guid loRelationId)
         {
-            MaxDataList loDataList = MaxBaseAspNetRepository.SelectAllByProperty(this.Data, this.DataModel.FormRelationId, loRelationId);
-            MaxEntityList loEntityList = MaxEntityList.Create(typeof(MaxFormEntity), loDataList);
-            return loEntityList;
-        }
-
-        public override bool Insert()
-        {
-            this.ArchiveCreatedOver30();
-            return base.Insert();
-        }
-
-        /// <summary>
-        /// Archives old orders
-        /// </summary>
-        /// <returns></returns>
-        public int ArchiveCreatedOver30()
-        {
-            int lnR = 0;
-            //// Prevent running archive process more than once per 24 hours
-            if (this.CanProcessArchive(new TimeSpan(24, 0, 0)))
-            {
-                lnR = this.Archive(DateTime.UtcNow.AddDays(-30), DateTime.MinValue, false);
-            }
-
-            return lnR;
-        }
-
-        public override int Archive(DateTime ldCreatedDate, DateTime ldLastUpdatedDate, bool lbInactiveOnly)
-        {
-            int lnR = 0;
-            //// Make sure the archive process does not run more than once per hour
-            /*
-            if (this.CanProcessArchive(new TimeSpan(1, 0, 0)))
-            {
-                MaxEntityList loEntityList = this.LoadAll();
-                Stopwatch loWatch = Stopwatch.StartNew();
-                MaxLogLibrary.Log(new MaxLogEntryStructure("EntityArchive-" + this.GetType() + "-Start", MaxEnumGroup.LogInfo, "Archiving from {ldCreatedDate} to {ldLastUpdatedDate}.  Checking {loEntityList.Count} items.", ldCreatedDate, ldLastUpdatedDate, loEntityList.Count));
-                for (int lnE = 0; lnE < loEntityList.Count; lnE++)
-                {
-                    MaxBaseIdEntity loEntity = loEntityList[lnE] as MaxBaseIdEntity;
-                    if (loEntity.CreatedDate < ldCreatedDate || loEntity.LastUpdateDate < ldLastUpdatedDate)
-                    {
-                        if (!lbInactiveOnly || (lbInactiveOnly && !loEntity.IsActive))
-                        {
-                            MaxFormValueEntity loFormValue = MaxFormValueEntity.Create();
-                            MaxEntityList loFormValueList = loFormValue.LoadAllByRelationId(loEntity.Id);
-                            bool lbFormValueArchived = true;
-                            for (int lnF = 0; lnF < loFormValueList.Count; lnF++)
-                            {
-                                loFormValue = loFormValueList[lnF] as MaxFormValueEntity;
-                                if (!loFormValue.Archive())
-                                {
-                                    lbFormValueArchived = false;
-                                }
-                            }
-
-                            if (lbFormValueArchived && loEntity.Archive())
-                            {
-                                lnR++;
-                            }
-                        }
-                    }
-                }
-
-                MaxLogLibrary.Log(new MaxLogEntryStructure("EntityArchive-" + this.GetType() + "-End", MaxEnumGroup.LogInfo, "Archived {Count} in {loWatch.Elapsed.TotalSeconds}", lnR, loWatch.Elapsed.TotalSeconds));
-            }
-            */
-
-            return lnR;
+            return this.LoadAllByProperty(this.DataModel.FormRelationId, loRelationId);
         }
     }
 }

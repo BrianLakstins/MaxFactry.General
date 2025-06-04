@@ -99,16 +99,6 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             return lsR;
         }
 
-
-        [HttpPost]
-        [ActionName("formarchive")]
-        public int FormArchive()
-        {
-            MaxFormEntity loForm = MaxFormEntity.Create();
-            int lnR = loForm.ArchiveCreatedOver30();
-            return lnR;
-        }
-
         [HttpGet]
         [HttpOptions]
         [ActionName("daterange")]

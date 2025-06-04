@@ -29,6 +29,7 @@
 // <changelog>
 // <change date="1/23/2015" author="Brian A. Lakstins" description="Initial Release">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
+// <change date="6/4/2025" author="Brian A. Lakstins" description="Update base class">
 // </changelog>
 #endregion
 
@@ -44,7 +45,7 @@ namespace MaxFactry.General.AspNet.BusinessLayer
     /// <summary>
     /// Entity to represent virtual text file in a web site.
     /// </summary>
-    public class MaxServerVariableEntity : MaxBaseIdEntity
+    public class MaxServerVariableEntity : MaxBaseGuidKeyEntity
     {
         /// <summary>
         /// Initializes a new instance of the MaxVirtualTextFileEntity class
@@ -114,9 +115,7 @@ namespace MaxFactry.General.AspNet.BusinessLayer
 
         public virtual MaxEntityList LoadAllByRelationId(Guid loRelationId)
         {
-            MaxDataList loDataList = MaxBaseAspNetRepository.SelectAllByProperty(this.Data, this.DataModel.ServerVariableRelationId, loRelationId);
-            MaxEntityList loEntityList = MaxEntityList.Create(typeof(MaxServerVariableEntity), loDataList);
-            return loEntityList;
+            return this.LoadAllByProperty(this.DataModel.ServerVariableRelationId, loRelationId);
         }
     }
 }
