@@ -32,6 +32,7 @@
 // <change date="12/2/2019" author="Brian A. Lakstins" description="Added new initialization method so logs can be archived.">
 // <change date="3/20/2024" author="Brian A. Lakstins" description="Happy birthday to my mom.  Sara Jean Lakstins (Cartwright) - 3/20/1944 to 3/14/2019.">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Change parent class.">
+// <change date="6/4/2025" author="Brian A. Lakstins" description="Update keys">
 // </changelog>
 #endregion
 
@@ -67,9 +68,10 @@ namespace MaxFactry.General.DataLayer
 		public MaxUserLogDataModel() : base()
 		{
             this.SetDataStorageName("MaxSecurityUserLog");
-            this.AddAttribute(this.CreatedDate, "IsPrimaryKey", "true");
-            this.AddKey(this.UserId, typeof(Guid));
-			this.AddType(this.LogEntryType, typeof(int));
+            this.AddStorageKey(this.UserId, typeof(Guid));
+			this.AddAttribute(this.UserId, AttributeIsDataKey, "true");
+            this.AddAttribute(this.CreatedDate, AttributeIsDataKey, "true");
+            this.AddDataKey(this.LogEntryType, typeof(int));
 			this.AddType(this.Comment, typeof(string));
             this.RepositoryProviderType = typeof(MaxFactry.General.DataLayer.Provider.MaxSecurityRepositoryDefaultProvider);
             this.RepositoryType = typeof(MaxSecurityRepository);

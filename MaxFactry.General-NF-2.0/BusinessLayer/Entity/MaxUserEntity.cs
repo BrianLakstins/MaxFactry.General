@@ -37,6 +37,7 @@
 // <change date="6/19/2024" author="Brian A. Lakstins" description="Remove unneeded method.">
 // <change date="4/28/2024" author="Brian A. Lakstins" description="Integrate with roles.">
 // <change date="9/16/2024" author="Brian A. Lakstins" description="Making sure Propertlist is not null.">
+// <change date="6/4/2025" author="Brian A. Lakstins" description="Updates to take advantage of changes to base.">
 // </changelog>
 #endregion
 
@@ -222,8 +223,10 @@ namespace MaxFactry.General.BusinessLayer
         /// <returns>List of users.</returns>
         public MaxEntityList LoadAllByUsernamePartial(string lsUserName, int lnPageIndex, int lnPageSize, string lsPropertySort, params string[] laPropertyNameList)
         {
-            MaxDataQuery loDataQuery = new MaxDataQuery();
+            MaxDataQuery loDataQuery = this.GetDataQuery();
+            loDataQuery.StartGroup();
             loDataQuery.AddFilter(this.UserName, "LIKE", "%" + lsUserName + "%");
+            loDataQuery.EndGroup();
             MaxData loData = new MaxData(this.Data);
             return this.LoadAllByPageCache(loData, lnPageSize, lnPageIndex, lsPropertySort, loDataQuery, laPropertyNameList);
         }
@@ -239,8 +242,10 @@ namespace MaxFactry.General.BusinessLayer
         /// <returns>List of users.</returns>
         public MaxEntityList LoadAllByEmailPartial(string lsEmail, int lnPageIndex, int lnPageSize, string lsPropertySort, params string[] laPropertyNameList)
         {
-            MaxDataQuery loDataQuery = new MaxDataQuery();
+            MaxDataQuery loDataQuery = this.GetDataQuery();
+            loDataQuery.StartGroup();
             loDataQuery.AddFilter(this.Email, "LIKE", "%" + lsEmail + "%");
+            loDataQuery.EndGroup();
             MaxData loData = new MaxData(this.Data);
             return this.LoadAllByPageCache(loData, lnPageSize, lnPageIndex, lsPropertySort, loDataQuery, laPropertyNameList);
         }

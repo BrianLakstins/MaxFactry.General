@@ -30,6 +30,7 @@
 // <change date="6/4/2015" author="Brian A. Lakstins" description="Initial creation">
 // <change date="12/11/2019" author="Brian A. Lakstins" description="Add method to LoadAll that can ignore PartitionKey">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class. Use parent methods instead of repository.">
+// <change date="6/4/2025" author="Brian A. Lakstins" description="Remove unused methods">
 // </changelog>
 #endregion
 
@@ -84,24 +85,6 @@ namespace MaxFactry.General.BusinessLayer
             return MaxBusinessLibrary.GetEntity(
                 typeof(MaxProfileIndexEntity),
                 typeof(MaxProfileIndexDataModel)) as MaxProfileIndexEntity;
-        }
-
-        public virtual int ArchiveLastUpdatedOver90()
-        {
-            int lnR = 0;
-            //// Prevent running archive process more than once per 24 hours
-            if (this.CanProcessArchive(new TimeSpan(24, 0, 0)))
-            {
-                lnR = this.Archive(DateTime.MinValue, DateTime.UtcNow.AddDays(-90), false);
-            }
-
-            return lnR;
-        }
-
-        public override bool Insert()
-        {
-            //this.ArchiveLastUpdatedOver90();
-            return base.Insert();
         }
     }
 }

@@ -36,6 +36,7 @@
 // <change date="6/19/2024" author="Brian A. Lakstins" description="Add user related logging.">
 // <change date="7/16/2024" author="Brian A. Lakstins" description="Set some attributes based on time.">
 // <change date="9/16/2024" author="Brian A. Lakstins" description="Use underscore to designate attributes that are internal">
+// <change date="6/4/2025" author="Brian A. Lakstins" description="Change base class and keys">
 // </changelog>
 #endregion
 
@@ -52,7 +53,7 @@ namespace MaxFactry.General.BusinessLayer
 	/// <summary>
     /// Entity used to manage information about passwords for the MaxSecurityProvider.
 	/// </summary>
-	public class MaxUserPasswordEntity : MaxBaseEntity
+	public class MaxUserPasswordEntity : MaxBaseGuidKeyEntity
 	{
 		/// <summary>
 		/// Value for clear password format.
@@ -132,7 +133,13 @@ namespace MaxFactry.General.BusinessLayer
         {
             get
             {
-                return this.GetGuid(this.DataModel.EncryptionSaltId);
+                Guid loR = this.GetGuid(this.DataModel.EncryptionSaltId);
+                if (loR == Guid.Empty)
+                {
+                    loR = this.Id;
+                }
+
+                return loR;
             }
         }
 
@@ -258,7 +265,7 @@ namespace MaxFactry.General.BusinessLayer
                         loR = loEntity;
                         ldLatest = loEntity.CreatedDate;
                     }
-                    else
+                    else 
                     {
                         loEntity.IsActive = false;
                         loEntity.Update();

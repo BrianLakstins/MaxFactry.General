@@ -30,6 +30,7 @@
 // <change date="6/4/2015" author="Brian A. Lakstins" description="Initial creation">
 // <change date="3/20/2024" author="Brian A. Lakstins" description="Happy birthday to my mom.  Sara Jean Lakstins (Cartwright) - 3/20/1944 to 3/14/2019.">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Change parent class.  Add storage for salt id instead of using id">
+// <change date="6/4/2025" author="Brian A. Lakstins" description="Change base class and keys">
 // </changelog>
 #endregion
 
@@ -43,7 +44,7 @@ namespace MaxFactry.General.DataLayer
     /// <summary>
     /// Data model for the password information associated with the MaxSecurityProvider.
     /// </summary>
-    public class MaxUserPasswordDataModel : MaxBaseDataModel
+    public class MaxUserPasswordDataModel : MaxBaseGuidKeyDataModel
 	{
         /// <summary>
         /// Random salt value used to encrypt password
@@ -82,9 +83,9 @@ namespace MaxFactry.General.DataLayer
 		{
             this.SetDataStorageName("MaxSecurityUserPassword");
             this.RemoveType(this.CreatedDate);
-            this.AddKey(this.CreatedDate, typeof(DateTime));
-            this.AddKey(this.EncryptionSaltId, typeof(Guid));
-			this.AddKey(this.UserId, typeof(Guid));
+            this.AddType(this.CreatedDate, typeof(DateTime));
+            this.AddType(this.EncryptionSaltId, typeof(Guid));
+			this.AddType(this.UserId, typeof(Guid));
 			this.AddType(this.Password, typeof(string));
 			this.AddType(this.PasswordFormat, typeof(int));
 			this.AddNullable(this.PasswordQuestion, typeof(string));

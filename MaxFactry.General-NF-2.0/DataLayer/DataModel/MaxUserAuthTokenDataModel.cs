@@ -33,6 +33,7 @@
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Change parent class.">
 // <change date="6/19/2024" author="Brian A. Lakstins" description="Add remote url field.">
 // <change date="11/14/2024" author="Brian A. Lakstins" description="Add last used field.">
+// <change date="6/4/2025" author="Brian A. Lakstins" description="Use constants instead of strings">
 // </changelog>
 #endregion
 
@@ -108,11 +109,11 @@ namespace MaxFactry.General.DataLayer
 			this.AddNullable(this.UserAuthGrantId, typeof(Guid));
 			this.AddNullable(this.TokenHash, typeof(string));
 			this.AddNullable(this.Token, typeof(string));
-            this.AddAttribute(this.Token, "IsEncrypted", "true");
+            this.AddAttribute(this.Token, AttributeIsEncrypted, "true");
             this.AddNullable(this.Expiration, typeof(int));
 			this.AddNullable(this.TokenType, typeof(string));
 			this.AddNullable(this.TokenResult, typeof(MaxLongString));
-			this.AddAttribute(this.TokenResult, "IsEncrypted", "true");
+			this.AddAttribute(this.TokenResult, AttributeIsEncrypted, "true");
             this.AddNullable(this.RemoteUrl, typeof(string));
 			this.AddNullable(this.LastUsedDate, typeof(DateTime));
 

@@ -32,6 +32,7 @@
 // <change date="5/18/2021" author="Brian A. Lakstins" description="remove loading by relation since in base class">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
 // <change date="4/9/2025" author="Brian A. Lakstins" description="Use Insert instead of Insert(Guid)">
+// <change date="6/4/2025" author="Brian A. Lakstins" description="Remove unused methods">
 // </changelog>
 #endregion
 
@@ -86,30 +87,6 @@ namespace MaxFactry.General.BusinessLayer
             return MaxBusinessLibrary.GetEntity(
                 typeof(MaxEmailEntity),
                 typeof(MaxEmailDataModel)) as MaxEmailEntity;
-        }
-
-        /// <summary>
-        /// Runs archive process and then inserts a new record
-        /// </summary>
-        /// <param name="loId">Id for the new record</param>
-        /// <returns>true if inserted.  False if cannot be inserted.</returns>
-        public override bool Insert()
-        {
-            this.ArchiveCreatedOver30();
-            bool lbR = base.Insert();
-            return lbR;
-        }
-
-        public int ArchiveCreatedOver30()
-        {
-            int lnR = 0;
-            //// Prevent running archive process more than once per 24 hours
-            if (this.CanProcessArchive(new TimeSpan(24, 0, 0)))
-            {
-                lnR = this.Archive(DateTime.UtcNow.Date.AddDays(-30), DateTime.MinValue, false);
-            }
-
-            return lnR;
         }
     }
 }

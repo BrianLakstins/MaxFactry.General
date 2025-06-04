@@ -193,8 +193,10 @@ namespace MaxFactry.General.BusinessLayer
         /// <returns>List of user logs.</returns>
 		public MaxEntityList LoadAllByUserIdCache(Guid loUserId)
 		{
-            MaxDataQuery loDataQuery = new MaxDataQuery();
+            MaxDataQuery loDataQuery = this.GetDataQuery();
+            loDataQuery.StartGroup();
             loDataQuery.AddFilter(this.DataModel.UserId, "=", loUserId);
+            loDataQuery.EndGroup();
             MaxData loData = new MaxData(this.Data);
             return this.LoadAllByPageCache(loData, 0, 0, this.DataModel.CreatedDate + " desc", loDataQuery);
 		}
@@ -206,10 +208,12 @@ namespace MaxFactry.General.BusinessLayer
         /// <returns>List of user logs.</returns>
         public MaxEntityList LoadAllByUserIdCreatedDate(Guid loUserId, DateTime ldCreatedDate)
         {
-            MaxDataQuery loDataQuery = new MaxDataQuery();
+            MaxDataQuery loDataQuery = this.GetDataQuery();
+            loDataQuery.StartGroup();
             loDataQuery.AddFilter(this.DataModel.UserId, "=", loUserId);
             loDataQuery.AddAnd();
             loDataQuery.AddFilter(this.DataModel.CreatedDate, ">=", ldCreatedDate);
+            loDataQuery.EndGroup();
             MaxData loData = new MaxData(this.Data);
             return this.LoadAllByPageCache(loData, 0, 0, this.DataModel.CreatedDate + " desc", loDataQuery);
         }
@@ -221,8 +225,10 @@ namespace MaxFactry.General.BusinessLayer
         /// <returns>List of user logs.</returns>
         public int GetCountActivityByCreatedDate(DateTime ldCreatedDate)
         {
-            MaxDataQuery loDataQuery = new MaxDataQuery();
+            MaxDataQuery loDataQuery = this.GetDataQuery();
+            loDataQuery.StartGroup();
             loDataQuery.AddFilter(this.DataModel.CreatedDate, ">=", ldCreatedDate);
+            loDataQuery.EndGroup();
             MaxData loData = new MaxData(this.Data);
             MaxEntityList loList = LoadAllByPageCache(loData, 1, 1, this.DataModel.CreatedDate + " desc", loDataQuery);
             return loList.Total;

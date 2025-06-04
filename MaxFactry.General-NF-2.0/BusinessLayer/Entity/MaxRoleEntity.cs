@@ -37,6 +37,7 @@
 // <change date="4/28/2024" author="Brian A. Lakstins" description="Integrate with permissions.">
 // <change date="7/10/2024" author="Brian A. Lakstins" description="Rename variable to better reflect what it is">
 // <change date="9/16/2024" author="Brian A. Lakstins" description="Making sure Propertlist is not null.">
+// <change date="6/4/2025" author="Brian A. Lakstins" description="Updates to take advantage of changes to base.">
 // </changelog>
 #endregion
 
@@ -130,23 +131,31 @@ namespace MaxFactry.General.BusinessLayer
         /// <returns>True if successful.</returns>
         public bool DeleteByRoleName(string lsRoleName)
         {
-            bool lbR = true;
+            bool lbR = false;
             MaxEntityList loList = this.LoadAllByRoleCache(lsRoleName);
-            for (int lnE = 0; lnE < loList.Count; lnE++)
+            if (loList.Count > 0)
             {
-                MaxRoleEntity loEntity = loList[lnE] as MaxRoleEntity;
-                MaxEntityList loRelationList = MaxRoleRelationUserEntity.Create().LoadAllByRoleIdCache(loEntity.Id);
-                for (int lnR = 0; lnR < loRelationList.Count; lnR++)
+                lbR = true;
+                for (int lnE = 0; lnE < loList.Count; lnE++)
                 {
-                    if (lbR)
+                    MaxRoleEntity loEntity = loList[lnE] as MaxRoleEntity;
+                    MaxEntityList loRelationList = MaxRoleRelationUserEntity.Create().LoadAllByRoleIdCache(loEntity.Id);
+                    bool lbIsRelationDeleted = true;
+                    for (int lnR = 0; lnR < loRelationList.Count; lnR++)
                     {
-                        lbR = loRelationList[lnR].Delete();
+                        if (!loRelationList[lnR].Delete())
+                        {
+                            lbIsRelationDeleted = false;
+                        }
                     }
-                }
 
-                if (lbR)
-                {
-                    lbR = loEntity.Delete();
+                    if (lbIsRelationDeleted)
+                    {
+                        if (!loEntity.Delete())
+                        {
+                            lbR = false;
+                        }
+                    }
                 }
             }
 

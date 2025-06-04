@@ -29,6 +29,7 @@
 // <changelog>
 // <change date="3/20/2024" author="Brian A. Lakstins" description="Happy birthday to my mom.  Sara Jean Lakstins (Cartwright) - 3/20/1944 to 3/14/2019.">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Initial creation.">
+// <change date="6/4/2025" author="Brian A. Lakstins" description="Change base class">
 // </changelog>
 #endregion
 
@@ -41,7 +42,7 @@ namespace MaxFactry.General.DataLayer
 	/// <summary>
 	/// Data model for the users related to roles
 	/// </summary>
-    public class MaxRoleRelationUserDataModel : MaxBaseRelationGuidKeyDataModel
+    public class MaxRoleRelationUserDataModel : MaxBaseRelationDataModel
     {
 		/// <summary>
         /// Initializes a new instance of the MaxRoleUserRelationDataModel class.
@@ -52,10 +53,8 @@ namespace MaxFactry.General.DataLayer
             this.SetDataStorageName("MaxSecurityRoleRelationUser");
             this.RepositoryProviderType = typeof(MaxFactry.General.DataLayer.Provider.MaxSecurityRepositoryDefaultProvider);
             this.RepositoryType = typeof(MaxSecurityRepository);
-			this.RemoveType(this.AttributeIndexText);
 			this.RemoveType(this.RelationType);
 			this.RemoveType(this.RelativeOrder);
-            this.RemoveType(this.OptionFlagList);
         }
     }
 }
