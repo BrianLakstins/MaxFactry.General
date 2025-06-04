@@ -81,6 +81,7 @@ namespace MaxFactry.Base.DataLayer.Library.Provider
 
         protected virtual string GetStorageKeyFromCookie()
         {
+            //// TODO: Use MaxOwnLibrary after it's been moved to a general library namespace to remove duplicate code.
             string lsR = string.Empty;
             if (this.HasRequest)
             {

@@ -36,6 +36,7 @@
 // <change date="3/22/2025" author="Brian A. Lakstins" description="Make sure Name is set when inserting.">
 // <change date="4/9/2025" author="Brian A. Lakstins" description="Override SetInitial and SetProperties instead of Insert and Update.">
 // <change date="4/10/2025" author="Brian A. Lakstins" description="Tweak SetInitial and SetProperties.">
+// <change date="6/4/2025" author="Brian A. Lakstins" description="Updates for changes to base including removing versioning">
 // </changelog>
 #endregion
 
@@ -48,6 +49,7 @@ namespace MaxFactry.General.AspNet.BusinessLayer
     using MaxFactry.Base.DataLayer.Library;
     using MaxFactry.General.AspNet.DataLayer;
     using MaxFactry.General.BusinessLayer;
+    using System.IO;
 
     /// <summary>
     /// Entity to represent virtual text file in a web site.
@@ -129,141 +131,6 @@ namespace MaxFactry.General.AspNet.BusinessLayer
             return this.Name.ToLowerInvariant().PadRight(500, ' ') + base.GetDefaultSortString();
         }
 
-        public virtual void GetFromDownloadUrl(string lsUrl, string lsToken)
-        {
-            MaxFileDownloadEntity loEntity = MaxFileDownloadEntity.Create();
-            loEntity.Download(lsUrl, lsToken);
-            this.Content = loEntity.Content;
-            this.ContentLength = loEntity.ContentLength;
-            this.ContentType = loEntity.ContentType;
-            this.Name = loEntity.Name;
-            this.UploadName = loEntity.ResponseUrl;
-        }
-
-        public virtual bool LoadByUploadName(string lsName)
-        {
-            MaxDataList loDataList = MaxBaseAspNetRepository.SelectAllActiveByProperty(this.Data, this.DataModel.UploadName, lsName);
-            if (loDataList.Count > 0)
-            {
-                this.Load(loDataList[0]);
-                return true;
-            }
-
-            return false;
-        }
-
-        public virtual bool LoadByName(string lsName)
-        {
-            MaxDataList loDataList = MaxBaseAspNetRepository.SelectAllActiveByProperty(this.Data, this.DataModel.Name, lsName);
-            if (loDataList.Count > 0)
-            {
-                this.Load(loDataList[0]);
-                return true;
-            }
-
-            return false;
-        }
-
-        public virtual bool LoadByFileNameCache(string lsFileName)
-        {
-            string lsCacheDataKey = this.GetCacheKey() + "LoadAll";
-            MaxDataList loDataList = MaxCacheRepository.Get(this.GetType(), lsCacheDataKey, typeof(MaxDataList)) as MaxDataList;
-            if (null != loDataList)
-            {
-                for (int lnD = 0; lnD < loDataList.Count; lnD++)
-                {
-                    if (MaxConvertLibrary.ConvertToString(typeof(object), loDataList[lnD].Get(this.DataModel.FileName)) == lsFileName)
-                    {
-                        if (MaxConvertLibrary.ConvertToBoolean(typeof(object), loDataList[lnD].Get(this.DataModel.IsActive)))
-                        {
-                            this.Load(loDataList[lnD]);
-                            return true;
-                        }
-                    }
-                }
-            }
-
-            lsCacheDataKey = this.GetCacheKey() + "LoadByFileNameCache/" + lsFileName;
-            MaxData loData = MaxCacheRepository.Get(this.GetType(), lsCacheDataKey, typeof(MaxDataList)) as MaxData;
-            if (null == loData)
-            {
-                loDataList = MaxBaseAspNetRepository.SelectAllActiveByProperty(this.Data, this.DataModel.FileName, lsFileName);
-                if (loDataList.Count > 0)
-                {
-                    loData = loDataList[0];
-                    MaxCacheRepository.Set(this.GetType(), lsCacheDataKey, loData);
-                }
-            }
-            
-            if (null != loData)
-            {
-                this.Load(loData);
-                return true;
-            }
-
-            return false;
-        }
-
-        public virtual bool LoadByNameCache(string lsName)
-        {
-            string lsCacheDataKey = this.GetCacheKey() + "LoadAll";
-            MaxDataList loDataList = MaxCacheRepository.Get(this.GetType(), lsCacheDataKey, typeof(MaxDataList)) as MaxDataList;
-            if (null != loDataList)
-            {
-                for (int lnD = 0; lnD < loDataList.Count; lnD++)
-                {
-                    if (MaxConvertLibrary.ConvertToString(typeof(object), loDataList[lnD].Get(this.DataModel.Name)) == lsName)
-                    {
-                        if (MaxConvertLibrary.ConvertToBoolean(typeof(object), loDataList[lnD].Get(this.DataModel.IsActive)))
-                        {
-                            this.Load(loDataList[lnD]);
-                            return true;
-                        }
-                    }
-                }
-            }
-
-            lsCacheDataKey = this.GetCacheKey() + "LoadByNameCache/" + lsName;
-            MaxData loData = MaxCacheRepository.Get(this.GetType(), lsCacheDataKey, typeof(MaxDataList)) as MaxData;
-            if (null == loData)
-            {
-                loDataList = MaxBaseAspNetRepository.SelectAllActiveByProperty(this.Data, this.DataModel.Name, lsName);
-                if (loDataList.Count > 0)
-                {
-                    loData = loDataList[0];
-                    MaxCacheRepository.Set(this.GetType(), lsCacheDataKey, loData);
-                }
-            }
-
-            if (null != loData)
-            {
-                this.Load(loData);
-                return true;
-            }
-
-            return false;
-        }
-
-        protected override void SetProperties()
-        {
-            if (null == this.MimeType || this.MimeType.Length.Equals(0))
-            {
-                this.MimeType = this.GetMimeType(this.FileName);
-            }
-
-            if (null == this.ContentName || this.ContentName.Length.Equals(0))
-            {
-                this.ContentName = this.FileName;
-            }
-
-            if (null == this.ContentType || this.ContentType.Length.Equals(0))
-            {
-                this.ContentType = this.GetMimeType(this.ContentName);
-            }
-
-            base.SetProperties();
-        }
-
         protected override void SetInitial()
         {
             base.SetInitial();
@@ -272,15 +139,7 @@ namespace MaxFactry.General.AspNet.BusinessLayer
                 if (null != this.UploadName && this.UploadName.Length > 0)
                 {
                     this.Name = this.UploadName;
-                }
-                else if (null != this.FileName && this.FileName.Length > 0)
-                {
-                    this.Name = this.FileName;
-                }
-                else if (null != this.ContentName && this.ContentName.Length > 0)
-                {
-                    this.Name = this.ContentName;
-                }
+                }                
             }
 
             if (null == this.UploadName || this.UploadName.Length.Equals(0))
@@ -296,14 +155,18 @@ namespace MaxFactry.General.AspNet.BusinessLayer
             string lsUrl = MaxCacheRepository.Get(typeof(MaxFileUploadEntity), lsCacheKey, typeof(string)) as string;
             if (null == lsUrl)
             {
-                MaxFileUploadEntity loEntity = MaxFileUploadEntity.Create();
-                if (loEntity.LoadByNameCache(lsName))
+                MaxEntityList loList = MaxFileUploadEntity.Create().LoadAllActiveCache();
+                for (int lnE = 0; lnE < loList.Count && string.IsNullOrEmpty(lsR); lnE++)
                 {
-                    lsR = loEntity.GetContentUrl();
-                }
-                else if (loEntity.LoadByFileNameCache(lsName))
-                {
-                    lsR = loEntity.GetContentUrl();
+                    MaxFileUploadEntity loEntity = loList[lnE] as MaxFileUploadEntity;
+                    if (loEntity.Name.Equals(lsName, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        lsR = loEntity.GetContentUrl();
+                    }
+                    else if (loEntity.FileName.Equals(lsName, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        lsR = loEntity.GetContentUrl();
+                    }
                 }
 
                 MaxCacheRepository.Set(typeof(MaxFileUploadEntity), lsCacheKey, lsR);
@@ -314,6 +177,6 @@ namespace MaxFactry.General.AspNet.BusinessLayer
             }
 
             return lsR;
-        }
+        }        
     }
 }

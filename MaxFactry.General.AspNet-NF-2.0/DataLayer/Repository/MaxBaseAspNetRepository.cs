@@ -28,6 +28,7 @@
 #region Change Log
 // <changelog>
 // <change date="6/4/2015" author="Brian A. Lakstins" description="Initial creation">
+// <change date="6/4/2025" author="Brian A. Lakstins" description="Change base class">
 // </changelog>
 #endregion
 
@@ -40,7 +41,7 @@ namespace MaxFactry.General.AspNet.DataLayer
     /// <summary>
     /// Repository for web content
     /// </summary>
-    public class MaxBaseAspNetRepository : MaxBaseIdRepository
+    public class MaxBaseAspNetRepository : MaxBaseRepository
     {
     }
 }

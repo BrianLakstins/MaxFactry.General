@@ -30,6 +30,7 @@
 // <change date="12/10/2019" author="Brian A. Lakstins" description="Initial creation">
 // <change date="5/31/2020" author="Brian A. Lakstins" description="Add endpoints to start archive process">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.  Updated to use DataKey.">
+// <change date="6/4/2025" author="Brian A. Lakstins" description="Remove api calls for archiving data">
 // </changelog>
 #endregion
 
@@ -98,23 +99,6 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             return lsR;
         }
 
-        [HttpPost]
-        [ActionName("profilearchive")]
-        public int ProfileArchive()
-        {
-            MaxProfileIndexEntity loProfile = MaxProfileIndexEntity.Create();
-            int lnR = loProfile.ArchiveLastUpdatedOver90();
-            return lnR;
-        }
-
-        [HttpPost]
-        [ActionName("emailarchive")]
-        public int EmailArchive()
-        {
-            MaxEmailEntity loEmail = MaxEmailEntity.Create();
-            int lnR = loEmail.ArchiveCreatedOver30();
-            return lnR;
-        }
 
         [HttpPost]
         [ActionName("formarchive")]

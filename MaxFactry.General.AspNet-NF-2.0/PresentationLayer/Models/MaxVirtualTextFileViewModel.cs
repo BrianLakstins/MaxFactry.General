@@ -31,6 +31,7 @@
 // <change date="4/24/2016" author="Brian A. Lakstins" description="Update for no longer returning null from GetCurrent">
 // <change date="5/18/2016" author="Brian A. Lakstins" description="Fix issue with name being case sensitive in database">
 // <change date="7/15/2016" author="Brian A. Lakstins" description="Moved to Core.AspNet project and updated methods that can be overridden for IIS.">
+// <change date="6/4/2025" author="Brian A. Lakstins" description="Change base class to remove versioning">
 // </changelog>
 #endregion
 
@@ -47,8 +48,8 @@ namespace MaxFactry.General.AspNet.PresentationLayer
 	/// <summary>
 	/// View model for content.
 	/// </summary>
-    public class MaxVirtualTextFileViewModel : MaxFactry.Base.PresentationLayer.MaxBaseIdViewModel
-	{
+    public class MaxVirtualTextFileViewModel : MaxFactry.Base.PresentationLayer.MaxBaseGuidKeyViewModel
+    {
         private List<MaxVirtualTextFileViewModel> _oSortedList = null;
 
         /// <summary>
@@ -81,10 +82,20 @@ namespace MaxFactry.General.AspNet.PresentationLayer
         public virtual bool LoadFromPath(string lsVirtualPath)
         {
             string lsName = lsVirtualPath.ToLowerInvariant();
-            MaxVirtualTextFileEntity loEntity = MaxVirtualTextFileEntity.Create().GetCurrent(lsName) as MaxVirtualTextFileEntity;
-            if (!Guid.Empty.Equals(loEntity.Id))
+            bool lbFound = false;
+            MaxEntityList loList = MaxVirtualTextFileEntity.Create().LoadAllActiveCache();
+            for (int lnE = 0; lnE < loList.Count; lnE++)
             {
-                this.Entity = loEntity;
+                MaxVirtualTextFileEntity loEntity = loList[lnE] as MaxVirtualTextFileEntity;
+                if (loEntity.Name.Equals(lsName, StringComparison.OrdinalIgnoreCase))
+                {
+                    this.Entity = loEntity;
+                    lbFound = true;
+                }
+            }
+
+            if (lbFound)
+            {
                 return this.MapFromEntity();
             }
 
@@ -92,12 +103,6 @@ namespace MaxFactry.General.AspNet.PresentationLayer
         }
 
         public string Name
-        {
-            get;
-            set;
-        }
-
-        public string Version
         {
             get;
             set;
@@ -124,9 +129,9 @@ namespace MaxFactry.General.AspNet.PresentationLayer
                     
                     if (loSortedList.ContainsKey(lsKey))
                     {
-                        int lnVersionCheck = MaxConvertLibrary.ConvertToInt(typeof(object), loViewModel.Version);
-                        int lnVersionCurrent = MaxConvertLibrary.ConvertToInt(typeof(object), loSortedList[lsKey].Version);
-                        if (lnVersionCheck > lnVersionCurrent)
+                        DateTime ldCheck = MaxConvertLibrary.ConvertToDateTime(typeof(object), loViewModel.CreatedDate);
+                        DateTime ldCurrent = MaxConvertLibrary.ConvertToDateTime(typeof(object), loSortedList[lsKey].CreatedDate);
+                        if (ldCheck > ldCurrent)
                         {
                             loSortedList[lsKey] = loViewModel;
                         }
@@ -177,17 +182,10 @@ namespace MaxFactry.General.AspNet.PresentationLayer
                 {
                     this.Name = loEntity.Name;
                     this.Content = loEntity.Content;
-                    if (loEntity.Version > 0)
-                    {
-                        this.Version = loEntity.Version.ToString();
-                    }
-
                     return true;
                 }
-
                 else
                 {
-                    this.Version = "File";
                     this.Name = loEntity.Name;
                     this.Content = loEntity.Content;
                 }
@@ -202,17 +200,6 @@ namespace MaxFactry.General.AspNet.PresentationLayer
             this.Id = null;
             this.Entity = MaxVirtualTextFileEntity.Create();
             lbR = base.Save();
-            return lbR;
-        }
-
-        public override bool Delete()
-        {
-            bool lbR = false;
-            if (this.Version != "File")
-            {
-                lbR = base.Delete();
-            }
-
             return lbR;
         }
     }

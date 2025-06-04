@@ -28,6 +28,7 @@
 #region Change Log
 // <changelog>
 // <change date="6/4/2015" author="Brian A. Lakstins" description="Initial creation">
+// <change date="6/4/2025" author="Brian A. Lakstins" description="Updates for changes to base including removing versioning">
 // </changelog>
 #endregion
 
@@ -44,7 +45,7 @@ namespace MaxFactry.General.AspNet.PresentationLayer
 	/// View model for content.
 	/// </summary>
     public class MaxFileUploadViewModel : MaxFactry.Base.PresentationLayer.MaxBaseIdFileViewModel
-	{
+    {
         private List<MaxFileUploadViewModel> _oSortedList = null;
 
         /// <summary>
@@ -68,8 +69,7 @@ namespace MaxFactry.General.AspNet.PresentationLayer
         public MaxFileUploadViewModel(string lsId)
         {
             MaxFileUploadEntity loEntity = MaxFileUploadEntity.Create();
-            Guid loId = MaxConvertLibrary.ConvertToGuid(this.GetType(), lsId);
-            if (loEntity.LoadByIdCache(loId))
+            if (loEntity.LoadByDataKeyCache(lsId))
             {
                 this.Entity = loEntity;
                 this.Load();
@@ -133,6 +133,7 @@ namespace MaxFactry.General.AspNet.PresentationLayer
                 MaxFileUploadEntity loEntity = this.Entity as MaxFileUploadEntity;
                 if (null != loEntity)
                 {
+                    loEntity.UploadName = this.UploadName;
                     loEntity.IsDownload = this.IsDownload;
                     return true;
                 }
@@ -154,7 +155,6 @@ namespace MaxFactry.General.AspNet.PresentationLayer
                 {
                     this.UploadName = loEntity.UploadName;
                     this.IsDownload = loEntity.IsDownload;
-                    this.ContentUrl = loEntity.GetContentUrl();
                     return true;
                 }
             }

@@ -31,29 +31,25 @@
 // <change date="6/24/2014" author="Brian A. Lakstins" description="Change storage name.">
 // <change date="6/27/2014" author="Brian A. Lakstins" description="Change base to MaxBaseIdDataModel.">
 // <change date="12/18/2019" author="Brian A. Lakstins" description="Allow Content to be long string.">
+// <change date="6/4/2025" author="Brian A. Lakstins" description="Change base class to remove versioning">
 // </changelog>
 #endregion
 
 namespace MaxFactry.General.AspNet.DataLayer
 {
-	using System;
-	using MaxFactry.Core;
 	using MaxFactry.Base.DataLayer;
 
-	/// <summary>
+    /// <summary>
     /// Data model for the virtual files in a web site.
-	/// </summary>
-	public class MaxVirtualTextFileDataModel : MaxBaseIdVersionedDataModel
-	{
-		/// <summary>
-		/// The text content to be stored.
-		/// </summary>
-        public readonly string Content = "Content";
+    /// </summary>
+	public class MaxVirtualTextFileDataModel : MaxBaseGuidKeyDataModel
+    {
+        public readonly string Name = "Name";
 
         /// <summary>
-        /// The virtual path of the content to be stored.
+        /// Content for the file
         /// </summary>
-        public readonly string VirtualPath = "VirtualPath";
+        public readonly string Content = "Content";
 
 		/// <summary>
         /// Initializes a new instance of the MaxVirtualTextFileDataModel class.
@@ -63,11 +59,9 @@ namespace MaxFactry.General.AspNet.DataLayer
 		{
             this.RepositoryProviderType = typeof(MaxFactry.General.AspNet.DataLayer.Provider.MaxBaseAspNetRepositoryDefaultProvider);
             this.RepositoryType = typeof(MaxBaseAspNetRepository);
-            //this.SetDataStorageName("MaxApplicationVirtualTextFile");
-            //// Copied 9/15/2015
             this.SetDataStorageName("MaxCoreAspNetVirtualTextFile");
+            this.AddType(this.Name, typeof(string));
             this.AddType(this.Content, typeof(MaxLongString));
-            this.AddType(this.VirtualPath, typeof(string));
         }
 	}
 }

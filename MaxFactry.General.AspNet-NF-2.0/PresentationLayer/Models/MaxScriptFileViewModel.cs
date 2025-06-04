@@ -29,6 +29,7 @@
 // <changelog>
 // <change date="7/14/2016" author="Brian A. Lakstins" description="Initial creation">
 // <change date="7/22/2016" author="Brian A. Lakstins" description="Added global script for facebook">
+// <change date="6/4/2025" author="Brian A. Lakstins" description="Change base class to remove versioning">
 // </changelog>
 #endregion
 
@@ -45,7 +46,7 @@ namespace MaxFactry.General.AspNet.PresentationLayer
 	/// <summary>
 	/// View model for content.
 	/// </summary>
-    public class MaxScriptFileViewModel : MaxFactry.Base.PresentationLayer.MaxBaseIdViewModel
+    public class MaxScriptFileViewModel : MaxFactry.Base.PresentationLayer.MaxBaseGuidKeyViewModel
 	{
         private List<MaxScriptFileViewModel> _oSortedList = null;
 
@@ -77,10 +78,20 @@ namespace MaxFactry.General.AspNet.PresentationLayer
 
         public virtual bool LoadFromName(string lsName)
         {
-            MaxScriptFileEntity loEntity = MaxScriptFileEntity.Create().GetCurrent(lsName) as MaxScriptFileEntity;
-            if (!Guid.Empty.Equals(loEntity.Id))
+            MaxEntityList loList = MaxScriptFileEntity.Create().LoadAllCache();
+            bool lbFound = false;
+            for (int lnE = 0; lnE < loList.Count; lnE++)
             {
-                this.Entity = loEntity;
+                MaxScriptFileEntity loEntity = loList[lnE] as MaxScriptFileEntity;
+                if (loEntity.Name.Equals(lsName, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    this.Entity = loEntity;
+                    lbFound = true;
+                }
+            }
+
+            if (lbFound)
+            {
                 return this.MapFromEntity();
             }
             else
@@ -114,11 +125,6 @@ namespace MaxFactry.General.AspNet.PresentationLayer
             set;
         }
 
-        public string Version
-        {
-            get;
-            set;
-        }
 
         public string Content
         {
@@ -133,12 +139,6 @@ namespace MaxFactry.General.AspNet.PresentationLayer
         }
 
         public string ContentName
-        {
-            get;
-            set;
-        }
-
-        public string FileVersion
         {
             get;
             set;
@@ -165,9 +165,9 @@ namespace MaxFactry.General.AspNet.PresentationLayer
                     
                     if (loSortedList.ContainsKey(lsKey))
                     {
-                        int lnVersionCheck = MaxConvertLibrary.ConvertToInt(typeof(object), loViewModel.Version);
-                        int lnVersionCurrent = MaxConvertLibrary.ConvertToInt(typeof(object), loSortedList[lsKey].Version);
-                        if (lnVersionCheck > lnVersionCurrent)
+                        DateTime ldCheck = MaxConvertLibrary.ConvertToDateTime(typeof(object), loViewModel.CreatedDate);
+                        DateTime ldCurrent = MaxConvertLibrary.ConvertToDateTime(typeof(object), loSortedList[lsKey].CreatedDate);
+                        if (ldCheck > ldCurrent)
                         {
                             loSortedList[lsKey] = loViewModel;
                         }
@@ -201,7 +201,6 @@ namespace MaxFactry.General.AspNet.PresentationLayer
                     loEntity.Content = this.Content;
                     loEntity.ContentMin = this.ContentMin;
                     loEntity.ContentName = lsName;
-                    loEntity.FileVersion = this.FileVersion;
                     loEntity.ScriptType = this.ScriptType;
                     return true;
                 }
@@ -225,9 +224,7 @@ namespace MaxFactry.General.AspNet.PresentationLayer
                     this.Content = loEntity.Content;
                     this.ContentMin = loEntity.ContentMin;
                     this.ContentName = loEntity.ContentName;
-                    this.FileVersion = loEntity.FileVersion;
                     this.ScriptType = loEntity.ScriptType;
-                    this.Version = loEntity.Version.ToString();
                     return true;
                 }
             }
@@ -241,17 +238,6 @@ namespace MaxFactry.General.AspNet.PresentationLayer
             this.Id = null;
             this.Entity = MaxScriptFileEntity.Create();
             lbR = base.Save();
-            return lbR;
-        }
-
-        public override bool Delete()
-        {
-            bool lbR = false;
-            if (this.Version != "File")
-            {
-                lbR = base.Delete();
-            }
-
             return lbR;
         }
     }

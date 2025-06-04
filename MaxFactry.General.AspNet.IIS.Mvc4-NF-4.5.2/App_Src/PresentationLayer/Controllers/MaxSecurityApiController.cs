@@ -46,6 +46,7 @@
 // <change date="11/19/2025" author="Brian A. Lakstins" description="Allow a user with proper permission to set a users's password">
 // <change date="1/27/2025" author="Brian A. Lakstins" description="Add auth type when logging in">
 // <change date="4/22/2025" author="Brian A. Lakstins" description="Use Login with GET to get current user">
+// <change date="6/4/2025" author="Brian A. Lakstins" description="Fix error message when not needed.">
 // </changelog>
 #endregion
 
@@ -498,7 +499,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                         }
                                         catch (Exception loE)
                                         {
-                                            if (loE.Message != "Password retrieval is disabled")
+                                            if (loE.Message != "Password retrieval is disabled" && loE.Message != "Password is hashed and cannot be retrieved.")
                                             {
                                                 loR.Message.Error = "Exception logging in a user: " + loE.Message;
                                                 MaxLogLibrary.Log(new MaxLogEntryStructure("MaxSecurityApi", MaxEnumGroup.LogError, "Exception logging in a user", loE));

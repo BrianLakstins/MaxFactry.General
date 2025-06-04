@@ -63,7 +63,6 @@
             <tr>
                 <th>Action</th>
                 <th>Name</th>
-                <th>Version</th>
             </tr>
         </thead>
         <tbody>
@@ -72,7 +71,6 @@
                 <tr>
                     <td>@Html.ActionLink("Edit", "ScriptFileEdit", "MaxFileManage", new RouteValueDictionary { { "id", loView.Id } }, new Dictionary<string, object> { { "class", "btn btn-default" } })</td>
                     <td>@loView.Name</td>
-                    <td>@loView.FileVersion</td>
                 </tr>
             }
         </tbody>
@@ -87,7 +85,6 @@
         <fieldset>
             <legend>Add Script File</legend>
             @Html.EditorFor(m => m.Name, additionalViewData: new { LabelColumnWidth = 1 })
-            @Html.EditorFor(m => m.FileVersion, additionalViewData: new { LabelColumnWidth = 1 })
             <div class="row">
 
                 <div class="form-group">

@@ -28,6 +28,7 @@
 #region Change Log
 // <changelog>
 // <change date="7/15/2016" author="Brian A. Lakstins" description="Initial creation">
+// <change date="6/4/2025" author="Brian A. Lakstins" description="Updates for removal of versioning">
 // </changelog>
 #endregion
 
@@ -124,9 +125,9 @@ namespace MaxFactry.General.AspNet.IIS.PresentationLayer
 
                     if (loSortedList.ContainsKey(lsKey))
                     {
-                        int lnVersionCheck = MaxConvertLibrary.ConvertToInt(typeof(object), loViewModel.Version);
-                        int lnVersionCurrent = MaxConvertLibrary.ConvertToInt(typeof(object), loSortedList[lsKey].Version);
-                        if (lnVersionCheck > lnVersionCurrent)
+                        DateTime ldCheck = MaxConvertLibrary.ConvertToDateTime(typeof(object), loViewModel.CreatedDate);
+                        DateTime ldCurrent = MaxConvertLibrary.ConvertToDateTime(typeof(object), loSortedList[lsKey].CreatedDate);
+                        if (ldCheck > ldCurrent)
                         {
                             loSortedList[lsKey] = loViewModel;
                         }
@@ -146,7 +147,6 @@ namespace MaxFactry.General.AspNet.IIS.PresentationLayer
                         {
                             MaxVirtualTextFileIISViewModel loViewModel = new MaxVirtualTextFileIISViewModel();
                             loViewModel.Name = lsVirtualTextPath;
-                            loViewModel.Version = "File";
                             loSortedList.Add(lsVirtualTextPath.ToLower(), loViewModel);
                         }
                     }

@@ -62,7 +62,6 @@
             <tr>
                 <th>Action</th>
                 <th>Name</th>
-                <th>Version</th>
             </tr>
         </thead>
         <tbody>
@@ -71,7 +70,6 @@
                 <tr>
                     <td>@Html.ActionLink("Edit", "VirtualTextFileEdit", "MaxFileManage", new RouteValueDictionary { { "name", loView.Name } }, new Dictionary<string, object> { { "class", "btn btn-default" } })</td>
                     <td>@loView.Name</td>
-                    <td>@loView.Version</td>
                 </tr>
             }
         </tbody>

@@ -29,6 +29,7 @@
 // <changelog>
 // <change date="7/14/2016" author="Brian A. Lakstins" description="Initial creation">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
+// <change date="6/4/2025" author="Brian A. Lakstins" description="Change base class to remove versioning">
 // </changelog>
 #endregion
 
@@ -43,7 +44,7 @@ namespace MaxFactry.General.AspNet.BusinessLayer
     /// <summary>
     /// Entity to represent virtual text file in a web site.
     /// </summary>
-    public class MaxStyleFileEntity : MaxBaseIdVersionedEntity
+    public class MaxStyleFileEntity : MaxBaseGuidKeyEntity
     {
         /// <summary>
         /// Initializes a new instance of the MaxStyleFileEntity class
@@ -61,6 +62,22 @@ namespace MaxFactry.General.AspNet.BusinessLayer
         public MaxStyleFileEntity(Type loDataModelType)
             : base(loDataModelType)
         {
+        }
+
+        /// <summary>
+        /// Gets or sets the name of the file.
+        /// </summary>
+        public string Name
+        {
+            get
+            {
+                return this.GetString(this.DataModel.Name);
+            }
+
+            set
+            {
+                this.Set(this.DataModel.Name, value);
+            }
         }
 
         /// <summary>
@@ -112,22 +129,6 @@ namespace MaxFactry.General.AspNet.BusinessLayer
             set
             {
                 this.Set(this.DataModel.ContentName, value);
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the File Version
-        /// </summary>
-        public string FileVersion
-        {
-            get
-            {
-                return this.GetString(this.DataModel.FileVersion);
-            }
-
-            set
-            {
-                this.Set(this.DataModel.FileVersion, value);
             }
         }
 

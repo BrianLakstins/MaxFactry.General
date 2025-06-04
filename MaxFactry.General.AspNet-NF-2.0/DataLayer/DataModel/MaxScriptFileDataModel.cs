@@ -28,23 +28,24 @@
 #region Change Log
 // <changelog>
 // <change date="7/14/2016" author="Brian A. Lakstins" description="Initial creation">
+// <change date="6/4/2025" author="Brian A. Lakstins" description="Change base class to remove versioning">
 // </changelog>
 #endregion
 
 namespace MaxFactry.General.AspNet.DataLayer
 {
-	using System;
-	using MaxFactry.Core;
 	using MaxFactry.Base.DataLayer;
 
 	/// <summary>
     /// Data model for the virtual files in a web site.
 	/// </summary>
-	public class MaxScriptFileDataModel : MaxBaseIdVersionedDataModel
-	{
-		/// <summary>
-		/// The text content to be stored.
-		/// </summary>
+	public class MaxScriptFileDataModel : MaxBaseGuidKeyDataModel
+    {
+        public readonly string Name = "Name";
+
+        /// <summary>
+        /// The text content to be stored.
+        /// </summary>
         public readonly string Content = "Content";
 
         /// <summary>
@@ -56,11 +57,6 @@ namespace MaxFactry.General.AspNet.DataLayer
         /// The the name of the file to use
         /// </summary>
         public readonly string ContentName = "ContentName";
-
-        /// <summary>
-        /// The version of the file library
-        /// </summary>
-        public readonly string FileVersion = "FileVersion";
 
         /// <summary>
         /// The type of script file
@@ -76,10 +72,10 @@ namespace MaxFactry.General.AspNet.DataLayer
             this.RepositoryProviderType = typeof(MaxFactry.General.AspNet.DataLayer.Provider.MaxBaseAspNetRepositoryDefaultProvider);
             this.RepositoryType = typeof(MaxBaseAspNetRepository);
             this.SetDataStorageName("MaxCoreAspNetScriptFile");
+            this.AddType(this.Name, typeof(string));
             this.AddType(this.Content, typeof(MaxLongString));
             this.AddType(this.ContentMin, typeof(MaxLongString));
             this.AddType(this.ContentName, typeof(MaxShortString));
-            this.AddType(this.FileVersion, typeof(MaxShortString));
             this.AddType(this.ScriptType, typeof(MaxShortString));
         }
 	}

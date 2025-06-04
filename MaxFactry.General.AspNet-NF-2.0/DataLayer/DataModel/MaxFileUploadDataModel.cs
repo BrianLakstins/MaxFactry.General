@@ -28,35 +28,32 @@
 #region Change Log
 // <changelog>
 // <change date="6/4/2015" author="Brian A. Lakstins" description="Initial creation">
+// <change date="6/4/2025" author="Brian A. Lakstins" description="Remove unused code">
 // </changelog>
 #endregion
 
 namespace MaxFactry.General.AspNet.DataLayer
 {
-	using System;
-	using MaxFactry.Core;
 	using MaxFactry.Base.DataLayer;
 
-	/// <summary>
+    /// <summary>
     /// Data model for the virtual files in a web site.
-	/// </summary>
+    /// </summary>
 	public class MaxFileUploadDataModel : MaxBaseIdFileDataModel
-	{
-		/// <summary>
-		/// The name of the file that was uploaded.
-		/// </summary>
+    {
+        /// <summary>
+        /// The name of the file that was uploaded.
+        /// </summary>
         public readonly string UploadName = "UploadName";
 
-		/// <summary>
+        /// <summary>
         /// Initializes a new instance of the MaxVirtualTextFileDataModel class.
-		/// </summary>
+        /// </summary>
         public MaxFileUploadDataModel()
             : base()
 		{
             this.RepositoryProviderType = typeof(MaxFactry.General.AspNet.DataLayer.Provider.MaxBaseAspNetRepositoryDefaultProvider);
             this.RepositoryType = typeof(MaxBaseAspNetRepository);
-            //this.SetDataStorageName("MaxSystemWebFileUpload");
-            //// Copied 9/15/2015
             this.SetDataStorageName("MaxCoreAspNetFileUpload");
             this.AddType(this.UploadName, typeof(string));
         }

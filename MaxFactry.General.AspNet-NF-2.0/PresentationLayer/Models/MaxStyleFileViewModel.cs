@@ -28,6 +28,7 @@
 #region Change Log
 // <changelog>
 // <change date="7/14/2016" author="Brian A. Lakstins" description="Initial creation">
+// <change date="6/4/2025" author="Brian A. Lakstins" description="Change base class to remove versioning">
 // </changelog>
 #endregion
 
@@ -44,8 +45,8 @@ namespace MaxFactry.General.AspNet.PresentationLayer
 	/// <summary>
 	/// View model for content.
 	/// </summary>
-    public class MaxStyleFileViewModel : MaxFactry.Base.PresentationLayer.MaxBaseIdViewModel
-	{
+    public class MaxStyleFileViewModel : MaxFactry.Base.PresentationLayer.MaxBaseGuidKeyViewModel
+    {
         private List<MaxStyleFileViewModel> _oSortedList = null;
 
         /// <summary>
@@ -76,10 +77,20 @@ namespace MaxFactry.General.AspNet.PresentationLayer
 
         public virtual bool LoadFromName(string lsName)
         {
-            MaxStyleFileEntity loEntity = MaxStyleFileEntity.Create().GetCurrent(lsName) as MaxStyleFileEntity;
-            if (!Guid.Empty.Equals(loEntity.Id))
+            MaxEntityList loList = MaxStyleFileEntity.Create().LoadAllCache();
+            bool lbFound = false;
+            for (int lnE = 0; lnE < loList.Count; lnE++)
             {
-                this.Entity = loEntity;
+                MaxStyleFileEntity loEntity = loList[lnE] as MaxStyleFileEntity;
+                if (loEntity.Name.Equals(lsName, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    this.Entity = loEntity;
+                    lbFound = true;
+                }
+            }
+
+            if (lbFound)
+            {
                 return this.MapFromEntity();
             }
 
@@ -87,12 +98,6 @@ namespace MaxFactry.General.AspNet.PresentationLayer
         }
 
         public string Name
-        {
-            get;
-            set;
-        }
-
-        public string Version
         {
             get;
             set;
@@ -111,12 +116,6 @@ namespace MaxFactry.General.AspNet.PresentationLayer
         }
 
         public string ContentName
-        {
-            get;
-            set;
-        }
-
-        public string FileVersion
         {
             get;
             set;
@@ -143,9 +142,9 @@ namespace MaxFactry.General.AspNet.PresentationLayer
                     
                     if (loSortedList.ContainsKey(lsKey))
                     {
-                        int lnVersionCheck = MaxConvertLibrary.ConvertToInt(typeof(object), loViewModel.Version);
-                        int lnVersionCurrent = MaxConvertLibrary.ConvertToInt(typeof(object), loSortedList[lsKey].Version);
-                        if (lnVersionCheck > lnVersionCurrent)
+                        DateTime ldCheck = MaxConvertLibrary.ConvertToDateTime(typeof(object), loViewModel.CreatedDate);
+                        DateTime ldCurrent = MaxConvertLibrary.ConvertToDateTime(typeof(object), loSortedList[lsKey].CreatedDate);
+                        if (ldCheck > ldCurrent)
                         {
                             loSortedList[lsKey] = loViewModel;
                         }
@@ -179,7 +178,6 @@ namespace MaxFactry.General.AspNet.PresentationLayer
                     loEntity.Content = this.Content;
                     loEntity.ContentMin = this.ContentMin;
                     loEntity.ContentName = lsName;
-                    loEntity.FileVersion = this.FileVersion;
                     loEntity.StyleType = this.StyleType;
                     return true;
                 }
@@ -203,9 +201,7 @@ namespace MaxFactry.General.AspNet.PresentationLayer
                     this.Content = loEntity.Content;
                     this.ContentMin = loEntity.ContentMin;
                     this.ContentName = loEntity.ContentName;
-                    this.FileVersion = loEntity.FileVersion;
                     this.StyleType = loEntity.StyleType;
-                    this.Version = loEntity.Version.ToString();
                     return true;
                 }
             }
@@ -219,17 +215,6 @@ namespace MaxFactry.General.AspNet.PresentationLayer
             this.Id = null;
             this.Entity = MaxStyleFileEntity.Create();
             lbR = base.Save();
-            return lbR;
-        }
-
-        public override bool Delete()
-        {
-            bool lbR = false;
-            if (this.Version != "File")
-            {
-                lbR = base.Delete();
-            }
-
             return lbR;
         }
     }
