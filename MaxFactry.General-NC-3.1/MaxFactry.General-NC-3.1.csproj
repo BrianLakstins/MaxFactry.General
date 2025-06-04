@@ -50,8 +50,6 @@
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxUSStateDataModel.cs" Link="DataLayer\Repository\DataModel\MaxUSStateDataModel.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\Interface\IMaxGeneralRepositoryProvider.cs" Link="DataLayer\Repository\Interface\IMaxGeneralRepositoryProvider.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\Interface\IMaxPaymentCardRepositoryProvider.cs" Link="DataLayer\Repository\Interface\IMaxPaymentCardRepositoryProvider.cs" />
-		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\Interface\IMaxUserLogRepositoryProvider.cs" Link="DataLayer\Repository\Interface\IMaxUserLogRepositoryProvider.cs" />
-		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\Interface\IMaxUserRepositoryProvider.cs" Link="DataLayer\Repository\Interface\IMaxUserRepositoryProvider.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\Interface\IMaxUSStateRepositoryProvider.cs" Link="DataLayer\Repository\Interface\IMaxUSStateRepositoryProvider.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\MaxGeneralRepository.cs" Link="DataLayer\Repository\MaxGeneralRepository.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\MaxPaymentCardRepository.cs" Link="DataLayer\Repository\MaxPaymentCardRepository.cs" />

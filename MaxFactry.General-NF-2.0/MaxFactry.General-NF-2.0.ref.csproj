@@ -80,8 +80,6 @@
     <Compile Include="DataLayer\DataModel\MaxUSStateDataModel.cs" />
     <Compile Include="DataLayer\Repository\Interface\IMaxGeneralRepositoryProvider.cs" />
     <Compile Include="DataLayer\Repository\Interface\IMaxPaymentCardRepositoryProvider.cs" />
-    <Compile Include="DataLayer\Repository\Interface\IMaxUserLogRepositoryProvider.cs" />
-    <Compile Include="DataLayer\Repository\Interface\IMaxUserRepositoryProvider.cs" />
     <Compile Include="DataLayer\Repository\Interface\IMaxUSStateRepositoryProvider.cs" />
     <Compile Include="DataLayer\Repository\MaxGeneralRepository.cs" />
     <Compile Include="DataLayer\Repository\MaxPaymentCardRepository.cs" />

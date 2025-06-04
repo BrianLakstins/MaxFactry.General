@@ -162,12 +162,6 @@
     <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\Interface\IMaxPaymentCardRepositoryProvider.cs">
       <Link>DataLayer\Repository\Interface\IMaxPaymentCardRepositoryProvider.cs</Link>
     </Compile>
-    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\Interface\IMaxUserLogRepositoryProvider.cs">
-      <Link>DataLayer\Repository\Interface\IMaxUserLogRepositoryProvider.cs</Link>
-    </Compile>
-    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\Interface\IMaxUserRepositoryProvider.cs">
-      <Link>DataLayer\Repository\Interface\IMaxUserRepositoryProvider.cs</Link>
-    </Compile>
     <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\Repository\Interface\IMaxUSStateRepositoryProvider.cs">
       <Link>DataLayer\Repository\Interface\IMaxUSStateRepositoryProvider.cs</Link>
     </Compile>
