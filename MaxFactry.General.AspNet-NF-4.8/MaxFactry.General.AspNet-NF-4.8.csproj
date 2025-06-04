@@ -152,7 +152,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="MaxFactry.pfx" />
     <None Include="MaxFactry.snk" />
   </ItemGroup>
   <ItemGroup>
