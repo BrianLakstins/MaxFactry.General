@@ -120,7 +120,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="MaxFactry.pfx" />
     <None Include="MaxFactry.snk" />
     <None Include="Resources\Mapping.csv" />
   </ItemGroup>
