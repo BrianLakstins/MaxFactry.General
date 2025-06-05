@@ -40,6 +40,7 @@
 // <change date="1/14/2016" author="Brian A. Lakstins" description="Update handling of url when it's not available and profile when no records exist for the profile.">
 // <change date="2/24/2016" author="Brian A. Lakstins" description="Update profile cookie to contain host name.">
 // <change date="7/22/2016" author="Brian A. Lakstins" description="Update for change to MaxConfigurationLibrary">
+// <change date="6/4/2025" author="Brian A. Lakstins" description="Clean up code">
 // </changelog>
 #endregion
 
@@ -454,12 +455,13 @@ namespace MaxFactry.Core.Provider
                             if (loId.Equals(loProfileId))
                             {
                                 string lsKey = "LastBrowserInfo";
-                                string lsValue = MaxProfileIndexEntity.Create().GetValue(loProfileId, lsKey) as string;
+                                MaxProfileIndexEntity loProfile = MaxProfileIndexEntity.Create();
+                                string lsValue = loProfile.GetValue(loProfileId, lsKey) as string;
                                 if (null != lsValue)
                                 {
                                     if (lsValue != lsLastBrowserInfo)
                                     {
-                                        MaxProfileIndexEntity.Create().SaveValue(loProfileId, lsKey, lsLastBrowserInfo);
+                                        loProfile.SaveValue(loProfileId, lsKey, lsLastBrowserInfo);
                                     }
                                 }
 
