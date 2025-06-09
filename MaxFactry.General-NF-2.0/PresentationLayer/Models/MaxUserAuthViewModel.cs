@@ -137,7 +137,6 @@ namespace MaxFactry.General.PresentationLayer
                 for (int lnK = 0; lnK < laKey.Length; lnK++)
                 {
                     MaxUserAuthViewModel loModel = new MaxUserAuthViewModel(this.EntityIndex[laKey[lnK]] as MaxEntity);
-                    loModel.Load();
                     if (loModel.UserKey == lsUserKey)
                     {
                         this._oSortedList.Add(loModel);
