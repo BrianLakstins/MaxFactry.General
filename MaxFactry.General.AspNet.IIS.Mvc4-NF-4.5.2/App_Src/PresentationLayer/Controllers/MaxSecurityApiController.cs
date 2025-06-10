@@ -47,6 +47,7 @@
 // <change date="1/27/2025" author="Brian A. Lakstins" description="Add auth type when logging in">
 // <change date="4/22/2025" author="Brian A. Lakstins" description="Use Login with GET to get current user">
 // <change date="6/4/2025" author="Brian A. Lakstins" description="Fix error message when not needed.">
+// <change date="6/10/2025" author="Brian A. Lakstins" description="Fix updating role to user relationships.">
 // </changelog>
 #endregion
 
@@ -833,12 +834,12 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         protected MaxApiResponseViewModel ProcessUser(MaxApiRequestViewModel loRequest, MaxUserEntity loUser, MaxApiResponseViewModel loResponse)
         {
             MaxApiResponseViewModel loR = loResponse;
-            if (null != loR && null != loR.Item && loR.Item.Contains(loUser.GetPropertyName(() => loUser.Id)) && null != loRequest.Item && loRequest.Item.Contains("RoleIdSelectedList"))
+            if (null != loR && null != loR.Item && Guid.Empty != loUser.Id && null != loRequest.Item && loRequest.Item.Contains("RoleIdSelectedList"))
             {
                 string[] laRoleIdSelectedList = MaxConvertLibrary.DeserializeObject(loRequest.Item.GetValueString("RoleIdSelectedList"), typeof(string[])) as string[];
                 if (null != laRoleIdSelectedList)
                 {
-                    Guid loUserId = MaxConvertLibrary.ConvertToGuid(typeof(object), loR.Item.GetValueString(loUser.GetPropertyName(() => loUser.Id)));
+                    Guid loUserId = loUser.Id;
                     List<string> loRoleIdSelectedList = new List<string>(laRoleIdSelectedList);
                     if (Guid.Empty != loUserId)
                     {
