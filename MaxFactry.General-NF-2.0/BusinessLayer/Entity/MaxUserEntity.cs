@@ -38,6 +38,7 @@
 // <change date="4/28/2024" author="Brian A. Lakstins" description="Integrate with roles.">
 // <change date="9/16/2024" author="Brian A. Lakstins" description="Making sure Propertlist is not null.">
 // <change date="6/4/2025" author="Brian A. Lakstins" description="Updates to take advantage of changes to base.">
+// <change date="6/10/2025" author="Brian A. Lakstins" description="Add expire data for caching.">
 // </changelog>
 #endregion
 
@@ -160,7 +161,7 @@ namespace MaxFactry.General.BusinessLayer
 
         public string GetAuthCode(string lsName)
         {
-            string lsCacheKey = this.GetCacheKey() + "AuthCode/" + lsName.ToLower();
+            string lsCacheKey = this.GetCacheKey("AuthCode/" + lsName.ToLower());
             string lsR = MaxCacheRepository.Get(this.GetType(), lsCacheKey, typeof(string)) as string;
             if (string.IsNullOrEmpty(lsR))
             {
@@ -170,7 +171,7 @@ namespace MaxFactry.General.BusinessLayer
                     lsR += MaxEncryptionLibrary.GetRandomInt(typeof(object), 0, 9).ToString();
                 }
 
-                MaxCacheRepository.Set(this.GetType(), lsCacheKey, lsR);
+                MaxCacheRepository.Set(this.GetType(), lsCacheKey, lsR, this.GetCacheExpire());
             }
 
             return lsR;
@@ -178,7 +179,7 @@ namespace MaxFactry.General.BusinessLayer
 
         public void ClearAuthCode(string lsName)
         {
-            string lsCacheKey = this.GetCacheKey() + "AuthCode/" + lsName.ToLower();
+            string lsCacheKey = this.GetCacheKey("AuthCode/" + lsName.ToLower());
             MaxCacheRepository.Remove(this.GetType(), lsCacheKey);
         }
 

@@ -37,6 +37,7 @@
 // <change date="5/19/2020" author="Brian A. Lakstins" description="Cache results for Profile configuration to help speed up accessing profile information.">
 // <change date="5/21/2020" author="Brian A. Lakstins" description="Using a provider to indicate what provider to use ends up creating the provider as the provider. Fixed by using typeof(object) in a provider.">
 // <change date="6/16/2020" author="Brian A. Lakstins" description="Fix getting value for profile when not in cache.">
+// <change date="6/10/2025" author="Brian A. Lakstins" description="Add expire data for caching.">
 // </changelog>
 #endregion
 
@@ -155,7 +156,7 @@ namespace MaxFactry.Core.Provider
                                 loIndex.Add("MaxNetworkAddress", this.GetSystemValue("NetworkInterface", "PhysicalAddress", true));
                                 loIndex.Add("MaxNetworkAdapterMAC", this.GetSystemValue("NetworkAdapterConfiguration", "MACAddress", true));
                                 loIndex.Add("MaxSystemVersion", "20180726");
-                                MaxFactry.Base.DataLayer.MaxCacheRepository.Set(typeof(object), "MaxSystemApplication", loIndex);
+                                MaxFactry.Base.DataLayer.MaxCacheRepository.Set(typeof(object), "MaxSystemApplication", loIndex, DateTime.UtcNow.AddDays(1));
                             }
                         }
                     }
@@ -180,18 +181,18 @@ namespace MaxFactry.Core.Provider
                     try
                     {
                         //// Make this use cache to access value faster than looking in database
-                        string lsCacheDataKey = this.GetType().ToString() + "ScopeProfile" + loId.ToString() + lsKey;
+                        string lsCacheDataKey = this.GetType().ToString() + "/ScopeProfile/" + loId.ToString() + "/" + lsKey;
                         loValue = MaxCacheRepository.Get(typeof(object), lsCacheDataKey, typeof(string)) as string;
                         if (null == loValue)
                         {
                             loValue = MaxProfileIndexEntity.Create().GetValue(loId, lsKey);
                             if (loValue is string)
                             {
-                                MaxCacheRepository.Set(typeof(object), lsCacheDataKey, loValue);
+                                MaxCacheRepository.Set(typeof(object), lsCacheDataKey, loValue, DateTime.UtcNow.AddHours(1));
                             }
                             else if (null == loValue)
                             {
-                                MaxCacheRepository.Set(typeof(object), lsCacheDataKey, string.Empty);
+                                MaxCacheRepository.Set(typeof(object), lsCacheDataKey, string.Empty, DateTime.UtcNow.AddHours(1));
                             }
                         }
                     }
@@ -299,8 +300,8 @@ namespace MaxFactry.Core.Provider
                 {
                     MaxProfileIndexEntity.Create().SaveValue(loId, lsKey, lsValue);
                     //// Make this use cache to access value faster than looking in database
-                    string lsCacheDataKey = this.GetType().ToString() + "ScopeProfile" + loId.ToString() + lsKey;
-                    MaxCacheRepository.Set(typeof(object), lsCacheDataKey, lsValue);
+                    string lsCacheDataKey = this.GetType().ToString() + "/ScopeProfile/" + loId.ToString() + "/" + lsKey;
+                    MaxCacheRepository.Set(typeof(object), lsCacheDataKey, lsValue, DateTime.UtcNow.AddHours(1));
                 }
             }
             else
