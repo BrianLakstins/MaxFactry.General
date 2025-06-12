@@ -43,6 +43,7 @@
 // <change date="3/3/2021" author="Brian A. Lakstins" description="Add ttf files.  Handle files from file system like they all might be binary.">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
 // <change date="6/4/2025" author="Brian A. Lakstins" description="Updates for changes to dependent classes.">
+// <change date="6/11/2025" author="Brian A. Lakstins" description="Update for ApplicationKey">
 // </changelog>
 #endregion
 
@@ -620,7 +621,7 @@ namespace System.Web.Hosting
         /// <returns>Current storage key for this thread.</returns>
         private static string GetStorageKey()
         {
-            string lsR = MaxDataLibrary.GetStorageKey(null).ToLowerInvariant();
+            string lsR = MaxDataLibrary.GetApplicationKey().ToLowerInvariant();
             return lsR;
         }
 

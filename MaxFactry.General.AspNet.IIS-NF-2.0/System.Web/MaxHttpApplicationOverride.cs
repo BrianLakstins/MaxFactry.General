@@ -46,6 +46,7 @@
 // <change date="7/20/2023" author="Brian A. Lakstins" description="Use constant instead of string for configuration name">
 // <change date="7/25/2023" author="Brian A. Lakstins" description="Remove GetConfig.  Moved to MaxAppLibrary.">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
+// <change date="6/11/2025" author="Brian A. Lakstins" description="Update for ApplicationKey">
 // </changelog>
 #endregion
 
@@ -316,7 +317,7 @@ namespace System.Web
                 //// Get the MaxStorageKey
                 if (loCustom.Contains(MaxFactry.General.AspNet.IIS.MaxAppLibrary.MaxStorageKeyQueryName))
                 {
-                    string lsMaxStorageKey = MaxFactry.Base.DataLayer.Library.MaxDataLibrary.GetStorageKey(null);
+                    string lsMaxStorageKey = MaxFactry.Base.DataLayer.Library.MaxDataLibrary.GetApplicationKey();
                     if (string.IsNullOrEmpty(lsMaxStorageKey))
                     {
                         //// Include a random storage key to make sure that nothing dependent on storage key is ever cached with Guid.Empty.

@@ -42,6 +42,7 @@
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
 // <change date="6/19/2024" author="Brian A. Lakstins" description="Add user related logging.  Updates to removal of an unneeded method.">
 // <change date="7/16/2024" author="Brian A. Lakstins" description="Set some attributes based on time.">
+// <change date="6/11/2025" author="Brian A. Lakstins" description="Update cache integration">
 // </changelog>
 #endregion
 
@@ -611,7 +612,7 @@ namespace System.Web.Security
                             loMaxUser.Id,
                             MaxUserLogEntity.LogEntryTypeActivity,
                             this.GetType() + ".GetUser(object providerUserKey, bool userIsOnline)");
-                        MaxCacheRepository.Set(this.GetType(), lsKey, DateTime.UtcNow.Ticks.ToString());
+                        MaxCacheRepository.Set(this.GetType(), lsKey, DateTime.UtcNow.Ticks.ToString(), DateTime.UtcNow.AddMinutes(10));
                         loMaxUser.SetAttribute("_LastGetUserByKey", DateTime.UtcNow);
                         loMaxUser.Update();
                     }
@@ -651,7 +652,7 @@ namespace System.Web.Security
                             loMaxUser.Id,
                             MaxUserLogEntity.LogEntryTypeActivity,
                             this.GetType() + ".GetUser(string username, bool userIsOnline)");
-                        MaxCacheRepository.Set(this.GetType(), lsKey, DateTime.UtcNow.Ticks.ToString());
+                        MaxCacheRepository.Set(this.GetType(), lsKey, DateTime.UtcNow.Ticks.ToString(), DateTime.UtcNow.AddMinutes(10));
                         loMaxUser.SetAttribute("_LastGetUserByUsername", DateTime.UtcNow);
                         loMaxUser.Update();
 

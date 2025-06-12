@@ -30,6 +30,7 @@
 // <change date="5/22/2020" author="Brian A. Lakstins" description="Initial creation">
 // <change date="3/15/2021" author="Brian A. Lakstins" description="Reduce exceptions by checking for context">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class. Use parent methods instead of repository.">
+// <change date="6/11/2025" author="Brian A. Lakstins" description="Update for ApplicationKey">
 // </changelog>
 #endregion
 
@@ -50,25 +51,18 @@ namespace MaxFactry.Base.DataLayer.Library.Provider
         /// </summary>
         /// <param name="loData">The data to be stored using the storage key.</param>
         /// <returns>string used for the storage key</returns>
-        public override string GetStorageKey(MaxData loData)
+        public override string GetApplicationKey()
         {
-            string lsR = this.GetStorageKeyFromProcess();
-            MaxBaseDataModel loBaseDataModel = loData.DataModel as MaxBaseDataModel;
-            if (null != loBaseDataModel && null != loData.Get(loBaseDataModel.StorageKey))
+            string lsR = base.GetApplicationKey();
+            string lsApplicationKey = this.GetStorageKeyFromQueryString();
+            if (null == lsApplicationKey || lsApplicationKey.Length.Equals(0))
             {
-                lsR = MaxConvertLibrary.ConvertToString(typeof(object), loData.Get(loBaseDataModel.StorageKey));
+                lsApplicationKey = this.GetStorageKeyFromCookie();
             }
-            else if (null == lsR || lsR.Length.Equals(0))
+
+            if (null != lsApplicationKey && lsApplicationKey.Length > 0)
             {
-                lsR = this.GetStorageKeyFromQueryString();
-                if (null == lsR || lsR.Length.Equals(0))
-                {
-                    lsR = this.GetStorageKeyFromCookie();
-                    if (null == lsR || lsR.Length.Equals(0))
-                    {
-                        lsR = this.GetStorageKeyFromConfiguration();
-                    }
-                }
+                lsR = lsApplicationKey;
             }
 
             if (lsR.Length == 0)
