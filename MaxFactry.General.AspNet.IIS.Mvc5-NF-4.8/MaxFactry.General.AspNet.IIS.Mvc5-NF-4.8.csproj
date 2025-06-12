@@ -58,20 +58,20 @@
     <Reference Include="JWT, Version=10.0.0.0, Culture=neutral, PublicKeyToken=6f98bca0f40f2ecf, processorArchitecture=MSIL">
       <HintPath>..\..\_nuget\JWT.10.1.1\lib\net462\JWT.dll</HintPath>
     </Reference>
-    <Reference Include="MaxFactry.Base-NF-4.8, Version=1.0.24.52, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
-      <HintPath>..\..\_nuget\MaxFactry.Base.1.0.24.52\lib\net48\MaxFactry.Base-NF-4.8.dll</HintPath>
+    <Reference Include="MaxFactry.Base-NF-4.8, Version=1.0.24.53, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\MaxFactry.Base.1.0.24.53\lib\net48\MaxFactry.Base-NF-4.8.dll</HintPath>
     </Reference>
     <Reference Include="MaxFactry.Core-NF-4.8, Version=1.0.24.50, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
       <HintPath>..\..\_nuget\MaxFactry.Core.1.0.24.50\lib\net48\MaxFactry.Core-NF-4.8.dll</HintPath>
     </Reference>
-    <Reference Include="MaxFactry.General-NF-4.8, Version=1.0.24.50, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
-      <HintPath>..\..\_nuget\MaxFactry.General.1.0.24.50\lib\net48\MaxFactry.General-NF-4.8.dll</HintPath>
+    <Reference Include="MaxFactry.General-NF-4.8, Version=1.0.24.53, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\MaxFactry.General.1.0.24.53\lib\net48\MaxFactry.General-NF-4.8.dll</HintPath>
     </Reference>
-    <Reference Include="MaxFactry.General.AspNet-NF-4.8, Version=1.0.24.50, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
-      <HintPath>..\..\_nuget\MaxFactry.General.AspNet.1.0.24.50\lib\net48\MaxFactry.General.AspNet-NF-4.8.dll</HintPath>
+    <Reference Include="MaxFactry.General.AspNet-NF-4.8, Version=1.0.24.53, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\MaxFactry.General.AspNet.1.0.24.53\lib\net48\MaxFactry.General.AspNet-NF-4.8.dll</HintPath>
     </Reference>
-    <Reference Include="MaxFactry.General.AspNet.IIS-NF-4.8, Version=1.0.24.50, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
-      <HintPath>..\..\_nuget\MaxFactry.General.AspNet.IIS.1.0.24.50\lib\net48\MaxFactry.General.AspNet.IIS-NF-4.8.dll</HintPath>
+    <Reference Include="MaxFactry.General.AspNet.IIS-NF-4.8, Version=1.0.24.53, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\MaxFactry.General.AspNet.IIS.1.0.24.53\lib\net48\MaxFactry.General.AspNet.IIS-NF-4.8.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\..\_nuget\Microsoft.Bcl.AsyncInterfaces.6.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
