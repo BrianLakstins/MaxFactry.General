@@ -37,6 +37,7 @@
 // <change date="4/9/2025" author="Brian A. Lakstins" description="Override SetInitial and SetProperties instead of Insert and Update.">
 // <change date="4/10/2025" author="Brian A. Lakstins" description="Tweak SetInitial and SetProperties.">
 // <change date="6/4/2025" author="Brian A. Lakstins" description="Updates for changes to base including removing versioning">
+// <change date="6/11/2025" author="Brian A. Lakstins" description="Update cache integration">
 // </changelog>
 #endregion
 
@@ -151,7 +152,7 @@ namespace MaxFactry.General.AspNet.BusinessLayer
         public string GetContentURLCache(string lsName)
         {
             string lsR = string.Empty;
-            string lsCacheKey = this.GetCacheKey() + "GetContentURLCache/" + lsName; ;
+            string lsCacheKey = this.GetCacheKey("GetContentURLCache/" + lsName);
             string lsUrl = MaxCacheRepository.Get(typeof(MaxFileUploadEntity), lsCacheKey, typeof(string)) as string;
             if (null == lsUrl)
             {
@@ -169,7 +170,7 @@ namespace MaxFactry.General.AspNet.BusinessLayer
                     }
                 }
 
-                MaxCacheRepository.Set(typeof(MaxFileUploadEntity), lsCacheKey, lsR);
+                MaxCacheRepository.Set(typeof(MaxFileUploadEntity), lsCacheKey, lsR, this.GetCacheExpire());
             }
             else
             {

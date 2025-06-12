@@ -43,6 +43,7 @@
 // <change date="4/24/2016" author="Brian A. Lakstins" description="Update for no longer returning null from GetCurrent">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
 // <change date="6/4/2025" author="Brian A. Lakstins" description="Change base class to remove versioning">
+// <change date="6/11/2025" author="Brian A. Lakstins" description="Update cache integration">
 // </changelog>
 #endregion
 
@@ -55,6 +56,7 @@ namespace MaxFactry.General.AspNet.BusinessLayer
     using MaxFactry.Base.DataLayer;
     using MaxFactry.Base.DataLayer.Library;
     using MaxFactry.General.AspNet.DataLayer;
+    using System.Runtime.CompilerServices;
 
     /// <summary>
     /// Entity to represent virtual text file in a web site.
@@ -161,7 +163,7 @@ namespace MaxFactry.General.AspNet.BusinessLayer
                     }
                 }               
 
-                MaxCacheRepository.Set(typeof(MaxVirtualTextFileEntity), lsCacheKey, lsExists);
+                MaxCacheRepository.Set(typeof(MaxVirtualTextFileEntity), lsCacheKey, lsExists, DateTime.UtcNow.AddDays(1));
             }
 
             return MaxConvertLibrary.ConvertToBoolean(typeof(object), lsExists);
@@ -178,7 +180,7 @@ namespace MaxFactry.General.AspNet.BusinessLayer
 
         public static string GetExistsKey(string lsName)
         {
-            return MaxDataLibrary.GetStorageKey(null) + typeof(MaxVirtualTextFileEntity).ToString() + ".LoadAllByName" + lsName;
+            return MaxDataLibrary.GetApplicationKey() + typeof(MaxVirtualTextFileEntity).ToString() + ".LoadAllByName" + lsName;
         }
     }
 }
