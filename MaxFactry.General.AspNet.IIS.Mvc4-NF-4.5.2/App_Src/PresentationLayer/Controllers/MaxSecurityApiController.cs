@@ -48,6 +48,7 @@
 // <change date="4/22/2025" author="Brian A. Lakstins" description="Use Login with GET to get current user">
 // <change date="6/4/2025" author="Brian A. Lakstins" description="Fix error message when not needed.">
 // <change date="6/10/2025" author="Brian A. Lakstins" description="Fix updating role to user relationships.">
+// <change date="6/11/2025" author="Brian A. Lakstins" description="Update for ApplicationKey">
 // </changelog>
 #endregion
 
@@ -95,7 +96,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 MaxLogLibrary.Log(new MaxLogEntryStructure(MaxEnumGroup.LogError, "General API Error.", loE));
             }
 
-            lsR = MaxDataLibrary.GetStorageKey(null);
+            lsR = MaxDataLibrary.GetApplicationKey();
 
             HttpResponseMessage loR = new HttpResponseMessage();
             loR.Content = new StringContent(lsR);

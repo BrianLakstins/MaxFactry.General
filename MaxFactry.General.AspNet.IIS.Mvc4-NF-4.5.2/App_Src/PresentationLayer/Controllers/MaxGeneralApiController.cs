@@ -31,6 +31,7 @@
 // <change date="5/31/2020" author="Brian A. Lakstins" description="Add endpoints to start archive process">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.  Updated to use DataKey.">
 // <change date="6/4/2025" author="Brian A. Lakstins" description="Remove api calls for archiving data">
+// <change date="6/11/2025" author="Brian A. Lakstins" description="Update for ApplicationKey">
 // </changelog>
 #endregion
 
@@ -75,7 +76,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 MaxLogLibrary.Log(new MaxLogEntryStructure(MaxEnumGroup.LogError, "General API Error.", loE));
             }
 
-            lsR = MaxDataLibrary.GetStorageKey(null);
+            lsR = MaxDataLibrary.GetApplicationKey();
 
             HttpResponseMessage loR = new HttpResponseMessage();
             loR.Content = new StringContent(lsR);
