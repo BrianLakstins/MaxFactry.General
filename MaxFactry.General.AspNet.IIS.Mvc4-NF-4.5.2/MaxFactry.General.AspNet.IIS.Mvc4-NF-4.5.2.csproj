@@ -63,8 +63,8 @@
     <Reference Include="MaxFactry.General-NF-4.5.2, Version=1.0.24.53, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
       <HintPath>..\..\_nuget\MaxFactry.General.1.0.24.53\lib\net452\MaxFactry.General-NF-4.5.2.dll</HintPath>
     </Reference>
-    <Reference Include="MaxFactry.General.AspNet-NF-4.5.2, Version=1.0.24.53, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
-      <HintPath>..\..\_nuget\MaxFactry.General.AspNet.1.0.24.53\lib\net452\MaxFactry.General.AspNet-NF-4.5.2.dll</HintPath>
+    <Reference Include="MaxFactry.General.AspNet-NF-4.5.2, Version=1.0.24.54, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\MaxFactry.General.AspNet.1.0.24.54\lib\net452\MaxFactry.General.AspNet-NF-4.5.2.dll</HintPath>
     </Reference>
     <Reference Include="MaxFactry.General.AspNet.IIS-NF-4.5.2, Version=1.0.24.53, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
       <HintPath>..\..\_nuget\MaxFactry.General.AspNet.IIS.1.0.24.53\lib\net452\MaxFactry.General.AspNet.IIS-NF-4.5.2.dll</HintPath>
