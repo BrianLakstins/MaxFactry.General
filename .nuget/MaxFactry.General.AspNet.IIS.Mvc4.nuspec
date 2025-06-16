@@ -2,7 +2,7 @@
 <package  xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
 	<metadata>
 		<id>MaxFactry.General.AspNet.IIS.Mvc4</id>
-		<version>1.0.24.53</version>
+		<version>1.0.24.54</version>
 		<title>MaxFactry General Asp.Net for IIS using Mvc4</title>
 		<authors>Brian Lakstins</authors>
 		<owners>brianlakstins</owners>
