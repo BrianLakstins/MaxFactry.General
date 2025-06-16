@@ -30,17 +30,20 @@
 // <change date="7/14/2016" author="Brian A. Lakstins" description="Initial creation">
 // <change date="5/27/2019" author="Brian A. Lakstins" description="Add some checking to make sure client still connected.">
 // <change date="9/15/2019" author="Brian A. Lakstins" description="Handle static files.">
+// <change date="6/16/2025" author="Brian A. Lakstins" description="Add using a cache">
 // </changelog>
 #endregion
 
 namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 {
 
+    using MaxFactry.Base.DataLayer;
+    using MaxFactry.Core;
+    using MaxFactry.General.AspNet.PresentationLayer;
     using System;
     using System.Web;
     using System.Web.Routing;
-    using MaxFactry.Core;
-    using MaxFactry.General.AspNet.PresentationLayer;
+    using System.Web.UI.WebControls;
 
     public class MaxScriptHandler : IRouteHandler, IHttpHandler
     {
@@ -100,32 +103,46 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         //     to service HTTP requests.
         public void ProcessRequest(HttpContext loContext)
         {
-            string lsFile = loContext.Server.MapPath(loContext.Request.AppRelativeCurrentExecutionFilePath);
-            if (System.IO.File.Exists(lsFile))
+            string lsFilePath = string.Empty;
+            if (null != loContext && null != loContext.Request && null != loContext.Request.AppRelativeCurrentExecutionFilePath)
             {
-                loContext.Response.Clear();
-                loContext.Response.ContentType = "text/javascript";
-                byte[] laContent = System.IO.File.ReadAllBytes(lsFile);
-                loContext.Response.OutputStream.Write(laContent, 0, laContent.Length);
-                loContext.Response.Flush();
+                lsFilePath = loContext.Request.AppRelativeCurrentExecutionFilePath;
             }
-            else
+
+            if (!string.IsNullOrEmpty(lsFilePath))
             {
-                MaxScriptFileViewModel loModel = new MaxScriptFileViewModel();
-                if (!string.IsNullOrEmpty(this._sId))
+                string lsFile = loContext.Server.MapPath(lsFilePath);
+                string lsCacheKey = this.GetType().ToString() + "/" + lsFile;
+                byte[] laContent = MaxCacheRepository.Get(this.GetType(), lsCacheKey, typeof(byte[])) as byte[];
+                if (null == laContent)
                 {
-                    loModel = new MaxScriptFileViewModel(this._sId);
-                }
-                else
-                {
-                    loModel.LoadFromName(this._sFileName);
+                    if (System.IO.File.Exists(lsFile))
+                    {
+                        laContent = System.IO.File.ReadAllBytes(lsFile);
+                    }
+                    else
+                    {
+                        MaxScriptFileViewModel loModel = new MaxScriptFileViewModel();
+                        if (!string.IsNullOrEmpty(this._sId))
+                        {
+                            loModel = new MaxScriptFileViewModel(this._sId);
+                        }
+                        else
+                        {
+                            loModel.LoadFromName(this._sFileName);
+                        }
+
+                        if (!string.IsNullOrEmpty(loModel.Content) && loContext.Response.IsClientConnected)
+                        {
+                            laContent = System.Text.UTF8Encoding.UTF8.GetBytes(loModel.Content);
+                        }
+                    }
                 }
 
-                if (!string.IsNullOrEmpty(loModel.Content) && loContext.Response.IsClientConnected)
+                if (null != laContent && laContent.Length > 0 && loContext.Response.IsClientConnected)
                 {
                     loContext.Response.Clear();
                     loContext.Response.ContentType = "text/javascript";
-                    byte[] laContent = System.Text.UTF8Encoding.UTF8.GetBytes(loModel.Content);
                     loContext.Response.OutputStream.Write(laContent, 0, laContent.Length);
                     loContext.Response.Flush();
                 }
