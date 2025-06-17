@@ -32,6 +32,7 @@
 // <change date="6/24/2014" author="Brian A. Lakstins" description="Refactor and document.">
 // <change date="6/28/2014" author="Brian A. Lakstins" description="Change to use BaseId.">
 // <change date="2/15/2021" author="Brian A. Lakstins" description="Remove unused methods">
+// <change date="6/17/2025" author="Brian A. Lakstins" description="Update logging.">
 // </changelog>
 #endregion
 
@@ -53,7 +54,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
     {
         public MaxBaseController()
         {
-            MaxLogLibrary.Log(MaxEnumGroup.LogInfo, "Created [" + this.GetType().ToString() + "] Controller", "MaxController");
+            MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "MaxBaseController", MaxEnumGroup.LogInfo, "Created"));
         }
 
         /// <summary>

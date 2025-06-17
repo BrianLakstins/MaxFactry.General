@@ -28,6 +28,7 @@
 #region Change Log
 // <changelog>
 // <change date="6/7/2015" author="Brian A. Lakstins" description="Initial creation">
+// <change date="6/17/2025" author="Brian A. Lakstins" description="Update logging.">
 // </changelog>
 #endregion
 
@@ -48,7 +49,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
     {
         public MaxSystemController()
         {
-            MaxLogLibrary.Log(MaxEnumGroup.LogInfo, "Created [" + this.GetType().ToString() + "] Controller", "MaxBaseController");
+            MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "MaxSystemController", MaxEnumGroup.LogInfo, "Created"));
         }
 
         [OutputCache(Duration = 600, VaryByParam = "msk;nocache", Location = System.Web.UI.OutputCacheLocation.Server, VaryByCustom = "msk;nocache")]

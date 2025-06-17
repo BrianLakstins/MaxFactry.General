@@ -33,6 +33,7 @@
 // <change date="10/28/2016" author="Brian A. Lakstins" description="Updated ignore client errors when sending a file.">
 // <change date="4/29/2019" author="Brian A. Lakstins" description="Fix issue with errors when file does not exist.">
 // <change date="5/27/2019" author="Brian A. Lakstins" description="Add some checking to make sure client still connected.">
+// <change date="6/17/2025" author="Brian A. Lakstins" description="Update logging.  Make sure client is connecte before sending response">
 // </changelog>
 #endregion
 
@@ -110,38 +111,36 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 if (null == loModel || null == loModel.Id || Guid.Empty.Equals(new Guid(loModel.Id)))
                 {
                     loContext.Response.StatusCode = 404;
-                    //loRequestContext.HttpContext.Response.Write("File for Id [" + lsId + "] was not able to be loaded<br />");
-                    //loRequestContext.HttpContext.Response.Write("Storage Key [" + MaxDataFactory.GetStorageKey(null) + "]<br />");
                 }
                 else
                 {
-                    System.Net.Mime.ContentDisposition loContent = new System.Net.Mime.ContentDisposition();
-                    if (!string.IsNullOrEmpty(this._sFileName))
+                    if (null != loModel.Content)
                     {
-                        loContent.FileName = this._sFileName;
-                    }
-                    else
-                    {
-                        loContent.FileName = loModel.FileName;
-                        if (string.IsNullOrEmpty(loContent.FileName))
+                        try
                         {
-                            loContent.FileName = loModel.Name;
-                        }
-                    }
-
-                    loContent.Inline = false;
-                    loContext.Response.ContentType = loModel.MimeType;
-                    if (loModel.IsDownload && loContext.Response.IsClientConnected)
-                    {
-                        loContext.Response.AppendHeader("Content-Disposition", loContent.ToString());
-                    }
-
-                    try
-                    {
-                        if (null != loModel.Content)
-                        {
-                            try
+                            System.Net.Mime.ContentDisposition loContent = new System.Net.Mime.ContentDisposition();
+                            if (!string.IsNullOrEmpty(this._sFileName))
                             {
+                                loContent.FileName = this._sFileName;
+                            }
+                            else
+                            {
+                                loContent.FileName = loModel.FileName;
+                                if (string.IsNullOrEmpty(loContent.FileName))
+                                {
+                                    loContent.FileName = loModel.Name;
+                                }
+                            }
+
+                            if (loContext.Response.IsClientConnected)
+                            {
+                                loContent.Inline = false;
+                                loContext.Response.ContentType = loModel.MimeType;
+                                if (loModel.IsDownload)
+                                {
+                                    loContext.Response.AppendHeader("Content-Disposition", loContent.ToString());
+                                }                            
+
                                 int lnBufferSize = 1024 * 50;
                                 byte[] loBuffer = new byte[lnBufferSize];
                                 int lnRead = loModel.Content.Read(loBuffer, 0, lnBufferSize);
@@ -152,34 +151,23 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                     lnRead = loModel.Content.Read(loBuffer, 0, lnBufferSize);
                                 }
                             }
-                            catch (Exception loERead)
+                        }
+                        catch (Exception loERead)
+                        {
+                            if (!(loERead is HttpException))
                             {
-                                if (!(loERead is HttpException))
-                                {
-                                    MaxLogLibrary.Log(new MaxLogEntryStructure(MaxEnumGroup.LogError, "Error reading content in MaxFileHandler.", loERead));
-                                }
-                            }
-                            finally
-                            {
-                                loModel.Content.Close();
-                                loModel.Content.Dispose();
+                                MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "ProcessRequest", MaxEnumGroup.LogError, "Error reading and sending content.", loERead));
                             }
                         }
-                        else
+                        finally
                         {
-                            loContext.Response.StatusCode = 404;
-                            //loRequestContext.HttpContext.Response.Write("Content for Id [" + lsId + "] was not found<br />");
-                            //loRequestContext.HttpContext.Response.Write("Storage Key [" + MaxDataFactory.GetStorageKey(null) + "]<br />");
-
+                            loModel.Content.Close();
+                            loModel.Content.Dispose();
                         }
                     }
-                    catch (Exception loEOpen)
+                    else
                     {
                         loContext.Response.StatusCode = 404;
-                        MaxLogLibrary.Log(new MaxLogEntryStructure(MaxEnumGroup.LogError, "Error opening content in MaxFileHandler.", loEOpen));
-                        //loRequestContext.HttpContext.Response.Write("Exception for for Id [" + lsId + "] when opening file.<br />");
-                        //loRequestContext.HttpContext.Response.Write("Storage Key [" + MaxDataFactory.GetStorageKey(null) + "]<br />");
-                        //loRequestContext.HttpContext.Response.Write("Exception<br /><pre>[" + loEOpen.ToString() + "]</pre><br />");
                     }
                 }
             }

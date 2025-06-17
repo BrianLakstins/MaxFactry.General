@@ -31,19 +31,17 @@
 // <change date="5/27/2019" author="Brian A. Lakstins" description="Add some checking to make sure client still connected.">
 // <change date="9/15/2019" author="Brian A. Lakstins" description="Handle static files.">
 // <change date="6/16/2025" author="Brian A. Lakstins" description="Add using a cache">
+// <change date="6/17/2025" author="Brian A. Lakstins" description="Clean up usings">
 // </changelog>
 #endregion
 
 namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 {
 
-    using MaxFactry.Base.DataLayer;
-    using MaxFactry.Core;
-    using MaxFactry.General.AspNet.PresentationLayer;
-    using System;
     using System.Web;
     using System.Web.Routing;
-    using System.Web.UI.WebControls;
+    using MaxFactry.Base.DataLayer;
+    using MaxFactry.General.AspNet.PresentationLayer;
 
     public class MaxScriptHandler : IRouteHandler, IHttpHandler
     {

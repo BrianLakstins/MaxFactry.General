@@ -64,6 +64,7 @@
 // <change date="3/4/2025" author="Brian A. Lakstins" description="Handle null data key different from empty data key">
 // <change date="4/14/2025" author="Brian A. Lakstins" description="Load through POST without also updating.">
 // <change date="4/29/2025" author="Brian A. Lakstins" description="Consider and update successful if any updates on a list succeed.">
+// <change date="6/17/2025" author="Brian A. Lakstins" description="Update logging.">
 // </changelog>
 #endregion
 
@@ -102,7 +103,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
         public MaxBaseApiController()
         {
-            MaxLogLibrary.Log(MaxEnumGroup.LogInfo, "Created [" + this.GetType().ToString() + "] Api Controller", "MaxController");
+            MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "MaxBaseApiController", MaxEnumGroup.LogInfo, "Created"));
         }
 
         public string Render(string lsView, object loModel, MaxIndex loMetaIndex)
