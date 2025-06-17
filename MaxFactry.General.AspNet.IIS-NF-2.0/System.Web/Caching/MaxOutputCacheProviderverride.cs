@@ -29,6 +29,7 @@
 // <changelog>
 // <change date="9/30/2014" author="Brian A. Lakstins" description="Initial Release">
 // <change date="6/16/2025" author="Brian A. Lakstins" description="Add using this MaxCacheRepository">
+// <change date="6/17/2025" author="Brian A. Lakstins" description="Add logging">
 // </changelog>
 #endregion
 
@@ -36,8 +37,8 @@ namespace System.Web.Caching
 {
     using MaxFactry.Base.DataLayer;
     using MaxFactry.Base.DataLayer.Library;
+    using MaxFactry.Core;
     using System;
-    using System.Collections.Generic;
 
 
 #if net4_52
@@ -53,12 +54,14 @@ namespace System.Web.Caching
         }
 
         public override object Get(string lsKey)
-        {           
+        {
+            string lsCacheKey = this.GetKey(lsKey);
             try
             {
                 if (null != HttpContext.Current && null != HttpContext.Current.Request && null != HttpContext.Current.Request.QueryString &&
                     !String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["clearcache"]))
                 {
+                    MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "Get", MaxEnumGroup.LogAlert, "Get() called with clearcache query string parameter.  Removing content for key: {0}", lsCacheKey));
                     this.Remove(lsKey);
                     return null;
                 }
@@ -70,12 +73,12 @@ namespace System.Web.Caching
                 if (null != HttpContext.Current && null != HttpContext.Current.Request && null != HttpContext.Current.Request.QueryString &&
                     !String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["nocache"]))
                 {
+                    MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "Get", MaxEnumGroup.LogAlert, "Get() called with nocache query string parameter.  Returning null for key: {0}", lsCacheKey));
                     return null;
                 }
             }
             catch { }
 
-            string lsCacheKey = this.GetKey(lsKey);
             object loR = MaxCacheRepository.Get(this.GetType(), lsCacheKey, typeof(object));
             return loR;
         }

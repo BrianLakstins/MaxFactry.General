@@ -47,6 +47,7 @@
 // <change date="7/25/2023" author="Brian A. Lakstins" description="Remove GetConfig.  Moved to MaxAppLibrary.">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
 // <change date="6/11/2025" author="Brian A. Lakstins" description="Update for ApplicationKey">
+// <change date="6/17/2025" author="Brian A. Lakstins" description="Update logging">
 // </changelog>
 #endregion
 
@@ -344,8 +345,7 @@ namespace System.Web
                 }
             }
 
-            //lsR += Guid.NewGuid().ToString();
-            MaxFactry.Core.MaxLogLibrary.Log(MaxFactry.Core.MaxEnumGroup.LogInfo, "GetVaryByCustomString [" + lsR + "]", "eFSWebApp");
+            MaxFactry.Core.MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "GetVaryByCustomString", MaxFactry.Core.MaxEnumGroup.LogInfo, "Returning {lsR} from {custom}", lsR, custom));
             MaxConfigurationLibrary.SetValue(MaxEnumGroup.ScopeProcess, "GetVaryByCustomString" + custom, lsR);
             return lsR;
         }

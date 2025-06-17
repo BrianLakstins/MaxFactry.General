@@ -44,6 +44,7 @@
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
 // <change date="6/4/2025" author="Brian A. Lakstins" description="Updates for changes to dependent classes.">
 // <change date="6/11/2025" author="Brian A. Lakstins" description="Update for ApplicationKey">
+// <change date="6/17/2025" author="Brian A. Lakstins" description="Update logging">
 // </changelog>
 #endregion
 
@@ -234,7 +235,7 @@ namespace System.Web.Hosting
         /// <returns>Stream of content of the virtual file.</returns>
         public static Stream Open(string lsVirtualPath)
         {
-            MaxFactry.Core.MaxLogLibrary.Log(MaxFactry.Core.MaxEnumGroup.LogInfo, "Opening(" + lsVirtualPath + ")", "MaxVirtualPathProvider");
+            MaxFactry.Core.MaxLogLibrary.Log(new MaxLogEntryStructure(typeof(MaxVirtualPathProviderOverride), "Open", MaxFactry.Core.MaxEnumGroup.LogInfo, "Start {Path}", lsVirtualPath));
             int lnFileType = GetFileType(lsVirtualPath);
             Stream loR = null;
             if (lnFileType > FileTypeBlank)
@@ -354,7 +355,7 @@ namespace System.Web.Hosting
         /// <returns>true if the file exists in the virtual file system; otherwise, false.</returns>
         public override bool FileExists(string lsVirtualPath)
         {
-            MaxFactry.Core.MaxLogLibrary.Log(MaxFactry.Core.MaxEnumGroup.LogDebug, "FileExists([" + lsVirtualPath + "]) start", "MaxVirtualPathProvider");
+            MaxFactry.Core.MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "FileExists", MaxFactry.Core.MaxEnumGroup.LogDebug, "Start for {Path}", lsVirtualPath));
             string lsFileExistsKey = GetStorageKey() + GetKey(lsVirtualPath);
             bool lbR = true;
             if (_oFileExistsIndex.ContainsKey(lsFileExistsKey))
@@ -369,7 +370,7 @@ namespace System.Web.Hosting
                 {
                     if (lnFileType > FileTypeBlank)
                     {
-                        MaxFactry.Core.MaxLogLibrary.Log(MaxFactry.Core.MaxEnumGroup.LogInfo, "FileExists virtual[" + lsVirtualPath + "][" + lnFileType.ToString() + "]", "MaxVirtualPathProvider");
+                        MaxFactry.Core.MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "FileExists", MaxFactry.Core.MaxEnumGroup.LogInfo, "File {File} is Type {Type}", lsVirtualPath, lnFileType));
                     }
                     else
                     {
@@ -396,7 +397,7 @@ namespace System.Web.Hosting
                 }
             }
 
-            MaxFactry.Core.MaxLogLibrary.Log(MaxFactry.Core.MaxEnumGroup.LogDebug, "FileExists([" + lsVirtualPath + "]) end [" + lbR.ToString() + "]", "MaxVirtualPathProvider");
+            MaxFactry.Core.MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "FileExists", MaxFactry.Core.MaxEnumGroup.LogDebug, "End for {Path}", lsVirtualPath));
             return lbR;
         }
 
@@ -408,7 +409,7 @@ namespace System.Web.Hosting
         public override VirtualFile GetFile(string lsVirtualPath)
         {
             System.Diagnostics.Stopwatch loWatch = System.Diagnostics.Stopwatch.StartNew();
-            MaxFactry.Core.MaxLogLibrary.Log(MaxFactry.Core.MaxEnumGroup.LogDebug, "GetFile([" + lsVirtualPath + "]) start", "MaxVirtualPathProvider");
+            MaxFactry.Core.MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "GetFile", MaxFactry.Core.MaxEnumGroup.LogDebug, "Start for [{Path}]", lsVirtualPath));
             int lnFileType = GetFileType(lsVirtualPath);
             VirtualFile loR = null;
             if (lnFileType > 0)
@@ -425,7 +426,10 @@ namespace System.Web.Hosting
 
             if (null != loR)
             {
-                MaxFactry.Core.MaxLogLibrary.Log(MaxFactry.Core.MaxEnumGroup.LogInfo, "GetFile([" + lsVirtualPath + "]) took " + loWatch.ElapsedMilliseconds + "ms end [" + loR.Name + "]", "MaxVirtualPathProvider");
+                if (loWatch.ElapsedMilliseconds > 100)
+                {
+                    MaxFactry.Core.MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "GetFile", MaxFactry.Core.MaxEnumGroup.LogInfo, "Path [{Path}] took {Time}ms end [{Name}]", lsVirtualPath, loWatch.ElapsedMilliseconds, loR.Name));
+                }
             }
 
             return loR;
