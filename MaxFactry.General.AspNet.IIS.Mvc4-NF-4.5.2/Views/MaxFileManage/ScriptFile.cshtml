@@ -63,14 +63,16 @@
             <tr>
                 <th>Action</th>
                 <th>Name</th>
+                <th>Version</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var loView in loList)
             {
                 <tr>
-                    <td>@Html.ActionLink("Edit", "ScriptFileEdit", "MaxFileManage", new RouteValueDictionary { { "id", loView.Id } }, new Dictionary<string, object> { { "class", "btn btn-default" } })</td>
+                    <td>@Html.ActionLink("Edit", "ScriptFileEdit", "MaxFileManage", new RouteValueDictionary { { "name", loView.Name } }, new Dictionary<string, object> { { "class", "btn btn-default" } })</td>
                     <td>@loView.Name</td>
+                    <td>@loView.Version</td>
                 </tr>
             }
         </tbody>

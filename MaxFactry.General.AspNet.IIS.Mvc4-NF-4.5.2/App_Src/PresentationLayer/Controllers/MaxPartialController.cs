@@ -71,56 +71,56 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         }
 
         [ChildActionOnly]
-        [OutputCache(Duration = 600, VaryByParam = "msk;nocache", VaryByCustom = "msk;url;nocache;user")]
+        [OutputCache(Duration = 600, VaryByCustom = "url;user")]
         public virtual ActionResult PartialManageHead()
         {
             return PartialView("Content/_PartialManageHead");
         }
 
         [ChildActionOnly]
-        [OutputCache(Duration = 600, VaryByParam = "msk;nocache", VaryByCustom = "msk;url;nocache")]
+        [OutputCache(Duration = 600, VaryByCustom = "url")]
         public virtual ActionResult PartialHead()
         {
             return PartialView("Content/_PartialHead");
         }
 
         [ChildActionOnly]
-        [OutputCache(Duration = 600, VaryByParam = "msk;nocache", VaryByCustom = "msk;url;nocache")]
+        [OutputCache(Duration = 600, VaryByCustom = "url")]
         public virtual ActionResult PartialManageHeadTitle()
         {
             return PartialView("Content/_PartialManageHeadTitle");
         }
 
         [ChildActionOnly]
-        [OutputCache(Duration = 600, VaryByParam = "msk;nocache", VaryByCustom = "msk;url;nocache")]
+        [OutputCache(Duration = 600, VaryByCustom = "url")]
         public virtual ActionResult PartialHeadTitle()
         {
             return PartialView("Content/_PartialHeadTitle");
         }
 
         [ChildActionOnly]
-        [OutputCache(Duration = 600, VaryByParam = "msk;nocache", VaryByCustom = "msk;nocache;user")]
+        [OutputCache(Duration = 600)]
         public virtual ActionResult PartialAddress()
         {
             return PartialView("Content/_PartialAddress");
         }
 
         [ChildActionOnly]
-        [OutputCache(Duration = 600, VaryByParam = "msk;nocache", VaryByCustom = "msk;url;nocache")]
+        [OutputCache(Duration = 600, VaryByCustom = "url")]
         public virtual ActionResult PartialNavTitle()
         {
             return PartialView("Content/_PartialNavTitle");
         }
 
         [ChildActionOnly]
-        [OutputCache(Duration = 600, VaryByParam = "msk;nocache", VaryByCustom = "msk;url;nocache")]
+        [OutputCache(Duration = 600, VaryByCustom = "url")]
         public virtual ActionResult PartialManageNavSectionLinkList()
         {
             return PartialView("Content/_PartialManageNavSectionLinkList");
         }
 
         [ChildActionOnly]
-        [OutputCache(Duration = 600, VaryByParam = "msk;nocache", VaryByCustom = "msk;url;nocache;user")]
+        [OutputCache(Duration = 600, VaryByCustom = "url;user")]
         public virtual ActionResult PartialNavLinkList()
         {
             return PartialView("Content/_PartialNavLinkList");

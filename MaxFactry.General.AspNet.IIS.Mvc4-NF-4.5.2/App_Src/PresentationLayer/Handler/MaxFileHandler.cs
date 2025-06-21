@@ -54,7 +54,6 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
         public MaxFileHandler()
         {
-
         }
 
         public MaxFileHandler(object loId, object loFileName)

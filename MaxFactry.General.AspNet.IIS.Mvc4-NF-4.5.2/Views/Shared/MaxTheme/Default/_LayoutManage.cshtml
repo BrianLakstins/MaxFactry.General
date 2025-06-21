@@ -19,7 +19,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@{Html.RenderAction("PartialManageHeadTitle", lsPartialController);}</title>
     <style type="text/css">
-        body { padding-top: 60px;}
+        body {
+            padding-top: 60px;
+        }
     </style>
     @{Html.RenderAction("PartialManageHead", lsPartialController);}
     @Html.MaxGetClientToolHtml("HEAD")
@@ -27,16 +29,17 @@
 </head>
 <body>
     <div id="udHeaderContainer">
-    @{Html.RenderAction("PartialThemeManageHeader", lsPartialController);}
+        @{Html.RenderAction("PartialThemeManageHeader", lsPartialController);}
     </div>
     <div id="udBodyContainer" class="container">
-    @RenderBody()
+        @RenderBody()
     </div>
     <div id="udFooterContainer">
-    @{Html.RenderAction("PartialThemeManageFooter", lsPartialController);}
+        @{Html.RenderAction("PartialThemeManageFooter", lsPartialController);}
     </div>
     @Html.MaxGetClientToolHtml("END")
     @RenderSection("ScriptSection", required: false)
 </body>
 </html>
 @RenderSection("PageEnd", required: false)
+<!--MaxFactry.General.AspNet.IIS.Mvc4-LayoutManage.cshtml-->

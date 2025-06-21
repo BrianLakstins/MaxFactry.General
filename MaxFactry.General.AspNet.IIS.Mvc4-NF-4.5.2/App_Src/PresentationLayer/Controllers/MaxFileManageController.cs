@@ -34,6 +34,7 @@
 // <change date="9/4/2020" author="Brian A. Lakstins" description="Add client tool management">
 // <change date="9/14/2020" author="Brian A. Lakstins" description="Add file for user list">
 // <change date="9/14/2020" author="Brian A. Lakstins" description="Add file test and import processes for user list">
+// <change date="6/21/2025" author="Brian A. Lakstins" description="Use name instead of id for versioned objects">
 // </changelog>
 #endregion
 
@@ -148,14 +149,9 @@ namespace MaxFactry.Module.File.Mvc4.PresentationLayer
         }
 
         [HttpGet]
-        public virtual ActionResult VirtualTextFileEdit()
+        public virtual ActionResult VirtualTextFileEdit(string name)
         {
-            MaxVirtualTextFileIISViewModel loModel = new MaxVirtualTextFileIISViewModel();
-            if (!string.IsNullOrEmpty(Request.QueryString["name"]))
-            {
-                loModel = new MaxVirtualTextFileIISViewModel(Request.QueryString["name"]);
-            }
-
+            MaxVirtualTextFileIISViewModel loModel = new MaxVirtualTextFileIISViewModel(name);
             return View(loModel);
         }
 
@@ -206,9 +202,9 @@ namespace MaxFactry.Module.File.Mvc4.PresentationLayer
         }
 
         [HttpGet]
-        public virtual ActionResult StyleFileEdit(string id)
+        public virtual ActionResult StyleFileEdit(string name)
         {
-            MaxStyleFileViewModel loModel = new MaxStyleFileViewModel(id);
+            MaxStyleFileViewModel loModel = new MaxStyleFileViewModel(name);
             return View(loModel);
         }
 
@@ -221,7 +217,7 @@ namespace MaxFactry.Module.File.Mvc4.PresentationLayer
             ActionResult loResult = this.Edit(loModel, uoProcess, lsCancelAction);
             if (loResult is ViewResult)
             {
-                return RedirectToAction("StyleFileEdit", new RouteValueDictionary { { "id", loModel.Id } });
+                return RedirectToAction("StyleFileEdit", new RouteValueDictionary { { "name", loModel.Name } });
             }
 
             return loResult;
@@ -252,9 +248,9 @@ namespace MaxFactry.Module.File.Mvc4.PresentationLayer
         }
 
         [HttpGet]
-        public virtual ActionResult ScriptFileEdit(string id)
+        public virtual ActionResult ScriptFileEdit(string name)
         {
-            MaxScriptFileViewModel loModel = new MaxScriptFileViewModel(id);
+            MaxScriptFileViewModel loModel = new MaxScriptFileViewModel(name);
             return View(loModel);
         }
 
@@ -267,7 +263,7 @@ namespace MaxFactry.Module.File.Mvc4.PresentationLayer
             ActionResult loResult = this.Edit(loModel, uoProcess, lsCancelAction);
             if (loResult is ViewResult)
             {
-                return RedirectToAction("ScriptFileEdit", new RouteValueDictionary { { "id", loModel.Id } });
+                return RedirectToAction("ScriptFileEdit", new RouteValueDictionary { { "name", loModel.Name } });
             }
 
             return loResult;

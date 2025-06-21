@@ -35,6 +35,7 @@
 // <change date="10/12/2020" author="Brian A. Lakstins" description="Make done button save first">
 // <change date="1/11/2021" author="Brian A. Lakstins" description="Redirect on Done even if nothing changed">
 // <change date="6/4/2025" author="Brian A. Lakstins" description="Updates for changes to base classes">
+// <change date="6/21/2025" author="Brian A. Lakstins" description="Updates for changes to base classes">
 // </changelog>
 #endregion
 
@@ -64,7 +65,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         /// <param name="lsProcess">The action to take.</param>
         /// <param name="lsCancelRedirect">The method to handle a cancel action.</param>
         /// <returns>A redirect action or view.</returns>
-        protected virtual ActionResult Edit(MaxFactry.Base.PresentationLayer.MaxBaseGuidKeyViewModel loModel, string lsProcess, string lsCancelRedirect)
+        protected virtual ActionResult Edit(MaxFactry.Base.PresentationLayer.MaxBaseViewModel loModel, string lsProcess, string lsCancelRedirect)
         {
             if (!string.IsNullOrEmpty(lsProcess))
             {
@@ -117,7 +118,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         /// <param name="loModel">The ViewModel related to the entity.</param>
         /// <param name="lsMessage">The message to show.</param>
         /// <returns>Normally a creation and list view.</returns>
-        protected virtual ActionResult Show(MaxFactry.Base.PresentationLayer.MaxBaseEntityViewModel loModel, string lsMessage)
+        protected virtual ActionResult Show(MaxFactry.Base.PresentationLayer.MaxBaseViewModel loModel, string lsMessage)
         {
             ViewBag.Message = lsMessage;
             return this.View(loModel);
@@ -132,12 +133,12 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         /// <param name="lsSuccessRedirect">The method to handle a successful creation.</param>
         /// <param name="lsSuccessMessage">The message to show for the success.</param>
         /// <returns>A redirect action or view.</returns>
-        protected virtual object Create(MaxBaseGuidKeyViewModel loModel, string lsProcess, string lsCancelRedirect, string lsSuccessRedirect, string lsSuccessMessage)
+        protected virtual object Create(MaxBaseViewModel loModel, string lsProcess, string lsCancelRedirect, string lsSuccessRedirect, string lsSuccessMessage)
         {
             return this.Create(loModel, lsProcess, lsCancelRedirect, lsSuccessRedirect, lsSuccessMessage, null);
         }
 
-        protected virtual object Create(MaxBaseGuidKeyViewModel loModel, string lsProcess, string lsCancelRedirect, string lsSuccessRedirect, string lsSuccessMessage, HttpPostedFileBase[] laFile)
+        protected virtual object Create(MaxBaseViewModel loModel, string lsProcess, string lsCancelRedirect, string lsSuccessRedirect, string lsSuccessMessage, HttpPostedFileBase[] laFile)
         {
             if (!string.IsNullOrEmpty(lsProcess) && lsProcess.Equals(ProcessCancel, StringComparison.InvariantCultureIgnoreCase))
             {
@@ -150,10 +151,15 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 {
                     if (lsProcess.Equals(ProcessCreate, StringComparison.InvariantCultureIgnoreCase))
                     {
-                        loModel.Id = string.Empty;
                         if (this.Save(loModel, laFile))
                         {
-                            return this.RedirectToAction(lsSuccessRedirect, new RouteValueDictionary { { "id", loModel.Id }, { "m", lsSuccessMessage } });
+                            string lsId = string.Empty;
+                            if (loModel is MaxBaseGuidKeyViewModel)
+                            {
+                                lsId = ((MaxBaseGuidKeyViewModel)loModel).Id;
+                            }
+
+                            return this.RedirectToAction(lsSuccessRedirect, new RouteValueDictionary { { "id", lsId }, { "m", lsSuccessMessage } });
                         }
                     }
                 }
@@ -162,7 +168,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             return this.View(loModel);
         }
 
-        protected virtual bool Save(MaxBaseGuidKeyViewModel loModel, HttpPostedFileBase[] laFile)
+        protected virtual bool Save(MaxBaseViewModel loModel, HttpPostedFileBase[] laFile)
         {
             bool lbR = false;
             if (null != laFile && laFile.Length > 0 && loModel is MaxBaseIdFileViewModel)

@@ -52,7 +52,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "MaxSystemController", MaxEnumGroup.LogInfo, "Created"));
         }
 
-        [OutputCache(Duration = 600, VaryByParam = "msk;nocache", Location = System.Web.UI.OutputCacheLocation.Server, VaryByCustom = "msk;nocache")]
+        [OutputCache(Duration = 600, Location = System.Web.UI.OutputCacheLocation.Server)]
         public virtual ActionResult Robots()
         {
             return View("Content/_Robots");

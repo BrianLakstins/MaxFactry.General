@@ -32,54 +32,41 @@
 // <change date="9/15/2019" author="Brian A. Lakstins" description="Handle static files.">
 // <change date="6/16/2025" author="Brian A. Lakstins" description="Add using a cache">
 // <change date="6/17/2025" author="Brian A. Lakstins" description="Clean up usings">
+// <change date="6/20/2025" author="Brian A. Lakstins" description="Update functionality to work with just name and cache output for 10 minutes">
 // </changelog>
 #endregion
 
 namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 {
-
+    using MaxFactry.Base.DataLayer;
+    using MaxFactry.Base.DataLayer.Library;
+    using MaxFactry.Core;
+    using MaxFactry.General.AspNet.PresentationLayer;
+    using System;
     using System.Web;
     using System.Web.Routing;
-    using MaxFactry.Base.DataLayer;
-    using MaxFactry.General.AspNet.PresentationLayer;
 
     public class MaxScriptHandler : IRouteHandler, IHttpHandler
     {
-        private string _sId = string.Empty;
-
         private string _sFileName = string.Empty;
 
         public MaxScriptHandler()
         {
-
         }
 
-        public MaxScriptHandler(object loId, object loFileName)
+        public MaxScriptHandler(object loFileName)
         {
-            if (null != loId && loId is string)
+            this._sFileName = MaxConvertLibrary.ConvertToString(typeof(object), loFileName);
+            if (!string.IsNullOrEmpty(this._sFileName) && !this._sFileName.EndsWith(".js", System.StringComparison.CurrentCultureIgnoreCase))
             {
-                this._sId = (string)loId;
-            }
-            else if (null != loId)
-            {
-                this._sId = loId.ToString();
-            }
-
-            if (null != loFileName && loFileName is string)
-            {
-                this._sFileName = (string)loFileName;
-            }
-            else if (null != loFileName)
-            {
-                this._sFileName = loFileName.ToString();
+                this._sFileName += ".js";
             }
         }
 
         public IHttpHandler GetHttpHandler(RequestContext loRequestContext)
         {
-            object loId = loRequestContext.HttpContext.Request.QueryString["id"];
             object loFileName = loRequestContext.RouteData.Values["filename"];
-            return new MaxScriptHandler(loId, loFileName);
+            return new MaxScriptHandler(loFileName);
         }
 
         // Summary:
@@ -108,37 +95,33 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             }
 
             if (!string.IsNullOrEmpty(lsFilePath))
-            {
-                string lsFile = loContext.Server.MapPath(lsFilePath);
-                string lsCacheKey = this.GetType().ToString() + "/" + lsFile;
-                byte[] laContent = MaxCacheRepository.Get(this.GetType(), lsCacheKey, typeof(byte[])) as byte[];
-                if (null == laContent)
+            {                
+                string lsCacheKey = this.GetType() + "/" + MaxDataLibrary.GetApplicationKey() + "/" + lsFilePath;
+                string lsContent = MaxCacheRepository.Get(typeof(object), lsCacheKey, typeof(string)) as string;
+                if (null == lsContent)
                 {
+                    lsContent = string.Empty;
+                    string lsFile = loContext.Server.MapPath(lsFilePath);
                     if (System.IO.File.Exists(lsFile))
                     {
-                        laContent = System.IO.File.ReadAllBytes(lsFile);
+                        lsContent = System.IO.File.ReadAllText(lsFile);
                     }
                     else
                     {
-                        MaxScriptFileViewModel loModel = new MaxScriptFileViewModel();
-                        if (!string.IsNullOrEmpty(this._sId))
-                        {
-                            loModel = new MaxScriptFileViewModel(this._sId);
-                        }
-                        else
-                        {
-                            loModel.LoadFromName(this._sFileName);
-                        }
-
+                        MaxScriptFileViewModel loModel = new MaxScriptFileViewModel(this._sFileName);
                         if (!string.IsNullOrEmpty(loModel.Content) && loContext.Response.IsClientConnected)
                         {
-                            laContent = System.Text.UTF8Encoding.UTF8.GetBytes(loModel.Content);
+                            lsContent = loModel.Content;
                         }
                     }
-                }
 
-                if (null != laContent && laContent.Length > 0 && loContext.Response.IsClientConnected)
+                    MaxCacheRepository.Set(typeof(object), lsCacheKey, lsContent, DateTime.UtcNow.AddMinutes(10));
+                }
+                
+                if (!string.IsNullOrEmpty(lsContent) && loContext.Response.IsClientConnected)
                 {
+                    
+                    byte[] laContent = System.Text.UTF8Encoding.UTF8.GetBytes(lsContent);
                     loContext.Response.Clear();
                     loContext.Response.ContentType = "text/javascript";
                     loContext.Response.OutputStream.Write(laContent, 0, laContent.Length);

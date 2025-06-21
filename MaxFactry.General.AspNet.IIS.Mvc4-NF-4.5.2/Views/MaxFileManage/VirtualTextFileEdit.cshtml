@@ -55,7 +55,6 @@
     @Html.AntiForgeryToken()
     @Html.ValidationSummary()
     <fieldset>
-        @Html.HiddenFor(m => m.Id)
         @Html.HiddenFor(m => m.Name)
         <legend>Edit Code File</legend>
         @Html.DisplayFor(m => m.Name, additionalViewData: new { LabelColumnWidth = 1 })
