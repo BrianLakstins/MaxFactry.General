@@ -30,6 +30,7 @@
 // <change date="9/30/2014" author="Brian A. Lakstins" description="Initial Release">
 // <change date="6/16/2025" author="Brian A. Lakstins" description="Add using this MaxCacheRepository">
 // <change date="6/17/2025" author="Brian A. Lakstins" description="Add logging">
+// <change date="6/18/2025" author="Brian A. Lakstins" description="Clear cache when virtual text files are changed">
 // </changelog>
 #endregion
 
@@ -38,7 +39,9 @@ namespace System.Web.Caching
     using MaxFactry.Base.DataLayer;
     using MaxFactry.Base.DataLayer.Library;
     using MaxFactry.Core;
+    using MaxFactry.General.AspNet.BusinessLayer;
     using System;
+    using System.Collections.Specialized;
 
 
 #if net4_52
@@ -53,9 +56,17 @@ namespace System.Web.Caching
             return lsR;
         }
 
+        public override void Initialize(string name, NameValueCollection config)
+        {
+            base.Initialize(name, config);
+            MaxVirtualTextFileEntity.InsertAfter += this.ClearOutputCache;
+            MaxVirtualTextFileEntity.UpdateAfter += this.ClearOutputCache;
+            MaxVirtualTextFileEntity.DeleteAfter += this.ClearOutputCache;
+        }
+
         public override object Get(string lsKey)
         {
-            string lsCacheKey = this.GetKey(lsKey);
+            string lsCacheKey = GetKey(lsKey);
             try
             {
                 if (null != HttpContext.Current && null != HttpContext.Current.Request && null != HttpContext.Current.Request.QueryString &&
@@ -85,21 +96,30 @@ namespace System.Web.Caching
 
         public override object Add(string lsKey, object loItem, DateTime ldExpire)
         {
-            string lsCacheKey = this.GetKey(lsKey);
+            string lsCacheKey = GetKey(lsKey);
             MaxCacheRepository.Set(this.GetType(), lsCacheKey, loItem, ldExpire);
             return loItem;
         }
 
         public override void Set(string lsKey, object loItem, DateTime ldExpire)
         {
-            string lsCacheKey = this.GetKey(lsKey);
+            string lsCacheKey = GetKey(lsKey);
             MaxCacheRepository.Set(this.GetType(), lsCacheKey, loItem, ldExpire);
         }
 
         public override void Remove(string lsKey)
         {
-            string lsCacheKey = this.GetKey(lsKey);
+            string lsCacheKey = GetKey(lsKey);
             MaxCacheRepository.Remove(this.GetType(), lsCacheKey);
+        }
+
+        private void ClearOutputCache(object sender, EventArgs e)
+        {
+            if (sender is MaxVirtualTextFileEntity)
+            {
+                string lsKey = GetKey("*");
+                MaxCacheRepository.Remove(typeof(MaxVirtualTextFileEntity), lsKey);
+            }
         }
     }
 #endif

@@ -45,6 +45,7 @@
 // <change date="6/4/2025" author="Brian A. Lakstins" description="Updates for changes to dependent classes.">
 // <change date="6/11/2025" author="Brian A. Lakstins" description="Update for ApplicationKey">
 // <change date="6/17/2025" author="Brian A. Lakstins" description="Update logging">
+// <change date="6/21/2025" author="Brian A. Lakstins" description="Integrate version information">
 // </changelog>
 #endregion
 
@@ -244,17 +245,13 @@ namespace System.Web.Hosting
                 string lsText = null;
                 if (lnFileType == FileTypeEntity)
                 {
-                    MaxEntityList loList = MaxVirtualTextFileEntity.Create().LoadAllActiveCache();
                     bool lbIsFound = false;
-                    for (int lnE = 0; lnE < loList.Count && !lbIsFound; lnE++)
+                    MaxVirtualTextFileEntity loEntity = MaxVirtualTextFileEntity.Create().GetCurrent(lsFileNameKey) as MaxVirtualTextFileEntity;
+                    if (null != loEntity)
                     {
-                        MaxVirtualTextFileEntity loEntity = (MaxVirtualTextFileEntity)loList[lnE];
-                        if (loEntity.Name.Equals(lsFileNameKey, StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            lbIsFound = true;
-                            lsText = loEntity.Content;
-                            lsFileNameKey += loEntity.Id.ToString();
-                        }
+                        lbIsFound = true;
+                        lsText = loEntity.Content;
+                        lsFileNameKey += loEntity.Version.ToString();
                     }
                 }
                 else if (lnFileType == FileTypeFile)
@@ -508,7 +505,7 @@ namespace System.Web.Hosting
                             if (loEntity.Name.Equals(lsVirtualPath, StringComparison.InvariantCultureIgnoreCase))
                             {
                                 lbIsFound = true;
-                                lsKey += loEntity.Id.ToString();
+                                lsKey += loEntity.Version.ToString();
                             }
                         }
                     }
@@ -549,6 +546,7 @@ namespace System.Web.Hosting
             string lsR = null;
             if (lnFileType > 0)
             {
+                lsR = this.GetType() + "/" + MaxDataLibrary.GetApplicationKey() + "/";
                 if (lnFileType > FileTypeBlank)
                 {
                     string lsKey = GetKey(lsVirtualPath);
@@ -562,7 +560,7 @@ namespace System.Web.Hosting
                             if (loEntity.Name.Equals(lsVirtualPath, StringComparison.InvariantCultureIgnoreCase))
                             {
                                 lbIsFound = true;
-                                lsKey += loEntity.Id.ToString();
+                                lsKey += loEntity.Version.ToString();
                             }
                         }
                     }
@@ -582,14 +580,15 @@ namespace System.Web.Hosting
 
                     if (!string.IsNullOrEmpty(lsKey))
                     {
-                        lsR = MaxEncryptionLibrary.GetHash(typeof(object), MaxEncryptionLibrary.MD5Hash, System.Text.UTF8Encoding.UTF8.GetBytes(lsKey));
+                        lsR += MaxEncryptionLibrary.GetHash(typeof(object), MaxEncryptionLibrary.MD5Hash, System.Text.UTF8Encoding.UTF8.GetBytes(lsKey));
                     }
                 }
                 else
                 {
-                    lsR = lsVirtualPath;
+                    lsR += lsVirtualPath;
                 }
 
+                lsR = MaxEncryptionLibrary.GetHash(typeof(object), "MD5", lsR);
                 MaxFactry.Core.MaxLogLibrary.Log(MaxFactry.Core.MaxEnumGroup.LogDebug, "GetCacheKey([" + lsVirtualPath + "]) end virtual [" + lsR + "]", "MaxVirtualPathProvider");
             }
             else
@@ -728,7 +727,7 @@ namespace System.Web.Hosting
                     lnR = _oFileTypeIndex[lsFileTypeKey];
 
                     // Try storage key specific locations, which are all better matches.
-                    if (MaxVirtualTextFileEntity.Exists(lsFileNameKey))
+                    if (null != MaxVirtualTextFileEntity.Create().GetCurrent(lsFileNameKey))
                     {
                         // Entity based content 
                         lnR = FileTypeEntity;

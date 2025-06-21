@@ -29,28 +29,28 @@
 // <changelog>
 // <change date="7/15/2016" author="Brian A. Lakstins" description="Initial creation">
 // <change date="6/4/2025" author="Brian A. Lakstins" description="Updates for removal of versioning">
+// <change date="6/21/2025" author="Brian A. Lakstins" description="Updates for changed to base">
 // </changelog>
 #endregion
 
 namespace MaxFactry.General.AspNet.IIS.PresentationLayer
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Web;
-    using System.Web.Hosting;
-    using MaxFactry.Core;
     using MaxFactry.Base.BusinessLayer;
+    using MaxFactry.Base.PresentationLayer;
+    using MaxFactry.Core;
     using MaxFactry.General.AspNet.BusinessLayer;
     using MaxFactry.General.AspNet.PresentationLayer;
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Web.Hosting;
 
     /// <summary>
     /// View model for content.
     /// </summary>
     public class MaxVirtualTextFileIISViewModel : MaxVirtualTextFileViewModel
     {
-        private List<MaxVirtualTextFileViewModel> _oSortedList = null;
-
         /// <summary>
         /// Initializes a new instance of the MaxVirtualTextFileViewModel class
         /// </summary>
@@ -73,18 +73,17 @@ namespace MaxFactry.General.AspNet.IIS.PresentationLayer
         /// Initializes a new instance of the MaxVirtualTextFileViewModel class
         /// </summary>
         /// <param name="lsId">Id associated with the entity.</param>
-        public MaxVirtualTextFileIISViewModel(string lsVirtualPath)
+        public MaxVirtualTextFileIISViewModel(string lsName): base(lsName)
         {
-            this.LoadFromPath(lsVirtualPath);
         }
 
-        public override bool LoadFromPath(string lsVirtualPath)
+        public override bool Load(string lsName)
         {
-            bool lbR = base.LoadFromPath(lsVirtualPath);
+            bool lbR = base.Load(lsName);
             if (!lbR)
             {
                 MaxVirtualTextFileEntity loEntity = MaxVirtualTextFileEntity.Create();
-                loEntity.Name = lsVirtualPath.ToLowerInvariant();
+                loEntity.Name = lsName.ToLowerInvariant();
                 Stream loStream = VirtualPathProvider.OpenFile(loEntity.Name);
                 try
                 {
@@ -110,52 +109,36 @@ namespace MaxFactry.General.AspNet.IIS.PresentationLayer
             return lbR;
         }
 
-        public override List<MaxVirtualTextFileViewModel> GetSortedList()
+        public override List<MaxBaseVersionedViewModel> GetSortedList()
         {
-            if (null == this._oSortedList)
+            List<MaxBaseVersionedViewModel> loR = base.GetSortedList();
+            if (HostingEnvironment.VirtualPathProvider is System.Web.Hosting.MaxVirtualPathProviderOverride)
             {
-                this._oSortedList = new List<MaxVirtualTextFileViewModel>();
-                SortedList<string, MaxVirtualTextFileViewModel> loSortedList = new SortedList<string, MaxVirtualTextFileViewModel>();
-                string[] laKey = this.EntityIndex.GetSortedKeyList();
-                for (int lnK = 0; lnK < laKey.Length; lnK++)
+                SortedList<string, MaxBaseVersionedViewModel> loSortedList = new SortedList<string, MaxBaseVersionedViewModel>(StringComparer.OrdinalIgnoreCase);
+                foreach (MaxBaseVersionedViewModel loViewModel in loR)
                 {
-                    MaxVirtualTextFileIISViewModel loViewModel = new MaxVirtualTextFileIISViewModel(this.EntityIndex[laKey[lnK]] as MaxVirtualTextFileEntity);
-                    loViewModel.Load();
-                    string lsKey = loViewModel.Name.ToLowerInvariant();
-
-                    if (loSortedList.ContainsKey(lsKey))
+                    if (!loSortedList.ContainsKey(loViewModel.Name.ToLower()))
                     {
-                        DateTime ldCheck = MaxConvertLibrary.ConvertToDateTime(typeof(object), loViewModel.CreatedDate);
-                        DateTime ldCurrent = MaxConvertLibrary.ConvertToDateTime(typeof(object), loSortedList[lsKey].CreatedDate);
-                        if (ldCheck > ldCurrent)
-                        {
-                            loSortedList[lsKey] = loViewModel;
-                        }
-                    }
-                    else
-                    {
-                        loSortedList.Add(lsKey, loViewModel);
+                        loSortedList.Add(loViewModel.Name.ToLower(), loViewModel);
                     }
                 }
 
-                if (HostingEnvironment.VirtualPathProvider is System.Web.Hosting.MaxVirtualPathProviderOverride)
+                string[] laVirtualTextPathList = System.Web.Hosting.MaxVirtualPathProviderOverride.GetVirtualPathList();
+                foreach (string lsVirtualTextPath in laVirtualTextPathList)
                 {
-                    string[] laVirtualTextPathList = System.Web.Hosting.MaxVirtualPathProviderOverride.GetVirtualPathList();
-                    foreach (string lsVirtualTextPath in laVirtualTextPathList)
+                    if (!loSortedList.ContainsKey(lsVirtualTextPath.ToLower()))
                     {
-                        if (!loSortedList.ContainsKey(lsVirtualTextPath.ToLower()))
-                        {
-                            MaxVirtualTextFileIISViewModel loViewModel = new MaxVirtualTextFileIISViewModel();
-                            loViewModel.Name = lsVirtualTextPath;
-                            loSortedList.Add(lsVirtualTextPath.ToLower(), loViewModel);
-                        }
+                        MaxBaseVersionedViewModel loViewModel = new MaxBaseVersionedViewModel();
+                        loViewModel.Name = lsVirtualTextPath;
+                        loViewModel.DataKey = "File";
+                        loSortedList.Add(lsVirtualTextPath.ToLower(), loViewModel);
                     }
                 }
 
-                this._oSortedList = new List<MaxVirtualTextFileViewModel>(loSortedList.Values);
+                loR = new List<MaxBaseVersionedViewModel>(loSortedList.Values);
             }
 
-            return this._oSortedList;
+            return loR;
         }
     }
 }

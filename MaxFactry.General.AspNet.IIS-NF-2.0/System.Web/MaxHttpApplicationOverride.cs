@@ -48,6 +48,7 @@
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
 // <change date="6/11/2025" author="Brian A. Lakstins" description="Update for ApplicationKey">
 // <change date="6/17/2025" author="Brian A. Lakstins" description="Update logging">
+// <change date="6/21/2025" author="Brian A. Lakstins" description="Remove variables that are included in the outputcacheprovider">
 // </changelog>
 #endregion
 
@@ -288,61 +289,33 @@ namespace System.Web
             }
 
             List<string> loCustom = new List<string>(custom.Split(';'));
-            string lsR = string.Empty;
-
-            if (loCustom.Contains("nocache") &&
-                null != context &&
-                null != context.Request &&
-                !string.IsNullOrEmpty(context.Request.QueryString["nocache"]))
+            string lsR = base.GetVaryByCustomString(context, custom);
+            if (null == lsR)
             {
-                lsR = Guid.NewGuid().ToString();
+                lsR = string.Empty;
             }
-            else
+
+            if (loCustom.Contains("user") &&
+                null != context &&
+                null != context.User &&
+                null != context.User.Identity &&
+                null != context.User.Identity.Name)
             {
-                if (null != context &&
-                    null != context.Request &&
-                    null != context.Request.Url)
+                lsR += context.User.Identity.Name;
+            }
+
+            //// Get the Url
+            if (loCustom.Contains("url"))
+            {
+                if (null != context && null != context.Request && null != context.Request.Url)
                 {
-                    lsR += context.Request.Url.Host;
+                    lsR += context.Request.Url.AbsolutePath;
                 }
+            }           
 
-                if (loCustom.Contains("user") &&
-                    null != context &&
-                    null != context.User &&
-                    null != context.User.Identity &&
-                    null != context.User.Identity.Name)
-                {
-                    lsR += ":" + context.User.Identity.Name;
-                }
-
-                //// Get the MaxStorageKey
-                if (loCustom.Contains(MaxFactry.General.AspNet.IIS.MaxAppLibrary.MaxStorageKeyQueryName))
-                {
-                    string lsMaxStorageKey = MaxFactry.Base.DataLayer.Library.MaxDataLibrary.GetApplicationKey();
-                    if (string.IsNullOrEmpty(lsMaxStorageKey))
-                    {
-                        //// Include a random storage key to make sure that nothing dependent on storage key is ever cached with Guid.Empty.
-                        lsMaxStorageKey = Guid.NewGuid().ToString();
-                    }
-
-                    lsR += lsMaxStorageKey;
-                }
-
-                //// Get the Url
-                if (loCustom.Contains("url"))
-                {
-                    if (null != context && null != context.Request && null != context.Request.Url)
-                    {
-                        lsR += context.Request.Url.AbsolutePath;
-                    }
-                }
-
-                string lsBase = base.GetVaryByCustomString(context, custom);
-
-                if (!string.IsNullOrEmpty(lsBase))
-                {
-                    lsR += lsBase;
-                }
+            if (null != lsR && lsR.Length > 10)
+            {
+                lsR = MaxEncryptionLibrary.GetHash(typeof(object), "MD5", lsR);
             }
 
             MaxFactry.Core.MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "GetVaryByCustomString", MaxFactry.Core.MaxEnumGroup.LogInfo, "Returning {lsR} from {custom}", lsR, custom));

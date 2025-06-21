@@ -37,9 +37,6 @@
 
 namespace MaxFactry.General.AspNet.IIS
 {
-    using System;
-    using System.Configuration;
-    using System.Web;
     using MaxFactry.Core;
     using MaxFactry.Base.BusinessLayer;
     using MaxFactry.Base.DataLayer.Library;
