@@ -29,6 +29,7 @@
 // <changelog>
 // <change date="7/14/2016" author="Brian A. Lakstins" description="Initial creation">
 // <change date="6/4/2025" author="Brian A. Lakstins" description="Change base class to remove versioning">
+// <change date="6/21/2025" author="Brian A. Lakstins" description="Change base class to add versioning back">
 // </changelog>
 #endregion
 
@@ -39,10 +40,8 @@ namespace MaxFactry.General.AspNet.DataLayer
 	/// <summary>
     /// Data model for the virtual files in a web site.
 	/// </summary>
-	public class MaxStyleFileDataModel : MaxBaseGuidKeyDataModel
+	public class MaxStyleFileDataModel : MaxBaseVersionedDataModel
     {
-        public readonly string Name = "Name";
-
         /// <summary>
         /// The text content to be stored.
         /// </summary>
@@ -72,11 +71,10 @@ namespace MaxFactry.General.AspNet.DataLayer
             this.RepositoryProviderType = typeof(MaxFactry.General.AspNet.DataLayer.Provider.MaxBaseAspNetRepositoryDefaultProvider);
             this.RepositoryType = typeof(MaxBaseAspNetRepository);
             this.SetDataStorageName("MaxCoreAspNetStyleFile");
-            this.AddType(this.Name, typeof(string));
             this.AddType(this.Content, typeof(MaxLongString));
-            this.AddType(this.ContentMin, typeof(MaxLongString));
-            this.AddType(this.ContentName, typeof(MaxShortString));
-            this.AddType(this.StyleType, typeof(MaxShortString));
+            this.AddNullable(this.ContentMin, typeof(MaxLongString));
+            this.AddNullable(this.ContentName, typeof(MaxShortString));
+            this.AddNullable(this.StyleType, typeof(MaxShortString));
         }
 	}
 }

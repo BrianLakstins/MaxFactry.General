@@ -44,24 +44,22 @@
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
 // <change date="6/4/2025" author="Brian A. Lakstins" description="Change base class to remove versioning">
 // <change date="6/11/2025" author="Brian A. Lakstins" description="Update cache integration">
+// <change date="6/21/2025" author="Brian A. Lakstins" description="Change base class to add versioning back">
 // </changelog>
 #endregion
 
 namespace MaxFactry.General.AspNet.BusinessLayer
 {
     using System;
-    using System.IO;
-    using MaxFactry.Core;
     using MaxFactry.Base.BusinessLayer ;
     using MaxFactry.Base.DataLayer;
     using MaxFactry.Base.DataLayer.Library;
     using MaxFactry.General.AspNet.DataLayer;
-    using System.Runtime.CompilerServices;
 
     /// <summary>
     /// Entity to represent virtual text file in a web site.
     /// </summary>
-    public class MaxVirtualTextFileEntity : MaxBaseGuidKeyEntity
+    public class MaxVirtualTextFileEntity : MaxBaseVersionedEntity
     {
         /// <summary>
         /// Initializes a new instance of the MaxVirtualTextFileEntity class
@@ -82,22 +80,6 @@ namespace MaxFactry.General.AspNet.BusinessLayer
         }
 
         /// <summary>
-        /// Gets or sets the name of the file.
-        /// </summary>
-        public string Name
-        {
-            get
-            {
-                return this.GetString(this.DataModel.Name);
-            }
-
-            set
-            {
-                this.Set(this.DataModel.Name, value);
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the text content
         /// </summary>
         public string Content
@@ -112,8 +94,6 @@ namespace MaxFactry.General.AspNet.BusinessLayer
                 lsR = lsR.Replace("Html.GetContentShortCode(", "Html.MaxGetContentShortCode(");
                 lsR = lsR.Replace("Html.GetGoogleAnalytics(", "Html.MaxGetGoogleAnalytics(");
                 lsR = lsR.Replace("MaxFactry.Application.AspNet.IIS.Mvc4.PresentationLayer.MaxEnableEmbedAttribute.", "MaxFactry.Base.Mvc4.PresentationLayer.MaxEnableEmbedAttribute.");
-
-
                 return lsR;
             }
 
@@ -143,44 +123,6 @@ namespace MaxFactry.General.AspNet.BusinessLayer
             return MaxBusinessLibrary.GetEntity(
                 typeof(MaxVirtualTextFileEntity),
                 typeof(MaxVirtualTextFileDataModel)) as MaxVirtualTextFileEntity;
-        }
-
-        public static bool Exists(string lsName)
-        {
-            string lsCacheKey = GetExistsKey(lsName);
-            string lsExists = MaxCacheRepository.Get(typeof(MaxVirtualTextFileEntity), lsCacheKey, typeof(string)) as string;
-            if (string.IsNullOrEmpty(lsExists))
-            {
-                MaxVirtualTextFileEntity loEntity = MaxVirtualTextFileEntity.Create();
-                MaxEntityList loList = loEntity.LoadAllActiveCache();
-                lsExists = "false";
-                for (int lnE = 0; lnE < loList.Count; lnE++)
-                {
-                    loEntity = loList[lnE] as MaxVirtualTextFileEntity;
-                    if (loEntity.Name.Equals(lsName))
-                    {
-                        lsExists = "true";
-                    }
-                }               
-
-                MaxCacheRepository.Set(typeof(MaxVirtualTextFileEntity), lsCacheKey, lsExists, DateTime.UtcNow.AddDays(1));
-            }
-
-            return MaxConvertLibrary.ConvertToBoolean(typeof(object), lsExists);
-        }
-
-        /// <summary>
-        /// Gets a string that can be used to sort a list of this entity.
-        /// </summary>
-        /// <returns>Lowercase version of Name passed to 100 characters.</returns>
-        public override string GetDefaultSortString()
-        {
-            return this.Name.ToLowerInvariant().PadRight(500, ' ') + base.GetDefaultSortString();
-        }
-
-        public static string GetExistsKey(string lsName)
-        {
-            return MaxDataLibrary.GetApplicationKey() + typeof(MaxVirtualTextFileEntity).ToString() + ".LoadAllByName" + lsName;
         }
     }
 }

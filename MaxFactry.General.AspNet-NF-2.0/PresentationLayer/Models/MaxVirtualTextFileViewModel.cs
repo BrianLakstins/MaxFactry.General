@@ -32,26 +32,21 @@
 // <change date="5/18/2016" author="Brian A. Lakstins" description="Fix issue with name being case sensitive in database">
 // <change date="7/15/2016" author="Brian A. Lakstins" description="Moved to Core.AspNet project and updated methods that can be overridden for IIS.">
 // <change date="6/4/2025" author="Brian A. Lakstins" description="Change base class to remove versioning">
+// <change date="6/21/2025" author="Brian A. Lakstins" description="Change base class to add versioning back">
 // </changelog>
 #endregion
 
 namespace MaxFactry.General.AspNet.PresentationLayer
 {
-	using System;
     using System.Collections.Generic;
-    using System.IO;
-    using System.Web;
-    using MaxFactry.Core;
     using MaxFactry.Base.BusinessLayer ;
     using MaxFactry.General.AspNet.BusinessLayer;
 
 	/// <summary>
 	/// View model for content.
 	/// </summary>
-    public class MaxVirtualTextFileViewModel : MaxFactry.Base.PresentationLayer.MaxBaseGuidKeyViewModel
+    public class MaxVirtualTextFileViewModel : MaxFactry.Base.PresentationLayer.MaxBaseVersionedViewModel
     {
-        private List<MaxVirtualTextFileViewModel> _oSortedList = null;
-
         /// <summary>
         /// Initializes a new instance of the MaxVirtualTextFileViewModel class
         /// </summary>
@@ -74,78 +69,19 @@ namespace MaxFactry.General.AspNet.PresentationLayer
         /// Initializes a new instance of the MaxVirtualTextFileViewModel class
         /// </summary>
         /// <param name="lsId">Id associated with the entity.</param>
-        public MaxVirtualTextFileViewModel(string lsVirtualPath)
+        public MaxVirtualTextFileViewModel(string lsName) : base(lsName)
         {
-            this.LoadFromPath(lsVirtualPath);
         }
 
-        public virtual bool LoadFromPath(string lsVirtualPath)
+        protected override void CreateEntity()
         {
-            string lsName = lsVirtualPath.ToLowerInvariant();
-            bool lbFound = false;
-            MaxEntityList loList = MaxVirtualTextFileEntity.Create().LoadAllActiveCache();
-            for (int lnE = 0; lnE < loList.Count; lnE++)
-            {
-                MaxVirtualTextFileEntity loEntity = loList[lnE] as MaxVirtualTextFileEntity;
-                if (loEntity.Name.Equals(lsName, StringComparison.OrdinalIgnoreCase))
-                {
-                    this.Entity = loEntity;
-                    lbFound = true;
-                }
-            }
-
-            if (lbFound)
-            {
-                return this.MapFromEntity();
-            }
-
-            return false;
-        }
-
-        public string Name
-        {
-            get;
-            set;
+            this.Entity = MaxVirtualTextFileEntity.Create();
         }
 
         public string Content
         {
             get;
             set;
-        }
-
-        public virtual List<MaxVirtualTextFileViewModel> GetSortedList()
-        {
-            if (null == this._oSortedList)
-            {
-                this._oSortedList = new List<MaxVirtualTextFileViewModel>();
-                SortedList<string, MaxVirtualTextFileViewModel> loSortedList = new SortedList<string, MaxVirtualTextFileViewModel>();
-                string[] laKey = this.EntityIndex.GetSortedKeyList();
-                for (int lnK = 0; lnK < laKey.Length; lnK++)
-                {
-                    MaxVirtualTextFileViewModel loViewModel = new MaxVirtualTextFileViewModel(this.EntityIndex[laKey[lnK]] as MaxVirtualTextFileEntity);
-                    loViewModel.Load();
-                    string lsKey = loViewModel.Name.ToLowerInvariant();
-                    
-                    if (loSortedList.ContainsKey(lsKey))
-                    {
-                        DateTime ldCheck = MaxConvertLibrary.ConvertToDateTime(typeof(object), loViewModel.CreatedDate);
-                        DateTime ldCurrent = MaxConvertLibrary.ConvertToDateTime(typeof(object), loSortedList[lsKey].CreatedDate);
-                        if (ldCheck > ldCurrent)
-                        {
-                            loSortedList[lsKey] = loViewModel;
-                        }
-                    }
-                    else
-                    {
-                        loSortedList.Add(lsKey, loViewModel);
-                    }
-                }
-
-                this._oSortedList = new List<MaxVirtualTextFileViewModel>(loSortedList.Values);
-            }
-
-            return this._oSortedList;
         }
 
         /// <summary>
@@ -160,8 +96,8 @@ namespace MaxFactry.General.AspNet.PresentationLayer
                 MaxVirtualTextFileEntity loEntity = this.Entity as MaxVirtualTextFileEntity;
                 if (null != loEntity)
                 {
-                    loEntity.Name = this.Name.ToLowerInvariant();
                     loEntity.Content = this.Content;
+                    loEntity.IsActive = true;
                     return true;
                 }
             }
@@ -180,27 +116,16 @@ namespace MaxFactry.General.AspNet.PresentationLayer
             {
                 if (base.MapFromEntity())
                 {
-                    this.Name = loEntity.Name;
                     this.Content = loEntity.Content;
                     return true;
                 }
                 else
                 {
-                    this.Name = loEntity.Name;
                     this.Content = loEntity.Content;
                 }
             }
 
             return false;
-        }
-
-        public override bool Save()
-        {
-            bool lbR = false;
-            this.Id = null;
-            this.Entity = MaxVirtualTextFileEntity.Create();
-            lbR = base.Save();
-            return lbR;
         }
     }
 }

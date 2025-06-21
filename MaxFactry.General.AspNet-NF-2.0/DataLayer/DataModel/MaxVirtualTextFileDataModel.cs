@@ -32,6 +32,7 @@
 // <change date="6/27/2014" author="Brian A. Lakstins" description="Change base to MaxBaseIdDataModel.">
 // <change date="12/18/2019" author="Brian A. Lakstins" description="Allow Content to be long string.">
 // <change date="6/4/2025" author="Brian A. Lakstins" description="Change base class to remove versioning">
+// <change date="6/21/2025" author="Brian A. Lakstins" description="Change base class to add versioning back">
 // </changelog>
 #endregion
 
@@ -42,10 +43,8 @@ namespace MaxFactry.General.AspNet.DataLayer
     /// <summary>
     /// Data model for the virtual files in a web site.
     /// </summary>
-	public class MaxVirtualTextFileDataModel : MaxBaseGuidKeyDataModel
+	public class MaxVirtualTextFileDataModel : MaxBaseVersionedDataModel
     {
-        public readonly string Name = "Name";
-
         /// <summary>
         /// Content for the file
         /// </summary>
@@ -60,7 +59,6 @@ namespace MaxFactry.General.AspNet.DataLayer
             this.RepositoryProviderType = typeof(MaxFactry.General.AspNet.DataLayer.Provider.MaxBaseAspNetRepositoryDefaultProvider);
             this.RepositoryType = typeof(MaxBaseAspNetRepository);
             this.SetDataStorageName("MaxCoreAspNetVirtualTextFile");
-            this.AddType(this.Name, typeof(string));
             this.AddType(this.Content, typeof(MaxLongString));
         }
 	}

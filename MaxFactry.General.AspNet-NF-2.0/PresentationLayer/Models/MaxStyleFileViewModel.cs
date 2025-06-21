@@ -29,26 +29,20 @@
 // <changelog>
 // <change date="7/14/2016" author="Brian A. Lakstins" description="Initial creation">
 // <change date="6/4/2025" author="Brian A. Lakstins" description="Change base class to remove versioning">
+// <change date="6/21/2025" author="Brian A. Lakstins" description="Change base class to add versioning back">
 // </changelog>
 #endregion
 
 namespace MaxFactry.General.AspNet.PresentationLayer
 {
-	using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Web;
-    using MaxFactry.Core;
     using MaxFactry.Base.BusinessLayer ;
     using MaxFactry.General.AspNet.BusinessLayer;
 
 	/// <summary>
 	/// View model for content.
 	/// </summary>
-    public class MaxStyleFileViewModel : MaxFactry.Base.PresentationLayer.MaxBaseGuidKeyViewModel
+    public class MaxStyleFileViewModel : MaxFactry.Base.PresentationLayer.MaxBaseVersionedViewModel
     {
-        private List<MaxStyleFileViewModel> _oSortedList = null;
-
         /// <summary>
         /// Initializes a new instance of the MaxStyleFileViewModel class
         /// </summary>
@@ -66,41 +60,13 @@ namespace MaxFactry.General.AspNet.PresentationLayer
         {
         }
 
-        public MaxStyleFileViewModel(string lsId) : base(lsId)
+        public MaxStyleFileViewModel(string lsName) : base(lsName)
         {
         }
 
         protected override void CreateEntity()
         {
             this.Entity = MaxStyleFileEntity.Create();
-        }
-
-        public virtual bool LoadFromName(string lsName)
-        {
-            MaxEntityList loList = MaxStyleFileEntity.Create().LoadAllCache();
-            bool lbFound = false;
-            for (int lnE = 0; lnE < loList.Count; lnE++)
-            {
-                MaxStyleFileEntity loEntity = loList[lnE] as MaxStyleFileEntity;
-                if (loEntity.Name.Equals(lsName, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    this.Entity = loEntity;
-                    lbFound = true;
-                }
-            }
-
-            if (lbFound)
-            {
-                return this.MapFromEntity();
-            }
-
-            return false;
-        }
-
-        public string Name
-        {
-            get;
-            set;
         }
 
         public string Content
@@ -127,39 +93,6 @@ namespace MaxFactry.General.AspNet.PresentationLayer
             set;
         }
 
-        public List<MaxStyleFileViewModel> GetSortedList()
-        {
-            if (null == this._oSortedList)
-            {
-                this._oSortedList = new List<MaxStyleFileViewModel>();
-                SortedList<string, MaxStyleFileViewModel> loSortedList = new SortedList<string, MaxStyleFileViewModel>();
-                string[] laKey = this.EntityIndex.GetSortedKeyList();
-                for (int lnK = 0; lnK < laKey.Length; lnK++)
-                {
-                    MaxStyleFileViewModel loViewModel = new MaxStyleFileViewModel(this.EntityIndex[laKey[lnK]] as MaxStyleFileEntity);
-                    loViewModel.Load();
-                    string lsKey = loViewModel.Name.ToLowerInvariant();
-                    
-                    if (loSortedList.ContainsKey(lsKey))
-                    {
-                        DateTime ldCheck = MaxConvertLibrary.ConvertToDateTime(typeof(object), loViewModel.CreatedDate);
-                        DateTime ldCurrent = MaxConvertLibrary.ConvertToDateTime(typeof(object), loSortedList[lsKey].CreatedDate);
-                        if (ldCheck > ldCurrent)
-                        {
-                            loSortedList[lsKey] = loViewModel;
-                        }
-                    }
-                    else
-                    {
-                        loSortedList.Add(lsKey, loViewModel);
-                    }
-                }
-
-                this._oSortedList = new List<MaxStyleFileViewModel>(loSortedList.Values);
-            }
-
-            return this._oSortedList;
-        }
 
         /// <summary>
         /// Loads the entity based on the Id property.
@@ -173,11 +106,9 @@ namespace MaxFactry.General.AspNet.PresentationLayer
                 MaxStyleFileEntity loEntity = this.Entity as MaxStyleFileEntity;
                 if (null != loEntity)
                 {
-                    string lsName = this.Name.ToLowerInvariant();
-                    loEntity.Name = lsName;
                     loEntity.Content = this.Content;
                     loEntity.ContentMin = this.ContentMin;
-                    loEntity.ContentName = lsName;
+                    loEntity.ContentName = this.Name;
                     loEntity.StyleType = this.StyleType;
                     return true;
                 }
@@ -197,7 +128,6 @@ namespace MaxFactry.General.AspNet.PresentationLayer
             {
                 if (base.MapFromEntity())
                 {
-                    this.Name = loEntity.Name;
                     this.Content = loEntity.Content;
                     this.ContentMin = loEntity.ContentMin;
                     this.ContentName = loEntity.ContentName;
@@ -207,15 +137,6 @@ namespace MaxFactry.General.AspNet.PresentationLayer
             }
 
             return false;
-        }
-
-        public override bool Save()
-        {
-            bool lbR = false;
-            this.Id = null;
-            this.Entity = MaxStyleFileEntity.Create();
-            lbR = base.Save();
-            return lbR;
         }
     }
 }
