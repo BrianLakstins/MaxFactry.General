@@ -29,6 +29,7 @@
 // <changelog>
 // <change date="4/28/2023" author="Brian A. Lakstins" description="Initial creation">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
+// <change date="6/22/2024" author="Brian A. Lakstins" description="Prevent exception when stream does not exist">
 // </changelog>
 #endregion
 
@@ -76,40 +77,43 @@ namespace MaxFactry.General.BusinessLayer
                     this._sContentString = string.Empty;
                     try
                     {
-                        System.Text.Encoding loEncoding = System.Text.Encoding.ASCII;
-                        if (this.ContentType.ToLowerInvariant().Contains("charset"))
+                        if (null != this.Content)
                         {
-                            string[] laContentType = this.ContentType.Split(';');
-                            foreach (string lsContentType in laContentType)
+                            System.Text.Encoding loEncoding = System.Text.Encoding.ASCII;
+                            if (this.ContentType.ToLowerInvariant().Contains("charset"))
                             {
-                                if (lsContentType.TrimStart().ToLowerInvariant().StartsWith("charset") && lsContentType.Contains("="))
+                                string[] laContentType = this.ContentType.Split(';');
+                                foreach (string lsContentType in laContentType)
                                 {
-                                    string[] laCharset = lsContentType.Split('=');
-                                    if (laCharset[1].Trim().ToLowerInvariant().Equals("utf-8"))
+                                    if (lsContentType.TrimStart().ToLowerInvariant().StartsWith("charset") && lsContentType.Contains("="))
                                     {
-                                        loEncoding = System.Text.Encoding.UTF8;
-                                    }
-                                    else if (laCharset[1].Trim().ToLowerInvariant().Equals("utf-7"))
-                                    {
-                                        loEncoding = System.Text.Encoding.UTF7;
-                                    }
-                                    else if (laCharset[1].Trim().ToLowerInvariant().Equals("utf-32"))
-                                    {
-                                        loEncoding = System.Text.Encoding.UTF32;
-                                    }
-                                    else if (laCharset[1].Trim().ToLowerInvariant().Equals("unicode"))
-                                    {
-                                        loEncoding = System.Text.Encoding.Unicode;
+                                        string[] laCharset = lsContentType.Split('=');
+                                        if (laCharset[1].Trim().ToLowerInvariant().Equals("utf-8"))
+                                        {
+                                            loEncoding = System.Text.Encoding.UTF8;
+                                        }
+                                        else if (laCharset[1].Trim().ToLowerInvariant().Equals("utf-7"))
+                                        {
+                                            loEncoding = System.Text.Encoding.UTF7;
+                                        }
+                                        else if (laCharset[1].Trim().ToLowerInvariant().Equals("utf-32"))
+                                        {
+                                            loEncoding = System.Text.Encoding.UTF32;
+                                        }
+                                        else if (laCharset[1].Trim().ToLowerInvariant().Equals("unicode"))
+                                        {
+                                            loEncoding = System.Text.Encoding.Unicode;
+                                        }
                                     }
                                 }
+
                             }
 
+                            StreamReader loReader = new StreamReader(this.Content, loEncoding);
+                            this._sContentString = loReader.ReadToEnd();
+                            loReader.Dispose();
+                            this.Content.Dispose();
                         }
-
-                        StreamReader loReader = new StreamReader(this.Content, loEncoding);
-                        this._sContentString = loReader.ReadToEnd();
-                        loReader.Dispose();
-                        this.Content.Dispose();
                     }
                     catch (Exception loE)
                     {
