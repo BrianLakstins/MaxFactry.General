@@ -29,15 +29,13 @@
 // <changelog>
 // <change date="9/30/2014" author="Brian A. Lakstins" description="Initial Release">
 // <change date="7/19/2016" author="Brian A. Lakstins" description="Add user to custom parameters for caching.">
+// <change date="6/22/2025" author="Brian A. Lakstins" description="Update custom caching parameters.">
 // </changelog>
 #endregion
 
 namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 {
 
-    using System;
-    using System.Collections.Generic;
-    using System.Web;
     using System.Web.Mvc;
 
     public class MaxPartialController : MaxBaseController
@@ -99,7 +97,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         }
 
         [ChildActionOnly]
-        [OutputCache(Duration = 600)]
+        [OutputCache(Duration = 600, VaryByCustom = "url")]
         public virtual ActionResult PartialAddress()
         {
             return PartialView("Content/_PartialAddress");

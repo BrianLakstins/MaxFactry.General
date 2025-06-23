@@ -29,17 +29,13 @@
 // <changelog>
 // <change date="6/7/2015" author="Brian A. Lakstins" description="Initial creation">
 // <change date="6/17/2025" author="Brian A. Lakstins" description="Update logging.">
+// <change date="6/22/2025" author="Brian A. Lakstins" description="Update custom caching parameters.">
 // </changelog>
 #endregion
 
 namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 {
-    using System;
-    using System.IO;
-    using System.Web;
-    using System.Web.Hosting;
     using System.Web.Mvc;
-    using System.Web.Routing;
     using MaxFactry.Core;
 
     /// <summary>
@@ -52,7 +48,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "MaxSystemController", MaxEnumGroup.LogInfo, "Created"));
         }
 
-        [OutputCache(Duration = 600, Location = System.Web.UI.OutputCacheLocation.Server)]
+        [OutputCache(Duration = 600, Location = System.Web.UI.OutputCacheLocation.Server, VaryByCustom = "url")]
         public virtual ActionResult Robots()
         {
             return View("Content/_Robots");

@@ -49,6 +49,7 @@
 // <change date="6/11/2025" author="Brian A. Lakstins" description="Update for ApplicationKey">
 // <change date="6/17/2025" author="Brian A. Lakstins" description="Update logging">
 // <change date="6/21/2025" author="Brian A. Lakstins" description="Remove variables that are included in the outputcacheprovider">
+// <change date="6/22/2025" author="Brian A. Lakstins" description="Add applicationkey back because testing cached wrong application keys">
 // </changelog>
 #endregion
 
@@ -66,6 +67,7 @@ namespace System.Web
     using MaxFactry.General.BusinessLayer;
     using MaxFactry.General.AspNet.IIS;
     using MaxFactry.Base.DataLayer.Provider;
+    using MaxFactry.Base.DataLayer.Library;
 
     /// <summary>
     /// MaxFactry implementation of HttpApplication
@@ -295,6 +297,8 @@ namespace System.Web
                 lsR = string.Empty;
             }
 
+            lsR += MaxDataLibrary.GetApplicationKey();
+
             if (loCustom.Contains("user") &&
                 null != context &&
                 null != context.User &&
@@ -302,7 +306,7 @@ namespace System.Web
                 null != context.User.Identity.Name)
             {
                 lsR += context.User.Identity.Name;
-            }
+            }           
 
             //// Get the Url
             if (loCustom.Contains("url"))
@@ -313,7 +317,7 @@ namespace System.Web
                 }
             }           
 
-            if (null != lsR && lsR.Length > 10)
+            if (null != lsR && lsR.Length > 32)
             {
                 lsR = MaxEncryptionLibrary.GetHash(typeof(object), "MD5", lsR);
             }
