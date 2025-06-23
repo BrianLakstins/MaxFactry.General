@@ -69,8 +69,8 @@
     <Reference Include="MaxFactry.General.AspNet-NF-4.5.2, Version=1.0.24.56, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
       <HintPath>..\..\_nuget\MaxFactry.General.AspNet.1.0.24.56\lib\net452\MaxFactry.General.AspNet-NF-4.5.2.dll</HintPath>
     </Reference>
-    <Reference Include="MaxFactry.General.AspNet.IIS-NF-4.5.2, Version=1.0.24.56, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
-      <HintPath>..\..\_nuget\MaxFactry.General.AspNet.IIS.1.0.24.56\lib\net452\MaxFactry.General.AspNet.IIS-NF-4.5.2.dll</HintPath>
+    <Reference Include="MaxFactry.General.AspNet.IIS-NF-4.5.2, Version=1.0.24.57, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\MaxFactry.General.AspNet.IIS.1.0.24.57\lib\net452\MaxFactry.General.AspNet.IIS-NF-4.5.2.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\_nuget\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
