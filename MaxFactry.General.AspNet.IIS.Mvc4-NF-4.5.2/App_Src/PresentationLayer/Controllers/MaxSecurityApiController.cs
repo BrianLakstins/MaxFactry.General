@@ -504,7 +504,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                             if (loE.Message != "Password retrieval is disabled" && loE.Message != "Password is hashed and cannot be retrieved.")
                                             {
                                                 loR.Message.Error = "Exception logging in a user: " + loE.Message;
-                                                MaxLogLibrary.Log(new MaxLogEntryStructure("MaxSecurityApi", MaxEnumGroup.LogError, "Exception logging in a user", loE));
+                                                MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "Login", MaxEnumGroup.LogError, "Exception logging in a user", loE));
                                             }
                                         }
                                     }
@@ -580,7 +580,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 catch (Exception loE)
                 {
                     loR.Message.Error = "Exception logging in a user: " + loE.Message;
-                    MaxLogLibrary.Log(new MaxLogEntryStructure("MaxSecurityApi", MaxEnumGroup.LogError, "Exception logging in a user", loE));
+                    MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "Login", MaxEnumGroup.LogError, "Exception logging in a user", loE));
                 }
             }
 
@@ -632,7 +632,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 catch (Exception loE)
                 {
                     loR.Message.Error = "Exception logging out a user: " + loE.Message;
-                    MaxLogLibrary.Log(new MaxLogEntryStructure("MaxSecurityApi", MaxEnumGroup.LogError, "Exception logging out a user", loE));
+                    MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "Logout", MaxEnumGroup.LogError, "Exception logging out a user", loE));
                 }
             }
 
@@ -718,7 +718,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 catch (Exception loE)
                 {
                     loR.Message.Error = "Exception resetting password: " + loE.Message;
-                    MaxLogLibrary.Log(new MaxLogEntryStructure("MaxSecurityApi", MaxEnumGroup.LogError, "Exception resetting password", loE));
+                    MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "ResetPassword", MaxEnumGroup.LogError, "Exception resetting password", loE));
                 }
             }
 
@@ -791,7 +791,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 catch (Exception loE)
                 {
                     loR.Message.Error = "Exception changing password: " + loE.Message;
-                    MaxLogLibrary.Log(new MaxLogEntryStructure("MaxSecurityApi", MaxEnumGroup.LogError, "Exception changing password", loE));
+                    MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "ChangePassword", MaxEnumGroup.LogError, "Exception changing password", loE));
                 }
             }
             else

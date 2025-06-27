@@ -141,19 +141,19 @@ namespace System.Web
         {
             //// Access session to prevent error creating session - https://stackoverflow.com/questions/904952/whats-causing-session-state-has-created-a-session-id-but-cannot-save-it-becau
             string lsSessionId = Session.SessionID; 
-            MaxFactry.Core.MaxLogLibrary.Log(new MaxLogEntryStructure("MaxHttpApplicationOverride", MaxFactry.Core.MaxEnumGroup.LogDebug, "Session_Start_Base {lsSessionId}", lsSessionId));
+            MaxFactry.Core.MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "MaxHttpApplicationOverride", MaxFactry.Core.MaxEnumGroup.LogDebug, "Session_Start_Base {lsSessionId}", lsSessionId));
         }
 
         protected virtual void Session_End_Handler(object sender, EventArgs e)
         {
             string lsSessionId = Session.SessionID;
-            MaxFactry.Core.MaxLogLibrary.Log(new MaxLogEntryStructure("MaxHttpApplicationOverride", MaxFactry.Core.MaxEnumGroup.LogDebug, "Session_End_Base {lsSessionId}", lsSessionId));
+            MaxFactry.Core.MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "MaxHttpApplicationOverride", MaxFactry.Core.MaxEnumGroup.LogDebug, "Session_End_Base {lsSessionId}", lsSessionId));
         }
 
         protected virtual void Application_End_Handler(object sender, EventArgs e)
         {
             string lsContent = "START\r\nUTC Time: " + MaxAppLibrary.GetApplicationStartDateTime().ToString() + "\r\n";
-            MaxFactry.Core.MaxLogLibrary.Log(new MaxLogEntryStructure("Application_End_Handler", MaxFactry.Core.MaxEnumGroup.LogInfo, "Start Application End Handler"));
+            MaxFactry.Core.MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "Application_End_Handler", MaxFactry.Core.MaxEnumGroup.LogInfo, "Start Application End Handler"));
             try
             {
                 lsContent += "STOP\r\nUTC Time: " + DateTime.UtcNow.ToString() + "\r\n";
@@ -198,7 +198,7 @@ namespace System.Web
                 //// Send an email about the application ending.
                 lsContent += MaxFactry.Core.MaxLogLibrary.GetEnvironmentInformation() + "\r\n\r\n" + MaxAppLibrary.GetApplicationRunId().ToString();
                 string lsVersion = MaxConfigurationLibrary.GetValue(MaxEnumGroup.ScopeApplication, "MaxAssemblyFileVersion").ToString();
-                MaxFactry.Core.MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "Application_End_Handler", MaxFactry.Core.MaxEnumGroup.LogInfo, "Ending Application {Name} for instance {InstanceId} as {Version} in environment {Environment} after {Time} milliseconds", this.Name, MaxAppLibrary.GetApplicationRunId().ToString(), lsVersion, MaxFactry.Core.MaxLogLibrary.GetEnvironmentInformation(), MaxAppLibrary.GetTimeSinceApplicationStart()));
+                MaxFactry.Core.MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "Application_End_Handler", MaxFactry.Core.MaxEnumGroup.LogAlert, "Ending Application {Name} for instance {InstanceId} as {Version} in environment {Environment} after {Time} milliseconds", this.Name, MaxAppLibrary.GetApplicationRunId().ToString(), lsVersion, MaxFactry.Core.MaxLogLibrary.GetEnvironmentInformation(), MaxAppLibrary.GetTimeSinceApplicationStart()));
             }
             catch (Exception loE)
             {
@@ -220,11 +220,11 @@ namespace System.Web
                             if (loE is HttpRequestValidationException || loE.Message.Contains("A potentially dangerous Request.Path value was detected"))
                             {
                                 string lsDetail = MaxLogLibrary.GetExceptionDetail(HttpContext.Current.AllErrors[lnE]);
-                                MaxLogLibrary.Log(new MaxLogEntryStructure("SiteErrorHandler", MaxEnumGroup.LogWarning, "Application Exception in AllErrors number {lnE] for Run Id: {MaxAppLibrary.GetApplicationRunId()}. {lsDetail}", lnE, MaxAppLibrary.GetApplicationRunId(), lsDetail));
+                                MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "Application_Error_Handler", MaxEnumGroup.LogWarning, "Application Exception in AllErrors number {lnE] for Run Id: {MaxAppLibrary.GetApplicationRunId()}. {lsDetail}", lnE, MaxAppLibrary.GetApplicationRunId(), lsDetail));
                             }
                             else
                             {
-                                MaxLogLibrary.Log(new MaxLogEntryStructure("SiteErrorHandler", MaxEnumGroup.LogError, "Application Exception in AllErrors number {lnE] for Run Id: {MaxAppLibrary.GetApplicationRunId()}.", HttpContext.Current.AllErrors[lnE], lnE, MaxAppLibrary.GetApplicationRunId()));
+                                MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "Application_Error_Handler", MaxEnumGroup.LogError, "Application Exception in AllErrors number {lnE] for Run Id: {MaxAppLibrary.GetApplicationRunId()}.", HttpContext.Current.AllErrors[lnE], lnE, MaxAppLibrary.GetApplicationRunId()));
                             }
                         }
 
@@ -238,15 +238,15 @@ namespace System.Web
                         string lsEnvironment = MaxLogLibrary.GetEnvironmentInformation();
                         if (loE is HttpRequestValidationException || loE.Message.Contains("A potentially dangerous Request.Path value was detected"))
                         {
-                            MaxLogLibrary.Log(new MaxLogEntryStructure("SiteErrorHandler", MaxEnumGroup.LogWarning, "Application Exception in Current for Run Id: {ApplicationRunId}.  {lsDetail} {Environment}", MaxAppLibrary.GetApplicationRunId(), lsDetail, lsEnvironment));
+                            MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "Application_Error_Handler", MaxEnumGroup.LogWarning, "Application Exception in Current for Run Id: {ApplicationRunId}.  {lsDetail} {Environment}", MaxAppLibrary.GetApplicationRunId(), lsDetail, lsEnvironment));
                         }
                         else if (loE is System.Web.HttpException && loE.Message.Contains("The remote host closed the connection."))
                         {
-                            MaxLogLibrary.Log(new MaxLogEntryStructure("SiteErrorHandler", MaxEnumGroup.LogWarning, "Application Exception in Current for Run Id: {ApplicationRunId}.  {lsDetail} {Environment}", loE, MaxAppLibrary.GetApplicationRunId(), lsDetail, lsEnvironment));
+                            MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "Application_Error_Handler", MaxEnumGroup.LogWarning, "Application Exception in Current for Run Id: {ApplicationRunId}.  {lsDetail} {Environment}", loE, MaxAppLibrary.GetApplicationRunId(), lsDetail, lsEnvironment));
                         }
                         else
                         {
-                            MaxLogLibrary.Log(new MaxLogEntryStructure("SiteErrorHandler", MaxEnumGroup.LogError, "Application Exception in Current for Run Id: {ApplicationRunId}.  {lsDetail} {Environment}", loE, MaxAppLibrary.GetApplicationRunId(), lsDetail, lsEnvironment));
+                            MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "Application_Error_Handler", MaxEnumGroup.LogError, "Application Exception in Current for Run Id: {ApplicationRunId}.  {lsDetail} {Environment}", loE, MaxAppLibrary.GetApplicationRunId(), lsDetail, lsEnvironment));
                         }
 
                         HttpContext.Current.Response.Write("An error occurred. It has been logged.");
@@ -265,17 +265,17 @@ namespace System.Web
                     string lsEnvironment = MaxLogLibrary.GetEnvironmentInformation();
                     if (_nErrorHttpContextCount > 3)
                     {
-                        MaxLogLibrary.Log(new MaxLogEntryStructure("SiteErrorHandler.3Null", MaxEnumGroup.LogError, "Application_Error_Handler ran, but HttpContext.Current was null at least 3 times.  {lsEnvironment}", new MaxException("Null HttpContext.Current"), lsEnvironment));
+                        MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "Application_Error_Handler", MaxEnumGroup.LogError, "Application_Error_Handler ran, but HttpContext.Current was null at least 3 times.  {lsEnvironment}", new MaxException("Null HttpContext.Current"), lsEnvironment));
                     }
 
-                    MaxLogLibrary.Log(new MaxLogEntryStructure("SiteErrorHandler.NoHttpContext", MaxEnumGroup.LogError, "{sender} {e}", sender, e));
+                    MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "Application_Error_Handler", MaxEnumGroup.LogError, "{sender} {e}", sender, e));
                 }
             }
             catch (Exception loE)
             {
                 try
                 {
-                    MaxLogLibrary.Log(new MaxLogEntryStructure("SiteErrorHandler.Error", MaxEnumGroup.LogError, "Error in Application_Error_Handler", loE));
+                    MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "Application_Error_Handler", MaxEnumGroup.LogError, "Error in Application_Error_Handler", loE));
                 }
                 catch
                 { }

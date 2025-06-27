@@ -694,12 +694,12 @@ namespace System.Web.Security
                     }
                     else
                     {
-                        MaxLogLibrary.Log(new MaxLogEntryStructure("GetUserNameByEmail", MaxEnumGroup.LogError, "Error getting user name by email.  There were {lnMatchCount} users with this email {email}", lnMatchCount, lsEmail));
+                        MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "GetUserNameByEmail", MaxEnumGroup.LogError, "Error getting user name by email.  There were {lnMatchCount} users with this email {email}", lnMatchCount, lsEmail));
                     }
 				}
 				catch (Exception loE)
 				{
-                    MaxLogLibrary.Log(new MaxLogEntryStructure("GetUserNameByEmail", MaxEnumGroup.LogError, "Error getting user name by email", loE));
+                    MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "GetUserNameByEmail", MaxEnumGroup.LogError, "Error getting user name by email", loE));
 					return null;
 				}
 			}

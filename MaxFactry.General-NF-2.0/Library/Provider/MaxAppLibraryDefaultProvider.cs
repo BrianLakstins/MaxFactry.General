@@ -406,12 +406,12 @@ namespace MaxFactry.General.Provider
             MaxFactryLibrary.SetValue("CurrentAssemblyName",  MaxFactry.Core.MaxFactryLibrary.GetAssembly(this.GetType()).ManifestModule.Name);
             MaxFactry.Base.MaxStartup.Instance.ApplicationStartup();
             MaxFactry.General.MaxStartup.Instance.ApplicationStartup();
-            MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "ApplicationStartup", MaxEnumGroup.LogInfo, "Application Startup"));
+            MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "ApplicationStartup", MaxEnumGroup.LogAlert, "Application Startup"));
         }
 
         public virtual void ApplicationShutdown()
         {
-            MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "ApplicationShutdown", MaxEnumGroup.LogInfo, "Application Shutdown"));
+            MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "ApplicationShutdown", MaxEnumGroup.LogAlert, "Application Shutdown"));
             string lsTempFolder = MaxConfigurationLibrary.GetValue(MaxEnumGroup.ScopeApplication, "__TempFolder") as string;
             if (null != lsTempFolder && lsTempFolder.Length > 0)
             {

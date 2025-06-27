@@ -42,7 +42,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
     {
         public override void OnException(HttpActionExecutedContext context)
         {
-            MaxLogLibrary.Log(new MaxLogEntryStructure("WebApi.Exception", MaxEnumGroup.LogError, "Error in WebApi", context.Exception));
+            MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "WebApi.Exception", MaxEnumGroup.LogError, "Error in WebApi", context.Exception));
             context.Response = context.Request.CreateResponse(HttpStatusCode.BadRequest, new { Error = context.Exception.Message });
             //context.Response = new System.Net.Http.HttpResponseMessage(HttpStatusCode.BadRequest);
             //context.Response.Content.Headers.Add("Error Message", context.Exception.Message);

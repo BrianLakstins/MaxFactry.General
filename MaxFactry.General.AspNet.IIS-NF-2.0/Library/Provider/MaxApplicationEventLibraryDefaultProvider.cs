@@ -295,7 +295,7 @@ namespace MaxFactry.App.Base.AspNet.IIS.Provider
             }
             catch (Exception loE)
             {
-                MaxLogLibrary.Log(new MaxLogEntryStructure("ApplicationLogRequest", MaxEnumGroup.LogWarning, "Error Getting RawURL in ApplicationLogRequest {loE.ToString()}", loE.ToString()));
+                MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "ApplicationLogRequest", MaxEnumGroup.LogWarning, "Error Getting RawURL in ApplicationLogRequest {loE.ToString()}", loE.ToString()));
             }
 
             MaxFactry.Core.MaxLogLibrary.Log(MaxFactry.Core.MaxEnumGroup.LogDebug, "19.Application_LogRequest [" + MaxOwinLibrary.GetTimeSinceBeginRequest().ToString() + "] milliseconds [" + lsUrl + "]", "MaxHttpApplicationLibraryProvider");
@@ -315,18 +315,18 @@ namespace MaxFactry.App.Base.AspNet.IIS.Provider
             }
             catch (Exception loE)
             {
-                MaxLogLibrary.Log(new MaxLogEntryStructure("ApplicationPostLogRequest", MaxEnumGroup.LogWarning, "Error Getting HttpContext.Current.Request.Url in ApplicationPostLogRequest {loE.ToString()}", loE.ToString()));
+                MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "ApplicationPostLogRequest", MaxEnumGroup.LogWarning, "Error Getting HttpContext.Current.Request.Url in ApplicationPostLogRequest {loE.ToString()}", loE.ToString()));
             }
 
             MaxFactry.Core.MaxLogLibrary.Log(MaxFactry.Core.MaxEnumGroup.LogDebug, "20.Application_PostLogRequest [" + MaxOwinLibrary.GetTimeSinceBeginRequest().ToString() + "] milliseconds [" + lsUrl + "]", "MaxHttpApplicationLibraryProvider");
             long lnDuration = MaxOwinLibrary.GetTimeSinceBeginRequest();
             if (lnDuration > 3000)
             {
-                MaxFactry.Core.MaxLogLibrary.Log(new MaxLogEntryStructure("PageEnd", MaxFactry.Core.MaxEnumGroup.LogWarning, "Page Process End {lnDuration} {lsUrl}", lnDuration, lsUrl));
+                MaxFactry.Core.MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "PageEnd", MaxFactry.Core.MaxEnumGroup.LogWarning, "Page Process End {lnDuration} {lsUrl}", lnDuration, lsUrl));
             }
             else
             {
-                MaxFactry.Core.MaxLogLibrary.Log(new MaxLogEntryStructure("PageEnd", MaxFactry.Core.MaxEnumGroup.LogDebug, "Page Process End {lnDuration} {lsUrl}", lnDuration, lsUrl));
+                MaxFactry.Core.MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "PageEnd", MaxFactry.Core.MaxEnumGroup.LogDebug, "Page Process End {lnDuration} {lsUrl}", lnDuration, lsUrl));
             }
         }
     }

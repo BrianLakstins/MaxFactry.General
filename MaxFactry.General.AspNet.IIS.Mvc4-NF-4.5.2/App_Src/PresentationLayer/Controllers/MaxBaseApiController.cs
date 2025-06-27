@@ -144,12 +144,12 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
                 if (loTask.IsFaulted)
                 {
-                    MaxLogLibrary.Log(new MaxLogEntryStructure("MaxBaseApiController.StartProcess", MaxEnumGroup.LogError, "MaxBaseApiController: Error running Process for [{Uri}][{lsProcess}][{lsContent}]", loTask.Exception, loRequestUri.ToString(), lsProcess, lsContent));
+                    MaxLogLibrary.Log(new MaxLogEntryStructure(typeof(MaxBaseApiController), "MaxBaseApiController.StartProcess", MaxEnumGroup.LogError, "MaxBaseApiController: Error running Process for [{Uri}][{lsProcess}][{lsContent}]", loTask.Exception, loRequestUri.ToString(), lsProcess, lsContent));
                 }
             }
             catch (Exception loE)
             {
-                MaxLogLibrary.Log(new MaxLogEntryStructure("MaxBaseApiController.StartProcess", MaxEnumGroup.LogError, "MaxBaseApiController.StartProcessEventHookLog: Error starting Process for [{Uri}][{lsProcess}][{lsContent}]", loE, loRequestUri.ToString(), lsProcess, lsContent));
+                MaxLogLibrary.Log(new MaxLogEntryStructure(typeof(MaxBaseApiController), "MaxBaseApiController.StartProcess", MaxEnumGroup.LogError, "MaxBaseApiController.StartProcessEventHookLog: Error starting Process for [{Uri}][{lsProcess}][{lsContent}]", loE, loRequestUri.ToString(), lsProcess, lsContent));
             }
         }
 
@@ -191,7 +191,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     catch (Exception loE)
                     {
                         loR.Message.Error = "Exception getting permission list: " + loE.Message;
-                        MaxLogLibrary.Log(new MaxLogEntryStructure("MaxBaseApi", MaxEnumGroup.LogError, "Exception getting permission list", loE));
+                        MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "MaxBaseApi", MaxEnumGroup.LogError, "Exception getting permission list", loE));
                     }
                 }
             }
@@ -246,7 +246,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     catch (Exception loE)
                     {
                         loR.Message.Error = "Exception getting permission type list: " + loE.Message;
-                        MaxLogLibrary.Log(new MaxLogEntryStructure("MaxBaseApi", MaxEnumGroup.LogError, "Exception getting permission type list", loE));
+                        MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "MaxBaseApi", MaxEnumGroup.LogError, "Exception getting permission type list", loE));
                     }
                 }
             }

@@ -170,19 +170,19 @@ namespace MaxFactry.General
                 string lsHost = new Uri(trackedEvent.Url).Host;
                 if (null == success || success == false)
                 {
-                    MaxLogLibrary.Log(new MaxLogEntryStructure("MaxHttpEvent-" + lsHost, MaxEnumGroup.LogError, "ID: {id}\r\n, Url: {trackedEvent.Url}\r\nElapsed Time: {trackedEvent.Stopwatch.ElapsedMilliseconds}ms\r\nSuccess: {success}\r\nStatus Code: {statusCode}\r\nSynchronus: {synchronous}", id, trackedEvent.Url, trackedEvent.Stopwatch.ElapsedMilliseconds, success, statusCode, synchronous));
+                    MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "OnEndHttpResponse-" + lsHost, MaxEnumGroup.LogError, "ID: {id}\r\n, Url: {trackedEvent.Url}\r\nElapsed Time: {trackedEvent.Stopwatch.ElapsedMilliseconds}ms\r\nSuccess: {success}\r\nStatus Code: {statusCode}\r\nSynchronus: {synchronous}", id, trackedEvent.Url, trackedEvent.Stopwatch.ElapsedMilliseconds, success, statusCode, synchronous));
                 }
                 else if (trackedEvent.Stopwatch.ElapsedMilliseconds > 5000)
                 {
-                    MaxLogLibrary.Log(new MaxLogEntryStructure("MaxHttpEvent-" + lsHost, MaxEnumGroup.LogWarning, "ID: {id}\r\n, Url: {trackedEvent.Url}\r\nElapsed Time: {trackedEvent.Stopwatch.ElapsedMilliseconds}ms\r\nSuccess: {success}\r\nStatus Code: {statusCode}\r\nSynchronus: {synchronous}", id, trackedEvent.Url, trackedEvent.Stopwatch.ElapsedMilliseconds, success, statusCode, synchronous));
+                    MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "OnEndHttpResponse-" + lsHost, MaxEnumGroup.LogWarning, "ID: {id}\r\n, Url: {trackedEvent.Url}\r\nElapsed Time: {trackedEvent.Stopwatch.ElapsedMilliseconds}ms\r\nSuccess: {success}\r\nStatus Code: {statusCode}\r\nSynchronus: {synchronous}", id, trackedEvent.Url, trackedEvent.Stopwatch.ElapsedMilliseconds, success, statusCode, synchronous));
                 }
                 else if (trackedEvent.Stopwatch.ElapsedMilliseconds > 1000)
                 {
-                    MaxLogLibrary.Log(new MaxLogEntryStructure("MaxHttpEvent-" + lsHost, MaxEnumGroup.LogInfo, "ID: {id}\r\n, Url: {trackedEvent.Url}\r\nElapsed Time: {trackedEvent.Stopwatch.ElapsedMilliseconds}ms\r\nSuccess: {success}\r\nStatus Code: {statusCode}\r\nSynchronus: {synchronous}", id, trackedEvent.Url, trackedEvent.Stopwatch.ElapsedMilliseconds, success, statusCode, synchronous));
+                    MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "OnEndHttpResponse-" + lsHost, MaxEnumGroup.LogInfo, "ID: {id}\r\n, Url: {trackedEvent.Url}\r\nElapsed Time: {trackedEvent.Stopwatch.ElapsedMilliseconds}ms\r\nSuccess: {success}\r\nStatus Code: {statusCode}\r\nSynchronus: {synchronous}", id, trackedEvent.Url, trackedEvent.Stopwatch.ElapsedMilliseconds, success, statusCode, synchronous));
                 }
                 else
                 {
-                    MaxLogLibrary.Log(new MaxLogEntryStructure("MaxHttpEvent-" + lsHost, MaxEnumGroup.LogDebug, "ID: {id}\r\n, Url: {trackedEvent.Url}\r\nElapsed Time: {trackedEvent.Stopwatch.ElapsedMilliseconds}ms\r\nSuccess: {success}\r\nStatus Code: {statusCode}\r\nSynchronus: {synchronous}", id, trackedEvent.Url, trackedEvent.Stopwatch.ElapsedMilliseconds, success, statusCode, synchronous));
+                    MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "OnEndHttpResponse-" + lsHost, MaxEnumGroup.LogDebug, "ID: {id}\r\n, Url: {trackedEvent.Url}\r\nElapsed Time: {trackedEvent.Stopwatch.ElapsedMilliseconds}ms\r\nSuccess: {success}\r\nStatus Code: {statusCode}\r\nSynchronus: {synchronous}", id, trackedEvent.Url, trackedEvent.Stopwatch.ElapsedMilliseconds, success, statusCode, synchronous));
                 }
 
             }

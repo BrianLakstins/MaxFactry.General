@@ -131,7 +131,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                             catch (Exception loE)
                             {
                                 ModelState.AddModelError(string.Empty, "Exception determining if password needs reset.");
-                                MaxFactry.Core.MaxLogLibrary.Log(new MaxFactry.Core.MaxLogEntryStructure("MaxSecurityController.Login", Core.MaxEnumGroup.LogError, "Exception determining if password needs reset", loE));
+                                MaxFactry.Core.MaxLogLibrary.Log(new MaxFactry.Core.MaxLogEntryStructure(this.GetType(), "Login", Core.MaxEnumGroup.LogError, "Exception determining if password needs reset", loE));
                             }
                         }
 

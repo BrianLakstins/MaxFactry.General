@@ -408,7 +408,7 @@ namespace MaxFactry.General.AspNet.PresentationLayer.Provider
                 }
                 catch (Exception loE)
                 {
-                    MaxLogLibrary.Log(new MaxLogEntryStructure("ApplicationBeginRequest", MaxEnumGroup.LogWarning, "Error Getting this.Request.Url.DnsSafeHost in ApplicationBeginRequest {loE.ToString()}", loE.ToString()));
+                    MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "ApplicationBeginRequest", MaxEnumGroup.LogWarning, "Error Getting this.Request.Url.DnsSafeHost in ApplicationBeginRequest {loE.ToString()}", loE.ToString()));
                 }
 
                 //// Set the environment based on the requested url

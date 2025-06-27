@@ -194,11 +194,11 @@ namespace System.Web.Hosting
                     {
                         if (loE is NotSupportedException)
                         {
-                            MaxLogLibrary.Log(new MaxLogEntryStructure("VirtualPathProvider", MaxEnumGroup.LogWarning, "Registering Assembly {loAssembly} caused NotSupportedException.", loAssembly));
+                            MaxLogLibrary.Log(new MaxLogEntryStructure(typeof(MaxVirtualPathProviderOverride), "Register", MaxEnumGroup.LogWarning, "Registering Assembly {loAssembly} caused NotSupportedException.", loAssembly));
                         }
                         else
                         {
-                            MaxLogLibrary.Log(new MaxLogEntryStructure("VirtualPathProvider", MaxEnumGroup.LogError, "Register process for Assembly {loAssembly} failed.", loE, loAssembly));
+                            MaxLogLibrary.Log(new MaxLogEntryStructure(typeof(MaxVirtualPathProviderOverride), "Register", MaxEnumGroup.LogError, "Register process for Assembly {loAssembly} failed.", loE, loAssembly));
                         }
                     }
                 }
