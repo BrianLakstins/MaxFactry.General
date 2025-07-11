@@ -65,6 +65,7 @@
 // <change date="4/14/2025" author="Brian A. Lakstins" description="Load through POST without also updating.">
 // <change date="4/29/2025" author="Brian A. Lakstins" description="Consider and update successful if any updates on a list succeed.">
 // <change date="6/17/2025" author="Brian A. Lakstins" description="Update logging.">
+// <change date="7/10/2025" author="Brian A. Lakstins" description="Add returning of ItemListTotal with page. Return lists for change operations that include DataKey.">
 // </changelog>
 #endregion
 
@@ -375,11 +376,21 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
         protected virtual HttpResponseMessage GetResponseMessage(object loReturn)
         {
+            if (loReturn is MaxApiResponseViewModel && null != ((MaxApiResponseViewModel)loReturn).ItemList && ((MaxApiResponseViewModel)loReturn).ItemList.Count > 0)
+            {
+                ((MaxApiResponseViewModel)loReturn).Page.Add("ItemListTotal", ((MaxApiResponseViewModel)loReturn).ItemList.Count);
+            }
+
             return this.GetResponseMessage(loReturn, System.Net.HttpStatusCode.OK);
         }
 
         protected virtual HttpResponseMessage GetResponseMessage(object loReturn, System.Net.HttpStatusCode loStatus)
         {
+            if (loReturn is MaxApiResponseViewModel && null != ((MaxApiResponseViewModel)loReturn).ItemList && ((MaxApiResponseViewModel)loReturn).ItemList.Count > 0)
+            {
+                ((MaxApiResponseViewModel)loReturn).Page.Add("ItemListTotal", ((MaxApiResponseViewModel)loReturn).ItemList.Count);
+            }
+
             HttpResponseMessage loR = this.GetResponseMessage();
             loR.StatusCode = loStatus;
             loR.Content = new StringContent(MaxConvertLibrary.SerializeObjectToString(typeof(object), loReturn));
@@ -391,6 +402,11 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
         protected virtual HttpResponseMessage GetResponseMessage(MaxApiResponseViewModel loReturn)
         {
+            if (null != loReturn.ItemList && loReturn.ItemList.Count > 0)
+            {
+                loReturn.Page.Add("ItemListTotal", loReturn.ItemList.Count);
+            }
+
             HttpResponseMessage loR = this.GetResponseMessage();
             loR.StatusCode = loReturn.Status;
             string lsContent = MaxConvertLibrary.SerializeObjectToString(typeof(object), loReturn);
@@ -403,9 +419,16 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
         protected virtual HttpResponseMessage GetResponseMessage(MaxApiResponseViewModel loReturn, MaxEntity loEntity)
         {
+            if (null != loReturn.ItemList && loReturn.ItemList.Count > 0)
+            {
+                loReturn.Page.Add("ItemListTotal", loReturn.ItemList.Count);
+            }
+
             HttpResponseMessage loR = this.GetResponseMessage();
             if (loReturn.Status == HttpStatusCode.OK && 
                 this.Request.Method == HttpMethod.Get && 
+                loReturn.Item.Contains("ContentName") &&
+                loReturn.Item.Contains("MimeType") &&
                 loEntity is MaxBaseIdFileEntity &&
                 ((MaxBaseIdFileEntity)loEntity).Id != Guid.Empty &&
                 null != ((MaxBaseIdFileEntity)loEntity).Content)
@@ -817,7 +840,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 else
                 {
                     string lsDataKey = loRequest.GetDataKey(-1);
-                    if (!string.IsNullOrEmpty(lsDataKey) && !loEntity.LoadByDataKeyCache(lsDataKey))
+                    if (!string.IsNullOrEmpty(lsDataKey) && !loEntity.LoadByDataKeyCache(lsDataKey, loRequest.ResponsePropertyList))
                     {
                         loR.Message.Error = "Entity could not be loaded by data key";
                     }
@@ -856,7 +879,8 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                 }
                             }
 
-                            if ((null == lsDataKey || this.Request.Method == HttpMethod.Delete || this.Request.Method == HttpMethod.Put) && loR.ItemList.Count == 0)
+                            //if ((null == lsDataKey || this.Request.Method == HttpMethod.Delete || this.Request.Method == HttpMethod.Put) && loR.ItemList.Count == 0)
+                            if (null == lsDataKey || (this.Request.Method != HttpMethod.Get && loR.ItemList.Count == 0))
                             {
                                 //// Load list
                                 if (!this.HasPermission(loRequest, loEntity, (int)MaxEnumGroup.PermissionSelect))
@@ -870,6 +894,10 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                     loR.Page = loLoadListResponse.Page;
                                     loR.ItemList = loLoadListResponse.ItemList;
                                 }
+                            }
+                            else if (loR.ItemList.Count == 0)
+                            {
+                                loR.ItemList = null;
                             }
                         }
                     }
@@ -1441,6 +1469,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 else
                 {
                     MaxEntityList loList = loEntityCopy.LoadAllCache(loRequest.ResponsePropertyList);
+                    loR.Page.Add(loResponsePage.Total, loList.Total);
                     SortedList<string, MaxEntity> loSortedList = new SortedList<string, MaxEntity>();
                     for (int lnE = 0; lnE < loList.Count; lnE++)
                     {
