@@ -66,6 +66,7 @@
 // <change date="4/29/2025" author="Brian A. Lakstins" description="Consider and update successful if any updates on a list succeed.">
 // <change date="6/17/2025" author="Brian A. Lakstins" description="Update logging.">
 // <change date="7/10/2025" author="Brian A. Lakstins" description="Add returning of ItemListTotal with page. Return lists for change operations that include DataKey.">
+// <change date="7/15/2025" author="Brian A. Lakstins" description="Send some properties to load list instead of having it determine them from request.">
 // </changelog>
 #endregion
 
@@ -879,7 +880,27 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                 }
                             }
 
-                            if (null == lsDataKey || (this.Request.Method != HttpMethod.Get && loR.ItemList.Count == 0 && loRequest.ResponseFilterList.Length > 0))
+                            var loRequestPage = new
+                            {
+                                Page = "Page",
+                                PageLength = "PageLength",
+                                PropertySort = "PropertySort"
+                            };
+
+                            int lnPage = MaxConvertLibrary.ConvertToInt(typeof(object), loRequest.Item.GetValueString(loRequestPage.Page));
+                            int lnPageLength = MaxConvertLibrary.ConvertToInt(typeof(object), loRequest.Item.GetValueString(loRequestPage.PageLength));
+                            if (lnPage == int.MinValue || lnPageLength == int.MinValue)
+                            {
+                                lnPage = 1;
+                                lnPageLength = 1000;
+                            }
+
+                            string lsPropertySort = loRequest.Item.GetValueString(loRequestPage.PropertySort);
+
+                            if (null == lsDataKey || 
+                                (this.Request.Method != HttpMethod.Get && loR.ItemList.Count == 0 && 
+                                ((null != loRequest.ResponseFilterList && loRequest.ResponseFilterList.Length > 0) ||
+                                lnPageLength > 0)))
                             {
                                 //// Load list
                                 if (!this.HasPermission(loRequest, loEntity, (int)MaxEnumGroup.PermissionSelect))
@@ -889,7 +910,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                 }
                                 else
                                 {
-                                    MaxApiResponseViewModel loLoadListResponse = this.ProcessLoadList(loRequest, loEntity);
+                                    MaxApiResponseViewModel loLoadListResponse = this.ProcessLoadList(loRequest, loEntity, lnPage, lnPageLength, lsPropertySort);
                                     loR.Page = loLoadListResponse.Page;
                                     loR.ItemList = loLoadListResponse.ItemList;
                                 }
@@ -1399,7 +1420,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             return loR;
         }
 
-        protected virtual MaxApiResponseViewModel ProcessLoadList(MaxApiRequestViewModel loRequest, MaxEntity loEntity)
+        protected virtual MaxApiResponseViewModel ProcessLoadList(MaxApiRequestViewModel loRequest, MaxEntity loEntity, int lnPage, int lnPageLength, string lsPropertySort)
         {
             MaxApiResponseViewModel loR = new MaxApiResponseViewModel();
             var loResponsePage = new
@@ -1408,22 +1429,6 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 ItemList = "ItemList"
             };
 
-            var loRequestPage = new
-            {
-                Page = "Page",
-                PageLength = "PageLength",
-                PropertySort = "PropertySort"
-            };
-
-            int lnPage = MaxConvertLibrary.ConvertToInt(typeof(object), loRequest.Item.GetValueString(loRequestPage.Page));
-            int lnPageLength = MaxConvertLibrary.ConvertToInt(typeof(object), loRequest.Item.GetValueString(loRequestPage.PageLength));
-            if (lnPage == int.MinValue || lnPageLength == int.MinValue)
-            {
-                lnPage = 1;
-                lnPageLength = 1000;
-            }
-
-            string lsPropertySort = loRequest.Item.GetValueString(loRequestPage.PropertySort);
             MaxIndex loFilter = this.GetFilter(loRequest, loEntity);
             MaxEntity loEntityCopy = loEntity.CreateNew();
             if (null != loEntityCopy)
