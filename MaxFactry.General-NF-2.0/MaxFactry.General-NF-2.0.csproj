@@ -119,7 +119,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MaxFactry.Base">
-      <Version>1.0.24.56</Version>
+      <Version>1.0.24.61</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
