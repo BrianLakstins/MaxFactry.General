@@ -879,8 +879,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                 }
                             }
 
-                            //if ((null == lsDataKey || this.Request.Method == HttpMethod.Delete || this.Request.Method == HttpMethod.Put) && loR.ItemList.Count == 0)
-                            if (null == lsDataKey || (this.Request.Method != HttpMethod.Get && loR.ItemList.Count == 0))
+                            if (null == lsDataKey || (this.Request.Method != HttpMethod.Get && loR.ItemList.Count == 0 && loRequest.ResponseFilterList.Length > 0))
                             {
                                 //// Load list
                                 if (!this.HasPermission(loRequest, loEntity, (int)MaxEnumGroup.PermissionSelect))
