@@ -32,14 +32,13 @@
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
 // <change date="6/19/2024" author="Brian A. Lakstins" description="Update user related logging.">
 // <change date="9/16/2024" author="Brian A. Lakstins" description="Adding methods to access entities">
+// <change date="7/18/2025" author="Brian A. Lakstins" description="Changing to individual queries for user log types">
 // </changelog>
 #endregion
 
 namespace System.Web.Security
 {
     using System;
-    using System.Collections.Generic;
-    using System.Text;
     using MaxFactry.General.BusinessLayer;
     using MaxFactry.Base.BusinessLayer;
 
@@ -49,25 +48,10 @@ namespace System.Web.Security
 
         private MembershipProvider _oMembership = null;
 
-        private MaxEntityList _oUserLogList = null;
-
         public MaxMembershipUser(MaxUserEntity loMaxUser, MembershipProvider loMembership)
         {
             this._oMaxUser = loMaxUser;
             this._oMembership = loMembership;
-        }
-
-        protected MaxEntityList UserLogList
-        {
-            get
-            {
-                if (null == this._oUserLogList)
-                {
-                    this._oUserLogList = MaxUserLogEntity.Create().LoadAllByUserIdCache(this._oMaxUser.Id);
-                }
-
-                return this._oUserLogList;
-            }
         }
 
         public override string Comment
@@ -141,31 +125,35 @@ namespace System.Web.Security
                 DateTime ldLastLoginFailure = DateTime.MinValue;
                 DateTime ldLastUnlock = DateTime.MinValue;
                 int lnLoginFailureCount = 0;
-                for (int lnL = 0; lnL < this.UserLogList.Count; lnL++)
+                MaxEntityList loUserLogList = MaxUserLogEntity.Create().LoadAllByPageUserIdLogEntryTypeCache(1, 500, this._oMaxUser.Id, MaxUserLogEntity.LogEntryTypePasswordFail, MaxUserLogEntity.LogEntryTypeUnlockout, MaxUserLogEntity.LogEntryTypeLockout);
+                for (int lnL = 0; lnL < loUserLogList.Count; lnL++)
                 {
-                    MaxUserLogEntity loMaxUserLog = (MaxUserLogEntity)this.UserLogList[lnL];
-                    if (loMaxUserLog.LogEntryType == MaxUserLogEntity.LogEntryTypePasswordFail &&
-                            loMaxUserLog.CreatedDate > ldPasswordWindow)
+                    MaxUserLogEntity loMaxUserLog = loUserLogList[lnL] as MaxUserLogEntity;
+                    if (null != loMaxUserLog)
                     {
-                        if (loMaxUserLog.CreatedDate > ldLastLoginFailure)
+                        if (loMaxUserLog.LogEntryType == MaxUserLogEntity.LogEntryTypePasswordFail &&
+                                loMaxUserLog.CreatedDate > ldPasswordWindow)
                         {
-                            ldLastLoginFailure = loMaxUserLog.CreatedDate;
-                        }
+                            if (loMaxUserLog.CreatedDate > ldLastLoginFailure)
+                            {
+                                ldLastLoginFailure = loMaxUserLog.CreatedDate;
+                            }
 
-                        lnLoginFailureCount++;
-                    }
-                    else if (loMaxUserLog.LogEntryType == MaxUserLogEntity.LogEntryTypeUnlockout)
-                    {
-                        if (loMaxUserLog.CreatedDate > ldLastUnlock)
-                        {
-                            ldLastUnlock = loMaxUserLog.CreatedDate;
+                            lnLoginFailureCount++;
                         }
-                    }
-                    else if (loMaxUserLog.LogEntryType == MaxUserLogEntity.LogEntryTypeLockout)
-                    {
-                        if (loMaxUserLog.CreatedDate > ldLastLockout)
+                        else if (loMaxUserLog.LogEntryType == MaxUserLogEntity.LogEntryTypeUnlockout)
                         {
-                            ldLastLockout = loMaxUserLog.CreatedDate;
+                            if (loMaxUserLog.CreatedDate > ldLastUnlock)
+                            {
+                                ldLastUnlock = loMaxUserLog.CreatedDate;
+                            }
+                        }
+                        else if (loMaxUserLog.LogEntryType == MaxUserLogEntity.LogEntryTypeLockout)
+                        {
+                            if (loMaxUserLog.CreatedDate > ldLastLockout)
+                            {
+                                ldLastLockout = loMaxUserLog.CreatedDate;
+                            }
                         }
                     }
                 }
@@ -210,10 +198,11 @@ namespace System.Web.Security
             get
             {
                 DateTime ldR = DateTime.MinValue;
-                for (int lnL = 0; lnL < this.UserLogList.Count; lnL++)
+                MaxEntityList loUserLogList = MaxUserLogEntity.Create().LoadAllByPageUserIdLogEntryTypeCache(1, 1, this._oMaxUser.Id, MaxUserLogEntity.LogEntryTypeActivity);
+                for (int lnL = 0; lnL < loUserLogList.Count; lnL++)
                 {
-                    MaxUserLogEntity loMaxUserLog = (MaxUserLogEntity)this.UserLogList[lnL];
-                    if (loMaxUserLog.LogEntryType == MaxUserLogEntity.LogEntryTypeActivity)
+                    MaxUserLogEntity loMaxUserLog = loUserLogList[lnL] as MaxUserLogEntity;
+                    if (null == loMaxUserLog)
                     {
                         if (loMaxUserLog.CreatedDate > ldR)
                         {
@@ -236,10 +225,11 @@ namespace System.Web.Security
             get
             {
                 DateTime ldR = DateTime.MinValue;
-                for (int lnL = 0; lnL < this.UserLogList.Count; lnL++)
+                MaxEntityList loUserLogList = MaxUserLogEntity.Create().LoadAllByPageUserIdLogEntryTypeCache(1, 1, this._oMaxUser.Id, MaxUserLogEntity.LogEntryTypeLockout);
+                for (int lnL = 0; lnL < loUserLogList.Count; lnL++)
                 {
-                    MaxUserLogEntity loMaxUserLog = (MaxUserLogEntity)this.UserLogList[lnL];
-                    if (loMaxUserLog.LogEntryType == MaxUserLogEntity.LogEntryTypeLockout)
+                    MaxUserLogEntity loMaxUserLog = loUserLogList[lnL] as MaxUserLogEntity;
+                    if (null != loMaxUserLog)
                     {
                         if (loMaxUserLog.CreatedDate > ldR)
                         {
@@ -257,10 +247,11 @@ namespace System.Web.Security
             get
             {
                 DateTime ldR = DateTime.MinValue;
-                for (int lnL = 0; lnL < this.UserLogList.Count; lnL++)
+                MaxEntityList loUserLogList = MaxUserLogEntity.Create().LoadAllByPageUserIdLogEntryTypeCache(1, 1, this._oMaxUser.Id, MaxUserLogEntity.LogEntryTypeLogin);
+                for (int lnL = 0; lnL < loUserLogList.Count; lnL++)
                 {
-                    MaxUserLogEntity loMaxUserLog = (MaxUserLogEntity)this.UserLogList[lnL];
-                    if (loMaxUserLog.LogEntryType == MaxUserLogEntity.LogEntryTypeLogin)
+                    MaxUserLogEntity loMaxUserLog = loUserLogList[lnL] as MaxUserLogEntity;
+                    if (null != loMaxUserLog)
                     {
                         if (loMaxUserLog.CreatedDate > ldR)
                         {
@@ -283,10 +274,11 @@ namespace System.Web.Security
             get
             {
                 DateTime ldR = DateTime.MinValue;
-                for (int lnL = 0; lnL < this.UserLogList.Count; lnL++)
+                MaxEntityList loUserLogList = MaxUserLogEntity.Create().LoadAllByPageUserIdLogEntryTypeCache(1, 500, this._oMaxUser.Id, MaxUserLogEntity.LogEntryTypePasswordChange);
+                for (int lnL = 0; lnL < loUserLogList.Count; lnL++)
                 {
-                    MaxUserLogEntity loMaxUserLog = (MaxUserLogEntity)this.UserLogList[lnL];
-                    if (loMaxUserLog.LogEntryType == MaxUserLogEntity.LogEntryTypePasswordChange && loMaxUserLog.Comment == "ChangePassword")
+                    MaxUserLogEntity loMaxUserLog = loUserLogList[lnL] as MaxUserLogEntity;
+                    if (null != loMaxUserLog && loMaxUserLog.Comment.Contains("ChangePassword"))
                     {
                         if (loMaxUserLog.CreatedDate > ldR)
                         {
@@ -346,11 +338,6 @@ namespace System.Web.Security
         public MembershipProvider GetProvider()
         {
             return this._oMembership;
-        }
-
-        public MaxEntityList GetLogList()
-        {
-            return this.UserLogList;
         }
 
         public static bool SetPassword(MembershipUser loUser, string lsPassword)

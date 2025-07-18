@@ -31,6 +31,7 @@
 // <change date="12/2/2019" author="Brian A. Lakstins" description="Added process to archive logs after 30 days">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class. Use parent methods instead of repository.">
 // <change date="6/19/2024" author="Brian A. Lakstins" description="Add user related logging types.">
+// <change date="7/18/2025" author="Brian A. Lakstins" description="Add filtering for a page and log entry type.">
 // </changelog>
 #endregion
 
@@ -191,15 +192,21 @@ namespace MaxFactry.General.BusinessLayer
         /// </summary>
         /// <param name="loUserId">The Id of the user.</param>
         /// <returns>List of user logs.</returns>
-		public MaxEntityList LoadAllByUserIdCache(Guid loUserId)
-		{
+		public MaxEntityList LoadAllByPageUserIdLogEntryTypeCache(int lnPageIndex, int lnPageSize, Guid loUserId, params int[] laLogEntryType)
+        {
             MaxDataQuery loDataQuery = this.GetDataQuery();
             loDataQuery.StartGroup();
             loDataQuery.AddFilter(this.DataModel.UserId, "=", loUserId);
+            foreach (int lnLogEntryType in laLogEntryType)
+            {
+                loDataQuery.AddAnd();
+                loDataQuery.AddFilter(this.DataModel.LogEntryType, "=", lnLogEntryType);
+            }
+
             loDataQuery.EndGroup();
             MaxData loData = new MaxData(this.Data);
-            return this.LoadAllByPageCache(loData, 0, 0, this.DataModel.CreatedDate + " desc", loDataQuery);
-		}
+            return this.LoadAllByPageCache(loData, lnPageIndex, lnPageSize, this.DataModel.CreatedDate + " desc", loDataQuery);
+        }
 
         /// <summary>
         /// Loads a list of all user logs associated to the User Id.
@@ -215,7 +222,7 @@ namespace MaxFactry.General.BusinessLayer
             loDataQuery.AddFilter(this.DataModel.CreatedDate, ">=", ldCreatedDate);
             loDataQuery.EndGroup();
             MaxData loData = new MaxData(this.Data);
-            return this.LoadAllByPageCache(loData, 0, 0, this.DataModel.CreatedDate + " desc", loDataQuery);
+            return this.LoadAllByPageCache(loData, 0, 500, this.DataModel.CreatedDate + " desc", loDataQuery);
         }
 
         /// <summary>

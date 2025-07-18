@@ -33,6 +33,7 @@
 // <change date="3/20/2024" author="Brian A. Lakstins" description="Happy birthday to my mom.  Sara Jean Lakstins (Cartwright) - 3/20/1944 to 3/14/2019.">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Change parent class.">
 // <change date="6/4/2025" author="Brian A. Lakstins" description="Update keys">
+// <change date="7/18/2025" author="Brian A. Lakstins" description="Add SQL Index for LogEntryType and UserId">
 // </changelog>
 #endregion
 
@@ -84,3 +85,14 @@ namespace MaxFactry.General.DataLayer
 		}
     }
 }
+
+/*
+
+CREATE CLUSTERED INDEX [idx_MaxSecurityUserLog] ON [dbo].[MaxSecurityUserLog]
+(
+	[UserId] ASC,
+	[LogEntryType] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+
+*/
