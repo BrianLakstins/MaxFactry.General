@@ -131,6 +131,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="MaxFactry.General">
+      <Version>1.0.24.63</Version>
+    </PackageReference>
     <PackageReference Include="MaxFactry.General.AspNet">
       <Version>1.0.24.61</Version>
     </PackageReference>
