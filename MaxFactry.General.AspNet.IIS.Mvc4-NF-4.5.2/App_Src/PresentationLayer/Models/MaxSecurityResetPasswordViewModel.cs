@@ -34,6 +34,7 @@
 // <change date="2/24/2021" author="Brian A. Lakstins" description="Update password reset process.">
 // <change date="2/25/2021" author="Brian A. Lakstins" description="Change password reset">
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class.">
+// <change date="8/1/2025" author="Brian A. Lakstins" description="Add error checking for resetting password.">
 // </changelog>
 #endregion
 
@@ -247,7 +248,11 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 {
                     if (null != this.User)
                     {
-                        if (MaxMembershipUser.SetPassword(this.User, this.Password))
+                        if (string.IsNullOrEmpty(this.Password))
+                        {
+                            lsR = "The password was blank and could not be set.";
+                        }
+                        else if (MaxMembershipUser.SetPassword(this.User, this.Password))
                         {
                             lsR = string.Empty;
                             MaxUserEntity.Create().ClearAuthCode(this.User.UserName);

@@ -49,6 +49,7 @@
 // <change date="6/4/2025" author="Brian A. Lakstins" description="Fix error message when not needed.">
 // <change date="6/10/2025" author="Brian A. Lakstins" description="Fix updating role to user relationships.">
 // <change date="6/11/2025" author="Brian A. Lakstins" description="Update for ApplicationKey">
+// <change date="8/1/2025" author="Brian A. Lakstins" description="Add error checking for resetting password.">
 // </changelog>
 #endregion
 
@@ -684,7 +685,15 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         if (this.HasPermission(loRequest, MaxUserEntity.Create(), (int)MaxEnumGroup.PermissionUpdate))
                         {
                             MembershipUser loResetUser = Membership.GetUser(loModel.UserName);
-                            if (MaxMembershipUser.SetPassword(loResetUser, loModel.Password))
+                            if (null == loResetUser)
+                            {
+                                loR.Message.Error = "The user [" + loModel.UserName + " was not found.";
+                            }
+                            else if (string.IsNullOrEmpty(loModel.Password))
+                            {
+                                loR.Message.Error = "The new password is blank.";
+                            }
+                            else if (MaxMembershipUser.SetPassword(loResetUser, loModel.Password))
                             {
                                 loR.Message.Error = string.Empty;
                                 MaxUserEntity loUser = MaxUserEntity.Create();
