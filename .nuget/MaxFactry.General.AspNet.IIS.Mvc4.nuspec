@@ -2,7 +2,7 @@
 <package  xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
 	<metadata>
 		<id>MaxFactry.General.AspNet.IIS.Mvc4</id>
-		<version>1.0.24.62</version>
+		<version>1.0.24.66</version>
 		<title>MaxFactry General Asp.Net for IIS using Mvc4</title>
 		<authors>Brian Lakstins</authors>
 		<owners>brianlakstins</owners>
@@ -15,7 +15,7 @@
 		<tags></tags>
 		<dependencies>
 			<group targetFramework="net452">
-				<dependency id="MaxFactry.General.AspNet.IIS" version="1.0.24.61" />
+				<dependency id="MaxFactry.General.AspNet.IIS" version="1.0.24.63" />
 				<dependency id="Newtonsoft.Json" version="13.0.3" />
 				<dependency id="Fizzler.Systems.HtmlAgilityPack" version="1.1.1" />
 				<dependency id="RazorEngine" version="3.3.0" />
