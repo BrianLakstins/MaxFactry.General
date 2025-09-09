@@ -67,6 +67,7 @@
 // <change date="6/17/2025" author="Brian A. Lakstins" description="Update logging.">
 // <change date="7/10/2025" author="Brian A. Lakstins" description="Add returning of ItemListTotal with page. Return lists for change operations that include DataKey.">
 // <change date="7/15/2025" author="Brian A. Lakstins" description="Send some properties to load list instead of having it determine them from request.">
+// <change date="9/9/2025" author="Brian A. Lakstins" description="Don't require ResponsePropertyList for updates.">
 // </changelog>
 #endregion
 
@@ -847,7 +848,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     }
                     else
                     {
-                        if (Request.Method == HttpMethod.Post && null != loRequest.RequestPropertyList && loRequest.ResponsePropertyList.Length > 0 && !this.HasPermission(loRequest, loEntity, (int)MaxEnumGroup.PermissionUpdate))
+                        if (Request.Method == HttpMethod.Post && null != loRequest.RequestPropertyList && !this.HasPermission(loRequest, loEntity, (int)MaxEnumGroup.PermissionUpdate))
                         {
                             loR.Message.Error = "User does not have permission to update this item.";
                             loR.Status = HttpStatusCode.Forbidden;
@@ -1203,7 +1204,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             else
             {
                 lbIsSuccess = false;
-                if (null != loRequest.RequestPropertyList && loRequest.ResponsePropertyList.Length > 0)
+                if (null != loRequest.RequestPropertyList)
                 {
                     if (!string.IsNullOrEmpty(loMappedEntity.DataKey))
                     {
@@ -1433,9 +1434,16 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             MaxEntity loEntityCopy = loEntity.CreateNew();
             if (null != loEntityCopy)
             {
+                string[] laPropertyNameList = loRequest.ResponsePropertyList;
+                if ((null == loRequest.ResponsePropertyList || loRequest.ResponsePropertyList.Length == 0) &&
+                    null != loRequest.RequestPropertyList && loRequest.RequestPropertyList.Length > 0)
+                {
+                    laPropertyNameList = loRequest.RequestPropertyList;
+                }
+
                 if ((!string.IsNullOrEmpty(lsPropertySort) && lnPage > 0 && lnPageLength > 0) || loFilter.Count > 0)
                 {
-                    MaxEntityList loList = loEntityCopy.LoadAllByPageFilter(lnPage, lnPageLength, lsPropertySort, loFilter, loRequest.ResponsePropertyList);
+                    MaxEntityList loList = loEntityCopy.LoadAllByPageFilter(lnPage, lnPageLength, lsPropertySort, loFilter, laPropertyNameList);
                     loR.Page.Add(loResponsePage.Total, loList.Total);
                     List<string> loDataNameList = new List<string>(loEntity.GetData().DataModel.DataNameList);
                     if (!loDataNameList.Contains(lsPropertySort))
@@ -1466,13 +1474,13 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     for (int lnE = 0; lnE < loList.Count; lnE++)
                     {
                         MaxEntity loListEntity = loList[lnE];
-                        MaxIndex loItem = loListEntity.MapIndex(loRequest.ResponsePropertyList);
+                        MaxIndex loItem = loListEntity.MapIndex(laPropertyNameList);
                         loR.ItemList.Add(loItem);
                     }
                 }
                 else
                 {
-                    MaxEntityList loList = loEntityCopy.LoadAllCache(loRequest.ResponsePropertyList);
+                    MaxEntityList loList = loEntityCopy.LoadAllCache(laPropertyNameList);
                     loR.Page.Add(loResponsePage.Total, loList.Total);
                     SortedList<string, MaxEntity> loSortedList = new SortedList<string, MaxEntity>();
                     for (int lnE = 0; lnE < loList.Count; lnE++)
@@ -1493,9 +1501,9 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
                     foreach (string lsKey in loSortedList.Keys)
                     {
-                        MaxIndex loItem = loSortedList[lsKey].MapIndex(loRequest.ResponsePropertyList);
+                        MaxIndex loItem = loSortedList[lsKey].MapIndex(laPropertyNameList);
                         loR.ItemList.Add(loItem);
-                    }
+                    }                    
                 }
             }
 
