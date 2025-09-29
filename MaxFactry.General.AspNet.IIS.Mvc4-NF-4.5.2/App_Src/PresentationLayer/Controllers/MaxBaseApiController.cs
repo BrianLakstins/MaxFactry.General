@@ -68,6 +68,7 @@
 // <change date="7/10/2025" author="Brian A. Lakstins" description="Add returning of ItemListTotal with page. Return lists for change operations that include DataKey.">
 // <change date="7/15/2025" author="Brian A. Lakstins" description="Send some properties to load list instead of having it determine them from request.">
 // <change date="9/9/2025" author="Brian A. Lakstins" description="Don't require ResponsePropertyList for updates.">
+// <change date="9/29/2025" author="Brian A. Lakstins" description="Allow for AttributeIndex to be readonly">
 // </changelog>
 #endregion
 
@@ -1127,9 +1128,13 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                             lsValue = lsValueCommon;
                         }
 
-                        if ((lbHasValueCommon || lbHasValue) && loProperty.CanWrite)
+                        if ((lbHasValueCommon || lbHasValue))
                         {
-                            if (loR is MaxBaseEntity && loProperty.Name == "AttributeIndex")
+                            if (loProperty.CanWrite)
+                            {
+                                loR.SetValue(loProperty, lsValue);
+                            }
+                            else if (loR is MaxBaseEntity && loProperty.Name == "AttributeIndex")
                             {
                                 MaxIndex loAttributeIndex = MaxConvertLibrary.DeserializeObject(lsValue, typeof(MaxIndex)) as MaxIndex;
                                 if (loAttributeIndex != null)
@@ -1143,10 +1148,6 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                         }
                                     }
                                 }
-                            }
-                            else
-                            {
-                                loR.SetValue(loProperty, lsValue);
                             }
                         }
                     }
