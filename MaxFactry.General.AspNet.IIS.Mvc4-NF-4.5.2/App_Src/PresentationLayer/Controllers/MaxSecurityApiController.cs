@@ -50,6 +50,7 @@
 // <change date="6/10/2025" author="Brian A. Lakstins" description="Fix updating role to user relationships.">
 // <change date="6/11/2025" author="Brian A. Lakstins" description="Update for ApplicationKey">
 // <change date="8/1/2025" author="Brian A. Lakstins" description="Add error checking for resetting password.">
+// <change date="10/17/2025" author="Brian A. Lakstins" description="Fix updating role related permissions">
 // </changelog>
 #endregion
 
@@ -901,54 +902,50 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         protected MaxApiResponseViewModel ProcessRole(MaxApiRequestViewModel loRequest, MaxRoleEntity loRole, MaxApiResponseViewModel loResponse)
         {
             MaxApiResponseViewModel loR = loResponse;
-            if (null != loR && null != loR.Item && loR.Item.Contains(loRole.GetPropertyName(() => loRole.Id)) && null != loRequest.Item && loRequest.Item.Contains("PermissionKeySelectedList"))
+            if (null != loR && null != loR.Item && null != loRole && !(loRole.Id == Guid.Empty) && null != loRequest.Item && loRequest.Item.Contains("PermissionKeySelectedList"))
             {
                 string[] laPermissionSelectedList = MaxConvertLibrary.DeserializeObject(loRequest.Item.GetValueString("PermissionKeySelectedList"), typeof(string[])) as string[];
                 if (null != laPermissionSelectedList)
                 {
-                    Guid loRoleId = MaxConvertLibrary.ConvertToGuid(typeof(object), loR.Item.GetValueString(loRole.GetPropertyName(() => loRole.Id)));
                     List<string> loPermissionSelectedList = new List<string>(laPermissionSelectedList);
-                    if (Guid.Empty != loRoleId)
+                    MaxRoleRelationPermissionEntity loRelation = MaxRoleRelationPermissionEntity.Create();
+                    MaxEntityList loRelationList = loRelation.LoadAllByRoleIdCache(loRole.Id);
+                    for (int lnR = 0; lnR < loRelationList.Count; lnR++)
                     {
-                        MaxRoleRelationPermissionEntity loRelation = MaxRoleRelationPermissionEntity.Create();
-                        MaxEntityList loRelationList = loRelation.LoadAllByRoleIdCache(loRoleId);
-                        for (int lnR = 0; lnR < loRelationList.Count; lnR++)
+                        loRelation = loRelationList[lnR] as MaxRoleRelationPermissionEntity;
+                        string lsKey = loRelation.PermissionId.ToString() + loRelation.Permission.ToString();
+                        if (loPermissionSelectedList.Contains(lsKey))
                         {
-                            loRelation = loRelationList[lnR] as MaxRoleRelationPermissionEntity;
-                            string lsKey = loRelation.PermissionId.ToString() + loRelation.Permission.ToString();
-                            if (loPermissionSelectedList.Contains(lsKey))
-                            {
-                                loPermissionSelectedList.Remove(lsKey);
-                            }
-                            else
-                            {
-                                loRelation.Delete();
-                            }
+                            loPermissionSelectedList.Remove(lsKey);
                         }
-
-                        foreach (string lsPermissionKey in loPermissionSelectedList)
+                        else
                         {
-                            loRelation = MaxRoleRelationPermissionEntity.Create();
-                            loRelation.PermissionId = MaxConvertLibrary.ConvertToGuid(typeof(object), lsPermissionKey.Substring(0, Guid.NewGuid().ToString().Length));
-                            loRelation.Permission = MaxConvertLibrary.ConvertToLong(typeof(object), lsPermissionKey.Substring(Guid.NewGuid().ToString().Length));
-                            loRelation.RoleId = loRoleId;
-                            loRelation.Insert();
+                            loRelation.Delete();
                         }
+                    }
 
-                        foreach (string lsRequestProperty in loRequest.RequestPropertyList)
+                    foreach (string lsPermissionKey in loPermissionSelectedList)
+                    {
+                        loRelation = MaxRoleRelationPermissionEntity.Create();
+                        loRelation.PermissionId = MaxConvertLibrary.ConvertToGuid(typeof(object), lsPermissionKey.Substring(0, Guid.NewGuid().ToString().Length));
+                        loRelation.Permission = MaxConvertLibrary.ConvertToLong(typeof(object), lsPermissionKey.Substring(Guid.NewGuid().ToString().Length));
+                        loRelation.RoleId = loRole.Id;
+                        loRelation.Insert();
+                    }
+
+                    foreach (string lsRequestProperty in loRequest.RequestPropertyList)
+                    {
+                        if (lsRequestProperty == "PermissionKeySelectedList" || lsRequestProperty == typeof(MaxRoleEntity).ToString() + ".PermissionKeySelectedList")
                         {
-                            if (lsRequestProperty == "PermissionKeySelectedList" || lsRequestProperty == typeof(MaxRoleEntity).ToString() + ".PermissionKeySelectedList")
+                            List<string> loPermissionList = new List<string>();
+                            loRelationList = loRelation.LoadAllByRoleIdCache(loRole.Id);
+                            for (int lnE = 0; lnE < loRelationList.Count; lnE++)
                             {
-                                List<string> loPermissionList = new List<string>();
-                                loRelationList = loRelation.LoadAllByRoleIdCache(loRoleId);
-                                for (int lnE = 0; lnE < loRelationList.Count; lnE++)
-                                {
-                                    loRelation = loRelationList[lnE] as MaxRoleRelationPermissionEntity;
-                                    loPermissionList.Add(loRelation.PermissionId.ToString() + loRelation.Permission.ToString());
-                                }
-
-                                loR.Item.Add("PermissionKeySelectedList", loPermissionList.ToArray());
+                                loRelation = loRelationList[lnE] as MaxRoleRelationPermissionEntity;
+                                loPermissionList.Add(loRelation.PermissionId.ToString() + loRelation.Permission.ToString());
                             }
+
+                            loR.Item.Add("PermissionKeySelectedList", loPermissionList.ToArray());
                         }
                     }
                 }
