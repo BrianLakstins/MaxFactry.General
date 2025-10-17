@@ -69,6 +69,7 @@
 // <change date="7/15/2025" author="Brian A. Lakstins" description="Send some properties to load list instead of having it determine them from request.">
 // <change date="9/9/2025" author="Brian A. Lakstins" description="Don't require ResponsePropertyList for updates.">
 // <change date="9/29/2025" author="Brian A. Lakstins" description="Allow for AttributeIndex to be readonly">
+// <change date="10/17/2025" author="Brian A. Lakstins" description="Fix null error">
 // </changelog>
 #endregion
 
@@ -1238,7 +1239,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     loR.Message.Success = "Items Updated";
                 }
             }
-            else if (null == loRequest.RequestPropertyList || loRequest.ResponsePropertyList.Length == 0)
+            else if (null == loRequest.RequestPropertyList || (null == loRequest.ResponsePropertyList || loRequest.ResponsePropertyList.Length == 0))
             {
                 loR.Message.Success = "Item Loaded";
             }
