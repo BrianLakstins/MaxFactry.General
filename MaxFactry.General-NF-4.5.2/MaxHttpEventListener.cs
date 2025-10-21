@@ -33,6 +33,7 @@
 // <change date="5/24/2020" author="Brian A. Lakstins" description="Update logging">
 // <change date="5/27/2020" author="Brian A. Lakstins" description="Don't check or log Azure Application Insights connections (circular logging possible).">
 // <change date="1/13/2021" author="Brian A. Lakstins" description="Don't log events that take a long time as errors">
+// <change date="10/21/2025" author="Brian A. Lakstins" description="Don't log events that are 404 status as errors">
 // </changelog>
 #endregion
 
@@ -170,7 +171,14 @@ namespace MaxFactry.General
                 string lsHost = new Uri(trackedEvent.Url).Host;
                 if (null == success || success == false)
                 {
-                    MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "OnEndHttpResponse-" + lsHost, MaxEnumGroup.LogError, "ID: {id}\r\n, Url: {trackedEvent.Url}\r\nElapsed Time: {trackedEvent.Stopwatch.ElapsedMilliseconds}ms\r\nSuccess: {success}\r\nStatus Code: {statusCode}\r\nSynchronus: {synchronous}", id, trackedEvent.Url, trackedEvent.Stopwatch.ElapsedMilliseconds, success, statusCode, synchronous));
+                    if (statusCode == 404)
+                    {
+                        MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "OnEndHttpResponse-" + lsHost, MaxEnumGroup.LogInfo, "ID: {id}\r\n, Url: {trackedEvent.Url}\r\nElapsed Time: {trackedEvent.Stopwatch.ElapsedMilliseconds}ms\r\nSuccess: {success}\r\nStatus Code: {statusCode}\r\nSynchronus: {synchronous}", id, trackedEvent.Url, trackedEvent.Stopwatch.ElapsedMilliseconds, success, statusCode, synchronous));
+                    }
+                    else
+                    {
+                        MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "OnEndHttpResponse-" + lsHost, MaxEnumGroup.LogError, "ID: {id}\r\n, Url: {trackedEvent.Url}\r\nElapsed Time: {trackedEvent.Stopwatch.ElapsedMilliseconds}ms\r\nSuccess: {success}\r\nStatus Code: {statusCode}\r\nSynchronus: {synchronous}", id, trackedEvent.Url, trackedEvent.Stopwatch.ElapsedMilliseconds, success, statusCode, synchronous));
+                    }
                 }
                 else if (trackedEvent.Stopwatch.ElapsedMilliseconds > 5000)
                 {
