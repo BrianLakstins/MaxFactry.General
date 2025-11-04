@@ -71,6 +71,7 @@
 // <change date="9/29/2025" author="Brian A. Lakstins" description="Allow for AttributeIndex to be readonly">
 // <change date="10/17/2025" author="Brian A. Lakstins" description="Fix null error">
 // <change date="11/4/2025" author="Brian A. Lakstins" description="Swap POST and PUT.  Add shorter variable names for request.">
+// <change date="11/4/2025" author="Brian A. Lakstins" description="Add standard variable names for request">
 // </changelog>
 #endregion
 
@@ -560,20 +561,32 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 loItem.Remove("access_token");
             }
 
+            var loProperty = new
+            {
+                RequestPropertyList = "RequestPropertyList",
+                dataFields = "dataFields",
+                ResponsePropertyList = "ResponsePropertyList",
+                fields = "fields",
+                ResponseFilterList = "ResponseFilterList",
+                filter = "filter",
+                SearchText = "SearchText",
+                search = "search"
+            };
+
             //// RequestPropertyList can be an array of strings or a comma delimited string
             //// It could be in the RequestPropertyList or RQ property
-            object[] laRequestPropertyList = loItem["RequestPropertyList"] as object[];
-            if (null == laRequestPropertyList && loItem.Contains("RequestPropertyList"))
+            object[] laRequestPropertyList = loItem[loProperty.RequestPropertyList] as object[];
+            if (null == laRequestPropertyList && loItem.Contains(loProperty.RequestPropertyList))
             {
-                laRequestPropertyList = loItem.GetValueString("RequestPropertyList").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                laRequestPropertyList = loItem.GetValueString(loProperty.RequestPropertyList).Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             }
 
             if (null == laRequestPropertyList)
             {
-                laRequestPropertyList = loItem["RQ"] as object[];
-                if (null == laRequestPropertyList && loItem.Contains("RQ"))
+                laRequestPropertyList = loItem[loProperty.dataFields] as object[];
+                if (null == laRequestPropertyList && loItem.Contains(loProperty.dataFields))
                 {
-                    laRequestPropertyList = loItem.GetValueString("RQ").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                    laRequestPropertyList = loItem.GetValueString(loProperty.dataFields).Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 }
             }
 
@@ -586,30 +599,30 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     loR.RequestPropertyList[lnF] = laRequestPropertyList[lnF].ToString();
                 }
 
-                if (loItem.Contains("RequestPropertyList"))
+                if (loItem.Contains(loProperty.RequestPropertyList))
                 {
-                    loItem.Remove("RequestPropertyList");
+                    loItem.Remove(loProperty.RequestPropertyList);
                 }
-                else if (loItem.Contains("RQ"))
+                else if (loItem.Contains(loProperty.dataFields))
                 {
-                    loItem.Remove("RQ");
+                    loItem.Remove(loProperty.dataFields);
                 }
             }
 
             //// ResponsePropertyList can be an array of strings or a comma delimited string
             //// It could be in the ResponsePropertyList or RS property
-            object[] laResponsePropertyList = loItem["ResponsePropertyList"] as object[];
-            if (null == laResponsePropertyList && loItem.Contains("ResponsePropertyList"))
+            object[] laResponsePropertyList = loItem[loProperty.ResponsePropertyList] as object[];
+            if (null == laResponsePropertyList && loItem.Contains(loProperty.ResponsePropertyList))
             {
-                laResponsePropertyList = loItem.GetValueString("ResponsePropertyList").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                laResponsePropertyList = loItem.GetValueString(loProperty.ResponsePropertyList).Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             }
 
             if (null == laResponsePropertyList)
             {
-                laResponsePropertyList = loItem["RS"] as object[];
-                if (null == laResponsePropertyList && loItem.Contains("RS"))
+                laResponsePropertyList = loItem[loProperty.fields] as object[];
+                if (null == laResponsePropertyList && loItem.Contains(loProperty.fields))
                 {
-                    laResponsePropertyList = loItem.GetValueString("RS").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                    laResponsePropertyList = loItem.GetValueString(loProperty.fields).Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 }
             }
 
@@ -622,30 +635,30 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     loR.ResponsePropertyList[lnF] = laResponsePropertyList[lnF].ToString();
                 }
 
-                if (loItem.Contains("ResponsePropertyList"))
+                if (loItem.Contains(loProperty.ResponsePropertyList))
                 {
-                    loItem.Remove("ResponsePropertyList");
+                    loItem.Remove(loProperty.ResponsePropertyList);
                 }
-                else if (loItem.Contains("RS"))
+                else if (loItem.Contains(loProperty.fields))
                 {
-                    loItem.Remove("RS");
+                    loItem.Remove(loProperty.fields);
                 }
             }
 
             //// ResponseFilterList can be an array of strings or a tab delimited string
             //// It could be in the ResponseFilterList or RSF property
-            object[] laResponseFilterList = loItem["ResponseFilterList"] as object[];
-            if (null == laResponseFilterList && loItem.Contains("ResponseFilterList"))
+            object[] laResponseFilterList = loItem[loProperty.ResponseFilterList] as object[];
+            if (null == laResponseFilterList && loItem.Contains(loProperty.ResponseFilterList))
             {
-                laResponseFilterList = loItem.GetValueString("ResponseFilterList").Split(new char[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                laResponseFilterList = loItem.GetValueString(loProperty.ResponseFilterList).Split(new char[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
             }
 
             if (null == laResponseFilterList)
             {
-                laResponseFilterList = loItem["RSF"] as object[];
-                if (null == laResponseFilterList && loItem.Contains("RSF"))
+                laResponseFilterList = loItem[loProperty.filter] as object[];
+                if (null == laResponseFilterList && loItem.Contains(loProperty.filter))
                 {
-                    laResponseFilterList = loItem.GetValueString("RSF").Split(new char[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                    laResponseFilterList = loItem.GetValueString(loProperty.filter).Split(new char[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
                 }
             }
 
@@ -657,14 +670,92 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     loR.ResponseFilterList[lnF] = laResponseFilterList[lnF].ToString();
                 }
 
-                if (loItem.Contains("ResponseFilterList"))
+                if (loItem.Contains(loProperty.ResponseFilterList))
                 {
-                    loItem.Remove("ResponseFilterList");
+                    loItem.Remove(loProperty.ResponseFilterList);
                 }
-                else if (loItem.Contains("RSF"))
+                else if (loItem.Contains(loProperty.filter))
                 {
-                    loItem.Remove("RSF");
+                    loItem.Remove(loProperty.filter);
                 }
+            }
+
+            var loRequestPage = new
+            {
+                Page = "Page",
+                page = "page",
+                PageLength = "PageLength",
+                limit = "limit",
+                PropertySort = "PropertySort",
+                sort = "sort",
+                SearchText = "SearchText",
+                q = "q"
+            };
+
+            loR.Page = MaxConvertLibrary.ConvertToInt(typeof(object), loItem.GetValueString(loRequestPage.Page));
+            if (loR.Page == int.MinValue)
+            {
+                loR.Page = MaxConvertLibrary.ConvertToInt(typeof(object), loItem.GetValueString(loRequestPage.page));
+            }
+
+            if (loItem.Contains(loRequestPage.Page))
+            {
+                loItem.Remove(loRequestPage.Page);
+            }
+            else if (loItem.Contains(loRequestPage.page))
+            {
+                loItem.Remove(loRequestPage.page);
+            }
+
+            loR.PageLength = MaxConvertLibrary.ConvertToInt(typeof(object), loItem.GetValueString(loRequestPage.PageLength));
+            if (loR.PageLength == int.MinValue)
+            {
+                loR.PageLength = MaxConvertLibrary.ConvertToInt(typeof(object), loItem.GetValueString(loRequestPage.limit));
+            }
+
+            if (loItem.Contains(loRequestPage.PageLength))
+            {
+                loItem.Remove(loRequestPage.PageLength);
+            }
+            else if (loItem.Contains(loRequestPage.limit))
+            {
+                loItem.Remove(loRequestPage.limit);
+            }
+
+            if (loR.Page == int.MinValue || loR.PageLength == int.MinValue)
+            {
+                loR.Page = 1;
+                loR.PageLength = 1000;
+            }
+
+            loR.PropertySort = loItem.GetValueString(loRequestPage.PropertySort);
+            if (string.IsNullOrEmpty(loR.PropertySort))
+            {
+                loR.PropertySort = loItem.GetValueString(loRequestPage.sort);
+            }
+
+            if (loItem.Contains(loRequestPage.PropertySort))
+            {
+                loItem.Remove(loRequestPage.PropertySort);
+            }
+            else if (loItem.Contains(loRequestPage.sort))
+            {
+                loItem.Remove(loRequestPage.sort);
+            }
+
+            loR.SearchText = loItem.GetValueString(loRequestPage.SearchText);
+            if (string.IsNullOrEmpty(loR.SearchText))
+            {
+                loR.SearchText = loItem.GetValueString(loRequestPage.q);
+            }
+
+            if (loItem.Contains(loRequestPage.SearchText))
+            {
+                loItem.Remove(loRequestPage.SearchText);
+            }
+            else if (loItem.Contains(loRequestPage.q))
+            {
+                loItem.Remove(loRequestPage.q);
             }
 
             loR.Item = loItem;
@@ -907,11 +998,11 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                             MaxEntity loMappedEntity = this.MapRequest(loEntity, loRequest);
                             if (Request.Method == HttpMethod.Post)
                             {
-                                loR = this.ProcessPost(loRequest, loEntity, loMappedEntity, loMappedList, loR);
+                                loR = this.ProcessPost(loRequest, loMappedEntity, loMappedList, loR);
                             }
                             else if (Request.Method == HttpMethod.Put)
                             {
-                                loR = this.ProcessPut(loRequest, loMappedEntity, loMappedList, loR);
+                                loR = this.ProcessPut(loRequest, loEntity, loMappedEntity, loMappedList, loR);
                             }
                             else if (Request.Method == HttpMethod.Delete)
                             {
@@ -929,27 +1020,10 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                 }
                             }
 
-                            var loRequestPage = new
-                            {
-                                Page = "Page",
-                                PageLength = "PageLength",
-                                PropertySort = "PropertySort"
-                            };
-
-                            int lnPage = MaxConvertLibrary.ConvertToInt(typeof(object), loRequest.Item.GetValueString(loRequestPage.Page));
-                            int lnPageLength = MaxConvertLibrary.ConvertToInt(typeof(object), loRequest.Item.GetValueString(loRequestPage.PageLength));
-                            if (lnPage == int.MinValue || lnPageLength == int.MinValue)
-                            {
-                                lnPage = 1;
-                                lnPageLength = 1000;
-                            }
-
-                            string lsPropertySort = loRequest.Item.GetValueString(loRequestPage.PropertySort);
-
                             if (null == lsDataKey || 
                                 (this.Request.Method != HttpMethod.Get && loR.ItemList.Count == 0 && 
                                 ((null != loRequest.ResponseFilterList && loRequest.ResponseFilterList.Length > 0) ||
-                                lnPageLength > 0)))
+                                loRequest.PageLength > 0)))
                             {
                                 //// Load list
                                 if (!this.HasPermission(loRequest, loEntity, (int)MaxEnumGroup.PermissionSelect))
@@ -959,7 +1033,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                 }
                                 else
                                 {
-                                    MaxApiResponseViewModel loLoadListResponse = this.ProcessLoadList(loRequest, loEntity, lnPage, lnPageLength, lsPropertySort);
+                                    MaxApiResponseViewModel loLoadListResponse = this.ProcessLoadList(loRequest, loEntity);
                                     loR.Page = loLoadListResponse.Page;
                                     loR.ItemList = loLoadListResponse.ItemList;
                                 }
@@ -1485,7 +1559,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             return loR;
         }
 
-        protected virtual MaxApiResponseViewModel ProcessLoadList(MaxApiRequestViewModel loRequest, MaxEntity loEntity, int lnPage, int lnPageLength, string lsPropertySort)
+        protected virtual MaxApiResponseViewModel ProcessLoadList(MaxApiRequestViewModel loRequest, MaxEntity loEntity)
         {
             MaxApiResponseViewModel loR = new MaxApiResponseViewModel();
             var loResponsePage = new
@@ -1505,16 +1579,16 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     laPropertyNameList = loRequest.RequestPropertyList;
                 }
 
-                if ((!string.IsNullOrEmpty(lsPropertySort) && lnPage > 0 && lnPageLength > 0) || loFilter.Count > 0)
+                if ((!string.IsNullOrEmpty(loRequest.PropertySort) && loRequest.Page > 0 && loRequest.PageLength > 0) || loFilter.Count > 0)
                 {
-                    MaxEntityList loList = loEntityCopy.LoadAllByPageFilter(lnPage, lnPageLength, lsPropertySort, loFilter, laPropertyNameList);
+                    MaxEntityList loList = loEntityCopy.LoadAllByPageFilter(loRequest.Page, loRequest.PageLength, loRequest.PropertySort, loFilter, laPropertyNameList);
                     loR.Page.Add(loResponsePage.Total, loList.Total);
                     List<string> loDataNameList = new List<string>(loEntity.GetData().DataModel.DataNameList);
-                    if (!loDataNameList.Contains(lsPropertySort))
+                    if (!loDataNameList.Contains(loRequest.PropertySort))
                     {
                         //// TODO: Take into account multiple properties separated by commas and "asc" and "desc" suffixes
-                        PropertyInfo loProperty = loEntityCopy.GetType().GetProperty(lsPropertySort);
-                        if (null != loProperty && loList.Total > lnPageLength && (lnPage > 1 || loList.Count > lnPageLength))
+                        PropertyInfo loProperty = loEntityCopy.GetType().GetProperty(loRequest.PropertySort);
+                        if (null != loProperty && loList.Total > loRequest.PageLength && (loRequest.Page > 1 || loList.Count > loRequest.PageLength))
                         {
                             SortedList<string, MaxEntity> loSortedList = new SortedList<string, MaxEntity>();
                             for (int lnE = 0; lnE < loList.Count; lnE++)
@@ -1527,7 +1601,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                             loList = new MaxEntityList(loEntityCopy.GetType());
                             for (int lnL = 0; lnL < loSortedList.Values.Count; lnL++)
                             {
-                                if (lnPageLength <= 0 || ((lnPage - 1) * lnPageLength <= lnL && lnL < lnPage * lnPageLength))
+                                if (loRequest.PageLength <= 0 || ((loRequest.Page - 1) * loRequest.PageLength <= lnL && lnL < loRequest.Page * loRequest.PageLength))
                                 {
                                     loList.Add(loSortedList.Values[lnL]);
                                 }

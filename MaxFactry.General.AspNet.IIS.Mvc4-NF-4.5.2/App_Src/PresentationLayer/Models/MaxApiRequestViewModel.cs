@@ -33,6 +33,7 @@
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Updated to not use default value for DataKey.  Only use if specified.">
 // <change date="11/6/2024" author="Brian A. Lakstins" description="Updated token integration">
 // <change date="3/4/2025" author="Brian A. Lakstins" description="Return null data key when no data key is in the request">
+// <change date="11/4/2025" author="Brian A. Lakstins" description="Add page and search text properties">
 // </changelog>
 #endregion
 
@@ -45,6 +46,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
     using MaxFactry.Core;
     using MaxFactry.General.BusinessLayer;
     using System.Xml.Linq;
+    using System.Globalization;
 
     /// <summary>
     /// View model for parsing a request to any api call
@@ -111,6 +113,14 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         public string[] ResponseFilterList { get; set; }
 
         public string[] ResponsePropertyList { get; set; }
+
+        public int Page { get; set; }
+
+        public int PageLength { get; set; }
+
+        public string PropertySort { get; set; }
+
+        public string SearchText { get; set; }
 
         public string Content { get; set; }
 
