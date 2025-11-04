@@ -70,6 +70,7 @@
 // <change date="9/9/2025" author="Brian A. Lakstins" description="Don't require ResponsePropertyList for updates.">
 // <change date="9/29/2025" author="Brian A. Lakstins" description="Allow for AttributeIndex to be readonly">
 // <change date="10/17/2025" author="Brian A. Lakstins" description="Fix null error">
+// <change date="11/4/2025" author="Brian A. Lakstins" description="Swap POST and PUT.  Add shorter variable names for request.">
 // </changelog>
 #endregion
 
@@ -457,10 +458,8 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         }
 
         /// <summary>
-        /// Gets the request in whatever format it is being supplied
+        /// Gets the request in whatever format it is being supplied (QueryString, JSON, Form Data, Multipart Form Data)
         /// </summary>
-        /// <typeparam name="T">Type of anonymous class</typeparam>
-        /// <param name="loRequestItem">Anonymous item with expected field names for request</param>
         /// <returns>Request information</returns>
         protected virtual async Task<MaxApiRequestViewModel> GetRequest()
         {
@@ -561,15 +560,24 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 loItem.Remove("access_token");
             }
 
+            //// RequestPropertyList can be an array of strings or a comma delimited string
+            //// It could be in the RequestPropertyList or RQ property
             object[] laRequestPropertyList = loItem["RequestPropertyList"] as object[];
+            if (null == laRequestPropertyList && loItem.Contains("RequestPropertyList"))
+            {
+                laRequestPropertyList = loItem.GetValueString("RequestPropertyList").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            }
+
             if (null == laRequestPropertyList)
             {
-                if (loItem.Contains("RequestPropertyList"))
+                laRequestPropertyList = loItem["RQ"] as object[];
+                if (null == laRequestPropertyList && loItem.Contains("RQ"))
                 {
-                    laRequestPropertyList = loItem.GetValueString("RequestPropertyList").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                    laRequestPropertyList = loItem.GetValueString("RQ").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 }
             }
 
+            //// Set the RequestPropertyList
             if (null != laRequestPropertyList)
             {
                 loR.RequestPropertyList = new string[laRequestPropertyList.Length];
@@ -578,18 +586,34 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     loR.RequestPropertyList[lnF] = laRequestPropertyList[lnF].ToString();
                 }
 
-                loItem.Remove("RequestPropertyList");
-            }
-
-            object[] laResponsePropertyList = loItem["ResponsePropertyList"] as object[];
-            if (null == laResponsePropertyList)
-            {
-                if (loItem.Contains("ResponsePropertyList"))
+                if (loItem.Contains("RequestPropertyList"))
                 {
-                    laResponsePropertyList = loItem.GetValueString("ResponsePropertyList").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                    loItem.Remove("RequestPropertyList");
+                }
+                else if (loItem.Contains("RQ"))
+                {
+                    loItem.Remove("RQ");
                 }
             }
 
+            //// ResponsePropertyList can be an array of strings or a comma delimited string
+            //// It could be in the ResponsePropertyList or RS property
+            object[] laResponsePropertyList = loItem["ResponsePropertyList"] as object[];
+            if (null == laResponsePropertyList && loItem.Contains("ResponsePropertyList"))
+            {
+                laResponsePropertyList = loItem.GetValueString("ResponsePropertyList").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            }
+
+            if (null == laResponsePropertyList)
+            {
+                laResponsePropertyList = loItem["RS"] as object[];
+                if (null == laResponsePropertyList && loItem.Contains("RS"))
+                {
+                    laResponsePropertyList = loItem.GetValueString("RS").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                }
+            }
+
+            /// Set the ResponsePropertyList
             if (null != laResponsePropertyList)
             {
                 loR.ResponsePropertyList = new string[laResponsePropertyList.Length];
@@ -598,15 +622,30 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     loR.ResponsePropertyList[lnF] = laResponsePropertyList[lnF].ToString();
                 }
 
-                loItem.Remove("ResponsePropertyList");
+                if (loItem.Contains("ResponsePropertyList"))
+                {
+                    loItem.Remove("ResponsePropertyList");
+                }
+                else if (loItem.Contains("RS"))
+                {
+                    loItem.Remove("RS");
+                }
             }
 
+            //// ResponseFilterList can be an array of strings or a tab delimited string
+            //// It could be in the ResponseFilterList or RSF property
             object[] laResponseFilterList = loItem["ResponseFilterList"] as object[];
+            if (null == laResponseFilterList && loItem.Contains("ResponseFilterList"))
+            {
+                laResponseFilterList = loItem.GetValueString("ResponseFilterList").Split(new char[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            }
+
             if (null == laResponseFilterList)
             {
-                if (loItem.Contains("ResponseFilterList"))
+                laResponseFilterList = loItem["RSF"] as object[];
+                if (null == laResponseFilterList && loItem.Contains("RSF"))
                 {
-                    laResponseFilterList = loItem.GetValueString("ResponseFilterList").Split(new char[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                    laResponseFilterList = loItem.GetValueString("RSF").Split(new char[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
                 }
             }
 
@@ -618,7 +657,14 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     loR.ResponseFilterList[lnF] = laResponseFilterList[lnF].ToString();
                 }
 
-                loItem.Remove("ResponseFilterList");
+                if (loItem.Contains("ResponseFilterList"))
+                {
+                    loItem.Remove("ResponseFilterList");
+                }
+                else if (loItem.Contains("RSF"))
+                {
+                    loItem.Remove("RSF");
+                }
             }
 
             loR.Item = loItem;
@@ -1158,7 +1204,16 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             return loR;
         }
 
-        protected virtual MaxApiResponseViewModel ProcessPost(MaxApiRequestViewModel loRequest, MaxEntity loOriginalEntity, MaxEntity loMappedEntity, MaxEntityList loMappedEntityList, MaxApiResponseViewModel loResponse)
+        /// <summary>
+        /// Create or replace a resource
+        /// </summary>
+        /// <param name="loRequest"></param>
+        /// <param name="loOriginalEntity"></param>
+        /// <param name="loMappedEntity"></param>
+        /// <param name="loMappedEntityList"></param>
+        /// <param name="loResponse"></param>
+        /// <returns></returns>
+        protected virtual MaxApiResponseViewModel ProcessPut(MaxApiRequestViewModel loRequest, MaxEntity loOriginalEntity, MaxEntity loMappedEntity, MaxEntityList loMappedEntityList, MaxApiResponseViewModel loResponse)
         {
             MaxApiResponseViewModel loR = loResponse;
             bool lbIsSuccess = false;
@@ -1251,7 +1306,15 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             return loR;
         }
 
-        protected virtual MaxApiResponseViewModel ProcessPut(MaxApiRequestViewModel loRequest, MaxEntity loMappedEntity, MaxEntityList loMappedList, MaxApiResponseViewModel loResponse)
+        /// <summary>
+        /// Create a new resource
+        /// </summary>
+        /// <param name="loRequest"></param>
+        /// <param name="loMappedEntity"></param>
+        /// <param name="loMappedList"></param>
+        /// <param name="loResponse"></param>
+        /// <returns></returns>
+        protected virtual MaxApiResponseViewModel ProcessPost(MaxApiRequestViewModel loRequest, MaxEntity loMappedEntity, MaxEntityList loMappedList, MaxApiResponseViewModel loResponse)
         {
             MaxApiResponseViewModel loR = loResponse;
             bool lbIsSuccess = false;
@@ -1290,8 +1353,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             else
             {
                 loR.Message.Error = "There was a problem adding";
-            }
-            
+            }            
 
             return loR;
         }

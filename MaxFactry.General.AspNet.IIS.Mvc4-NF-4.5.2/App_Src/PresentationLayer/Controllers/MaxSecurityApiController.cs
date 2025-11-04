@@ -51,6 +51,7 @@
 // <change date="6/11/2025" author="Brian A. Lakstins" description="Update for ApplicationKey">
 // <change date="8/1/2025" author="Brian A. Lakstins" description="Add error checking for resetting password.">
 // <change date="10/17/2025" author="Brian A. Lakstins" description="Fix updating role related permissions">
+// <change date="11/4/2025" author="Brian A. Lakstins" description="Swap POST and PUT">
 // </changelog>
 #endregion
 
@@ -812,9 +813,9 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             return this.GetResponseMessage(loR, loStatus);
         }
 
-        protected override MaxApiResponseViewModel ProcessPost(MaxApiRequestViewModel loRequest, MaxEntity loOriginalEntity, MaxEntity loMappedEntity, MaxEntityList loMappedEntityList, MaxApiResponseViewModel loResponse)
+        protected override MaxApiResponseViewModel ProcessPut(MaxApiRequestViewModel loRequest, MaxEntity loOriginalEntity, MaxEntity loMappedEntity, MaxEntityList loMappedEntityList, MaxApiResponseViewModel loResponse)
         {
-            MaxApiResponseViewModel loR = base.ProcessPost(loRequest, loOriginalEntity, loMappedEntity, loMappedEntityList, loResponse);
+            MaxApiResponseViewModel loR = base.ProcessPut(loRequest, loOriginalEntity, loMappedEntity, loMappedEntityList, loResponse);
             if (loMappedEntity is MaxUserEntity)
             {
                 loR = this.ProcessUser(loRequest, loMappedEntity as MaxUserEntity, loR);
@@ -827,9 +828,9 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             return loR;
         }
 
-        protected override MaxApiResponseViewModel ProcessPut(MaxApiRequestViewModel loRequest, MaxEntity loMappedEntity, MaxEntityList loMappedList, MaxApiResponseViewModel loResponse)
+        protected override MaxApiResponseViewModel ProcessPost(MaxApiRequestViewModel loRequest, MaxEntity loMappedEntity, MaxEntityList loMappedList, MaxApiResponseViewModel loResponse)
         {
-            MaxApiResponseViewModel loR = base.ProcessPut(loRequest, loMappedEntity, loMappedList, loResponse);
+            MaxApiResponseViewModel loR = base.ProcessPost(loRequest, loMappedEntity, loMappedList, loResponse);
             if (loMappedEntity is MaxUserEntity)
             {
                 loR = this.ProcessUser(loRequest, loMappedEntity as MaxUserEntity, loR);
