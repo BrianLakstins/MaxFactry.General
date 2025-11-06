@@ -72,6 +72,7 @@
 // <change date="10/17/2025" author="Brian A. Lakstins" description="Fix null error">
 // <change date="11/4/2025" author="Brian A. Lakstins" description="Swap POST and PUT.  Add shorter variable names for request.">
 // <change date="11/4/2025" author="Brian A. Lakstins" description="Add standard variable names for request">
+// <change date="11/6/2025" author="Brian A. Lakstins" description="Using MapIndexList to generate a returned list">
 // </changelog>
 #endregion
 
@@ -1609,12 +1610,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         }
                     }
 
-                    for (int lnE = 0; lnE < loList.Count; lnE++)
-                    {
-                        MaxEntity loListEntity = loList[lnE];
-                        MaxIndex loItem = loListEntity.MapIndex(laPropertyNameList);
-                        loR.ItemList.Add(loItem);
-                    }
+                    loR.ItemList = new List<MaxIndex>(loEntity.MapIndexList(loList, laPropertyNameList));
                 }
                 else
                 {
@@ -1637,11 +1633,13 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         }
                     }
 
+                    loList = new MaxEntityList(loEntityCopy.GetType());
                     foreach (string lsKey in loSortedList.Keys)
                     {
-                        MaxIndex loItem = loSortedList[lsKey].MapIndex(laPropertyNameList);
-                        loR.ItemList.Add(loItem);
-                    }                    
+                        loList.Add(loSortedList[lsKey]);
+                    }
+
+                    loR.ItemList = new List<MaxIndex>(loEntity.MapIndexList(loList, laPropertyNameList));
                 }
             }
 
