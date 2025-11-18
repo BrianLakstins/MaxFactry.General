@@ -52,6 +52,7 @@
 // <change date="8/1/2025" author="Brian A. Lakstins" description="Add error checking for resetting password.">
 // <change date="10/17/2025" author="Brian A. Lakstins" description="Fix updating role related permissions">
 // <change date="11/4/2025" author="Brian A. Lakstins" description="Swap POST and PUT">
+// <change date="11/18/2025" author="Brian A. Lakstins" description="Update fingerprint for post">
 // </changelog>
 #endregion
 
@@ -828,9 +829,9 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             return loR;
         }
 
-        protected override MaxApiResponseViewModel ProcessPost(MaxApiRequestViewModel loRequest, MaxEntity loMappedEntity, MaxEntityList loMappedList, MaxApiResponseViewModel loResponse)
+        protected override MaxApiResponseViewModel ProcessPost(MaxApiRequestViewModel loRequest, MaxEntity loOriginalEntity, MaxEntity loMappedEntity, MaxEntityList loMappedList, MaxApiResponseViewModel loResponse)
         {
-            MaxApiResponseViewModel loR = base.ProcessPost(loRequest, loMappedEntity, loMappedList, loResponse);
+            MaxApiResponseViewModel loR = base.ProcessPost(loRequest, loOriginalEntity, loMappedEntity, loMappedList, loResponse);
             if (loMappedEntity is MaxUserEntity)
             {
                 loR = this.ProcessUser(loRequest, loMappedEntity as MaxUserEntity, loR);

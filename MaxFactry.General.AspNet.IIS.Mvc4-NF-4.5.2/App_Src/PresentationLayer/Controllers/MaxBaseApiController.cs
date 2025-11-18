@@ -73,6 +73,7 @@
 // <change date="11/4/2025" author="Brian A. Lakstins" description="Swap POST and PUT.  Add shorter variable names for request.">
 // <change date="11/4/2025" author="Brian A. Lakstins" description="Add standard variable names for request">
 // <change date="11/6/2025" author="Brian A. Lakstins" description="Using MapIndexList to generate a returned list">
+// <change date="11/18/2025" author="Brian A. Lakstins" description="Make put and post use the same arguments">
 // </changelog>
 #endregion
 
@@ -999,7 +1000,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                             MaxEntity loMappedEntity = this.MapRequest(loEntity, loRequest);
                             if (Request.Method == HttpMethod.Post)
                             {
-                                loR = this.ProcessPost(loRequest, loMappedEntity, loMappedList, loR);
+                                loR = this.ProcessPost(loRequest, loEntity, loMappedEntity, loMappedList, loR);
                             }
                             else if (Request.Method == HttpMethod.Put)
                             {
@@ -1389,7 +1390,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         /// <param name="loMappedList"></param>
         /// <param name="loResponse"></param>
         /// <returns></returns>
-        protected virtual MaxApiResponseViewModel ProcessPost(MaxApiRequestViewModel loRequest, MaxEntity loMappedEntity, MaxEntityList loMappedList, MaxApiResponseViewModel loResponse)
+        protected virtual MaxApiResponseViewModel ProcessPost(MaxApiRequestViewModel loRequest, MaxEntity loOriginalEntity, MaxEntity loMappedEntity, MaxEntityList loMappedList, MaxApiResponseViewModel loResponse)
         {
             MaxApiResponseViewModel loR = loResponse;
             bool lbIsSuccess = false;
