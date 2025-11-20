@@ -597,7 +597,6 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [HttpPost]
         [HttpOptions]
         [ActionName("logout")]
         public async Task<HttpResponseMessage> Logout()
@@ -742,7 +741,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [HttpPost]
+        [HttpPut]
         [HttpOptions]
         [ActionName("changepassword")]
         public async Task<HttpResponseMessage> ChangePassword()
