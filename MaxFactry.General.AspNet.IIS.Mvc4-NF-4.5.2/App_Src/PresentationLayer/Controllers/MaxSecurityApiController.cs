@@ -53,6 +53,7 @@
 // <change date="10/17/2025" author="Brian A. Lakstins" description="Fix updating role related permissions">
 // <change date="11/4/2025" author="Brian A. Lakstins" description="Swap POST and PUT">
 // <change date="11/18/2025" author="Brian A. Lakstins" description="Update fingerprint for post">
+// <change date="11/20/2025" author="Brian A. Lakstins" description="Updating Put and Post checks for update and insert">
 // </changelog>
 #endregion
 
@@ -248,7 +249,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [HttpPost]
+        [HttpPut]
         [HttpDelete]
         [HttpOptions]
         [ActionName("usertoken")]
@@ -333,7 +334,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         }
                     }
 
-                    if (Request.Method == HttpMethod.Post || null == loCurrentEntity)
+                    if (Request.Method == HttpMethod.Put || null == loCurrentEntity)
                     {
                         string lsToken = MaxUserAuthTokenEntity.GenerateToken(false);
                         loCurrentEntity = MaxUserAuthTokenEntity.AddToken(lsToken, lsTokenType, loExpiration, loRequest.User.ProviderUserKey.ToString(), Guid.Empty, Guid.Empty);
@@ -400,7 +401,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [HttpPost]
+        [HttpPut]
         [HttpOptions]
         [ActionName("login")]
         public async Task<HttpResponseMessage> Login()
@@ -447,7 +448,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 {
                     bool lbIsValid = false;
                     MembershipUser loUser = loRequest.User;
-                    if (this.Request.Method == HttpMethod.Post)
+                    if (this.Request.Method == HttpMethod.Put)
                     {
                         string lsUserName = loRequest.Item.GetValueString(loRequestItem.UserName);
                         string lsEmail = loRequest.Item.GetValueString(loRequestItem.Email);
@@ -644,7 +645,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         }
 
         [HttpGet]
-        [HttpPost]
+        [HttpPut]
         [HttpOptions]
         [ActionName("resetpassword")]
         public async Task<HttpResponseMessage> ResetPassword()
@@ -683,7 +684,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                             loR.Item[loResponseItem.CanReset] = true;
                         }
                     }
-                    else if (this.Request.Method == HttpMethod.Post)
+                    else if (this.Request.Method == HttpMethod.Put)
                     {
                         if (this.HasPermission(loRequest, MaxUserEntity.Create(), (int)MaxEnumGroup.PermissionUpdate))
                         {

@@ -74,6 +74,7 @@
 // <change date="11/4/2025" author="Brian A. Lakstins" description="Add standard variable names for request">
 // <change date="11/6/2025" author="Brian A. Lakstins" description="Using MapIndexList to generate a returned list">
 // <change date="11/18/2025" author="Brian A. Lakstins" description="Make put and post use the same arguments">
+// <change date="11/20/2025" author="Brian A. Lakstins" description="Updating put and post checks for update and insert">
 // </changelog>
 #endregion
 
@@ -965,12 +966,12 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             }
             else
             {
-                if ((Request.Method == HttpMethod.Get || Request.Method == HttpMethod.Post || Request.Method == HttpMethod.Delete) && !this.HasPermission(loRequest, loEntity, (int)MaxEnumGroup.PermissionSelect))
+                if ((Request.Method == HttpMethod.Get || Request.Method == HttpMethod.Put || Request.Method == HttpMethod.Delete) && !this.HasPermission(loRequest, loEntity, (int)MaxEnumGroup.PermissionSelect))
                 {
                     loR.Message.Error = "User does not have permission for this item.";
                     loR.Status = HttpStatusCode.Forbidden;
                 }
-                else if (Request.Method == HttpMethod.Put && !this.HasPermission(loRequest, loEntity, (int)MaxEnumGroup.PermissionInsert))
+                else if (Request.Method == HttpMethod.Post && !this.HasPermission(loRequest, loEntity, (int)MaxEnumGroup.PermissionInsert))
                 {
                     loR.Message.Error = "User does not have permission to add item.";
                     loR.Status = HttpStatusCode.Forbidden;
@@ -989,7 +990,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     }
                     else
                     {
-                        if (Request.Method == HttpMethod.Post && null != loRequest.RequestPropertyList && !this.HasPermission(loRequest, loEntity, (int)MaxEnumGroup.PermissionUpdate))
+                        if (Request.Method == HttpMethod.Put && null != loRequest.RequestPropertyList && !this.HasPermission(loRequest, loEntity, (int)MaxEnumGroup.PermissionUpdate))
                         {
                             loR.Message.Error = "User does not have permission to update this item.";
                             loR.Status = HttpStatusCode.Forbidden;
