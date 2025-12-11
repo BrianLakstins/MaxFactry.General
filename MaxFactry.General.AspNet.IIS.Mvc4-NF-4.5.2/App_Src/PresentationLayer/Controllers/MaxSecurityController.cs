@@ -42,6 +42,7 @@
 // <change date="11/5/2024" author="Brian A. Lakstins" description="Changed stored username format">
 // <change date="1/27/2025" author="Brian A. Lakstins" description="Add auth type when logging in">
 // <change date="7/10/2025" author="Brian A. Lakstins" description="Fix logging of Auth2 Login">
+// <change date="12/11/2025" author="Brian A. Lakstins" description="Add a way to override the return host when running on localhost">
 // </changelog>
 #endregion
 
@@ -622,7 +623,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         [HttpGet]
         [AllowAnonymous]
         [OutputCache(NoStore = true, Duration = 0)]
-        public virtual ActionResult OAuth2OIDC(string tenant, string client_id, string response_type, string scope, string domain_hint, string ReturnUrl)
+        public virtual ActionResult OAuth2OIDC(string host, string tenant, string client_id, string response_type, string scope, string domain_hint, string ReturnUrl)
         {
             try
             {
@@ -645,6 +646,10 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         Uri loReturnUrl = new Uri(ReturnUrl);
                         lsCurrentHost = loReturnUrl.DnsSafeHost;
                     }
+                }
+                if (!string.IsNullOrEmpty(host) && lsCurrentHost.ToLower().Contains("localhost"))
+                {
+                    lsCurrentHost = host;
                 }
 
                 loEntity.FullUri = string.Format("https://{0}/MaxSecurity/OAuth2OIDC", lsCurrentHost);
