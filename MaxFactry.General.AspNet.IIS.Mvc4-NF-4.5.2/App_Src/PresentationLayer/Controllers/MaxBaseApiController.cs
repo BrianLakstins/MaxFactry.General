@@ -75,6 +75,7 @@
 // <change date="11/6/2025" author="Brian A. Lakstins" description="Using MapIndexList to generate a returned list">
 // <change date="11/18/2025" author="Brian A. Lakstins" description="Make put and post use the same arguments">
 // <change date="11/20/2025" author="Brian A. Lakstins" description="Updating put and post checks for update and insert">
+// <change date="12/17/2025" author="Brian A. Lakstins" description="Add handling schema requests">
 // </changelog>
 #endregion
 
@@ -915,7 +916,24 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     MaxApiRequestViewModel loRequest = await this.GetRequest();
                     try
                     {
-                        loR = this.ProcessRequest(loRequest, loEntity);
+                        if (Request.Method == HttpMethod.Get && (this.Request.RequestUri.AbsolutePath.ToLower().EndsWith("/schema") || this.Request.RequestUri.Query.ToLower().Contains("schema")))
+                        {
+                            loR.Item = loEntity.MapIndex();
+                            loR.Message.Success = "Schema requested";
+                        }
+                        else
+                        {
+                            loR = this.ProcessRequest(loRequest, loEntity);
+                        }
+                        if ((null == loR.Item || loR.Item.Count == 0) && Request.Method == HttpMethod.Get)
+                        {
+                            if (null == loR.ItemList || loR.ItemList.Count == 0)
+                            {
+                                loR.Message.Warning = "No data found for request.";
+                                MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "Process", MaxEnumGroup.LogNotice, "Nothing found for entity [{Type}]", loEntity.GetType()));
+                           
+                            }
+                        }
                     }
                     catch (Exception loE)
                     {
