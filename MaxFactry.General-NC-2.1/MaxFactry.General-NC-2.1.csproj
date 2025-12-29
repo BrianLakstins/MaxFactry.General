@@ -100,7 +100,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MaxFactry.Base" Version="1.0.24.61" />
+    <PackageReference Include="MaxFactry.Base" Version="1.0.26.1" />
   </ItemGroup>
 
 </Project>
