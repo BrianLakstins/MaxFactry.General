@@ -1,4 +1,5 @@
 rem Package the library for Nuget
+del lib\*.dll /s /q	
 copy ..\MaxFactry.General-NF-2.0\bin\Release\MaxFactry.General*.dll lib\General\net20\
 copy ..\MaxFactry.General-NF-4.5.2\bin\Release\MaxFactry.General*.dll lib\General\net452\
 copy ..\MaxFactry.General-NF-4.7.2\bin\Release\MaxFactry.General*.dll lib\General\net472\

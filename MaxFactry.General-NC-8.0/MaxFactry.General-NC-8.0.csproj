@@ -1,16 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-	  <ImplicitUsings>enable</ImplicitUsings>
-	  <Nullable>enable</Nullable>
-	  <RootNamespace>MaxFactry.General</RootNamespace>
-	  <Version>1.0.24.79</Version>
-	  <AssemblyVersion>1.0.24.79</AssemblyVersion>
-	  <FileVersion>2025.10.21.01</FileVersion>
-	  <SignAssembly>True</SignAssembly>
-	  <AssemblyOriginatorKeyFile>MaxFactry.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<RootNamespace>MaxFactry.General</RootNamespace>
+		<Version>1.0.26.01</Version>
+		<AssemblyVersion>1.0.24.79</AssemblyVersion>
+		<FileVersion>2025.12.29.01</FileVersion>
+		<SignAssembly>True</SignAssembly>
+		<AssemblyOriginatorKeyFile>MaxFactry.snk</AssemblyOriginatorKeyFile>
+	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DefineConstants>TRACE;netcore1;netcore2;netcore2_1;netcore3_1;netcore_6;netcore_8</DefineConstants>
@@ -87,22 +87,22 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="BusinessLayer\Entity\" />
-	  <Folder Include="BusinessLayer\Structure\" />
-	  <Folder Include="DataLayer\DataModel\" />
-	  <Folder Include="DataLayer\Repository\Interface\" />
-	  <Folder Include="DataLayer\Repository\Provider\" />
-	  <Folder Include="Library\Interface\" />
-	  <Folder Include="Library\Provider\" />
-	  <Folder Include="MaxFactry.Core\Library\Provider\" />
-	  <Folder Include="PresentationLayer\Attribute\" />
-	  <Folder Include="PresentationLayer\Library\Interface\" />
-	  <Folder Include="PresentationLayer\Library\Provider\" />
-	  <Folder Include="PresentationLayer\Models\" />
-  </ItemGroup>
+		<Folder Include="BusinessLayer\Entity\" />
+		<Folder Include="BusinessLayer\Structure\" />
+		<Folder Include="DataLayer\DataModel\" />
+		<Folder Include="DataLayer\Repository\Interface\" />
+		<Folder Include="DataLayer\Repository\Provider\" />
+		<Folder Include="Library\Interface\" />
+		<Folder Include="Library\Provider\" />
+		<Folder Include="MaxFactry.Core\Library\Provider\" />
+		<Folder Include="PresentationLayer\Attribute\" />
+		<Folder Include="PresentationLayer\Library\Interface\" />
+		<Folder Include="PresentationLayer\Library\Provider\" />
+		<Folder Include="PresentationLayer\Models\" />
+	</ItemGroup>
 
-  <ItemGroup>
-	  <PackageReference Include="MaxFactry.Base" Version="1.0.26.1" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="MaxFactry.Base" Version="1.0.26.1" />
+	</ItemGroup>
 
 </Project>
