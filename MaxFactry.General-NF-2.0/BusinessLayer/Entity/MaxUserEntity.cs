@@ -39,6 +39,7 @@
 // <change date="9/16/2024" author="Brian A. Lakstins" description="Making sure Propertlist is not null.">
 // <change date="6/4/2025" author="Brian A. Lakstins" description="Updates to take advantage of changes to base.">
 // <change date="6/10/2025" author="Brian A. Lakstins" description="Add expire data for caching.">
+// <change date="3/10/2026" author="Brian A. Lakstins" description="Update for faster MaxIndex data caching.">
 // </changelog>
 #endregion
 
@@ -159,6 +160,16 @@ namespace MaxFactry.General.BusinessLayer
                 typeof(MaxUserDataModel)) as MaxUserEntity;
         }
 
+        protected override string GetDataName(MaxDataModel loDataModel, string lsPropertyName)
+        {
+            if (lsPropertyName == "IsPasswordResetNeeded")
+            {
+                return this.DataModel.OptionFlagList;
+            }
+
+            return base.GetDataName(loDataModel, lsPropertyName); ;
+        }
+
         public string GetAuthCode(string lsName)
         {
             string lsCacheKey = this.GetCacheKey("AuthCode/" + lsName.ToLower());
@@ -275,23 +286,26 @@ namespace MaxFactry.General.BusinessLayer
         public override MaxIndex MapIndex(params string[] laPropertyNameList)
         {
             MaxIndex loR = base.MapIndex(laPropertyNameList);
-            if (null != laPropertyNameList)
+            if (null != laPropertyNameList && laPropertyNameList.Length > 0)
             {
-                foreach (string lsPropertyName in laPropertyNameList)
+                List<string> loPropertyNameList = new List<string>(laPropertyNameList);
+                if (loPropertyNameList.Contains("RoleIdSelectedList"))
                 {
-                    if (lsPropertyName == "RoleIdSelectedList")
+                    MaxRoleEntity loRoleEntity = MaxRoleEntity.Create();
+                    MaxEntityList loList = loRoleEntity.LoadAllByUserIdCache(this.Id);
+                    List<string> loRoleIdList = new List<string>();
+                    for (int lnE = 0; lnE < loList.Count; lnE++)
                     {
-                        MaxRoleEntity loRoleEntity = MaxRoleEntity.Create();
-                        MaxEntityList loList = loRoleEntity.LoadAllByUserIdCache(this.Id);
-                        List<string> loRoleIdList = new List<string>();
-                        for (int lnE = 0; lnE < loList.Count; lnE++)
-                        {
-                            loRoleEntity = loList[lnE] as MaxRoleEntity;
-                            loRoleIdList.Add(loRoleEntity.Id.ToString());
-                        }
-
-                        loR.Add("RoleIdSelectedList", loRoleIdList.ToArray());
+                        loRoleEntity = loList[lnE] as MaxRoleEntity;
+                        loRoleIdList.Add(loRoleEntity.Id.ToString());
                     }
+
+                    loR.Add("RoleIdSelectedList", loRoleIdList.ToArray());
+                }
+
+                if (loPropertyNameList.Contains("IsPasswordResetNeeded"))
+                {
+                    loR.Add("IsPasswordResetNeeded", this.IsPasswordResetNeeded);
                 }
             }
 
