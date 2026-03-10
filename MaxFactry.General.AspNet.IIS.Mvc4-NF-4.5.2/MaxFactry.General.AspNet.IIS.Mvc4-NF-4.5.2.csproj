@@ -60,6 +60,15 @@
     <Reference Include="MaxFactry.Core-NF-4.5.2, Version=1.0.26.3, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
       <HintPath>..\..\_nuget\MaxFactry.Core.1.0.26.3\lib\net452\MaxFactry.Core-NF-4.5.2.dll</HintPath>
     </Reference>
+    <Reference Include="MaxFactry.General-NF-4.5.2, Version=1.0.26.9, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\MaxFactry.General.1.0.26.9\lib\net452\MaxFactry.General-NF-4.5.2.dll</HintPath>
+    </Reference>
+    <Reference Include="MaxFactry.General.AspNet-NF-4.5.2, Version=1.0.24.79, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\MaxFactry.General.AspNet.1.0.24.79\lib\net452\MaxFactry.General.AspNet-NF-4.5.2.dll</HintPath>
+    </Reference>
+    <Reference Include="MaxFactry.General.AspNet.IIS-NF-4.5.2, Version=1.0.24.79, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\MaxFactry.General.AspNet.IIS.1.0.24.79\lib\net452\MaxFactry.General.AspNet.IIS-NF-4.5.2.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Owin, Version=4.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\_nuget\Microsoft.Owin.4.2.2\lib\net45\Microsoft.Owin.dll</HintPath>
