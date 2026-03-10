@@ -76,6 +76,7 @@
 // <change date="11/18/2025" author="Brian A. Lakstins" description="Make put and post use the same arguments">
 // <change date="11/20/2025" author="Brian A. Lakstins" description="Updating put and post checks for update and insert">
 // <change date="12/17/2025" author="Brian A. Lakstins" description="Add handling schema requests">
+// <change date="3/10/2026" author="Brian A. Lakstins" description="Update ability to check security single entity by DataKey">
 // </changelog>
 #endregion
 
@@ -984,85 +985,82 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             }
             else
             {
-                if ((Request.Method == HttpMethod.Get || Request.Method == HttpMethod.Put || Request.Method == HttpMethod.Delete) && !this.HasPermission(loRequest, loEntity, (int)MaxEnumGroup.PermissionSelect))
+                string lsDataKey = loRequest.GetDataKey(-1);
+                if (!string.IsNullOrEmpty(lsDataKey) && !loEntity.LoadByDataKeyCache(lsDataKey, loRequest.ResponsePropertyList))
                 {
-                    loR.Message.Error = "User does not have permission for this item.";
-                    loR.Status = HttpStatusCode.Forbidden;
-                }
-                else if (Request.Method == HttpMethod.Post && !this.HasPermission(loRequest, loEntity, (int)MaxEnumGroup.PermissionInsert))
-                {
-                    loR.Message.Error = "User does not have permission to add item.";
-                    loR.Status = HttpStatusCode.Forbidden;
-                }
-                else if (Request.Method == HttpMethod.Delete && !this.HasPermission(loRequest, loEntity, (int)MaxEnumGroup.PermissionDelete))
-                {
-                    loR.Message.Error = "User does not have permission to delete item.";
-                    loR.Status = HttpStatusCode.Forbidden;
+                    loR.Message.Error = "Entity could not be loaded by data key";
                 }
                 else
                 {
-                    string lsDataKey = loRequest.GetDataKey(-1);
-                    if (!string.IsNullOrEmpty(lsDataKey) && !loEntity.LoadByDataKeyCache(lsDataKey, loRequest.ResponsePropertyList))
+                    if ((Request.Method == HttpMethod.Get || Request.Method == HttpMethod.Put || Request.Method == HttpMethod.Delete) && !this.HasPermission(loRequest, loEntity, (int)MaxEnumGroup.PermissionSelect))
                     {
-                        loR.Message.Error = "Entity could not be loaded by data key";
+                        loR.Message.Error = "User does not have permission for this item.";
+                        loR.Status = HttpStatusCode.Forbidden;
+                    }
+                    else if (Request.Method == HttpMethod.Post && !this.HasPermission(loRequest, loEntity, (int)MaxEnumGroup.PermissionInsert))
+                    {
+                        loR.Message.Error = "User does not have permission to add item.";
+                        loR.Status = HttpStatusCode.Forbidden;
+                    }
+                    else if (Request.Method == HttpMethod.Delete && !this.HasPermission(loRequest, loEntity, (int)MaxEnumGroup.PermissionDelete))
+                    {
+                        loR.Message.Error = "User does not have permission to delete item.";
+                        loR.Status = HttpStatusCode.Forbidden;
+                    }
+                    else if (Request.Method == HttpMethod.Put && null != loRequest.RequestPropertyList && !this.HasPermission(loRequest, loEntity, (int)MaxEnumGroup.PermissionUpdate))
+                    {
+                        loR.Message.Error = "User does not have permission to update this item.";
+                        loR.Status = HttpStatusCode.Forbidden;
                     }
                     else
                     {
-                        if (Request.Method == HttpMethod.Put && null != loRequest.RequestPropertyList && !this.HasPermission(loRequest, loEntity, (int)MaxEnumGroup.PermissionUpdate))
+                        MaxEntityList loMappedList = this.MapListRequest(loEntity, loRequest);
+                        MaxEntity loMappedEntity = this.MapRequest(loEntity, loRequest);
+                        if (Request.Method == HttpMethod.Post)
                         {
-                            loR.Message.Error = "User does not have permission to update this item.";
-                            loR.Status = HttpStatusCode.Forbidden;
+                            loR = this.ProcessPost(loRequest, loEntity, loMappedEntity, loMappedList, loR);
                         }
-                        else
+                        else if (Request.Method == HttpMethod.Put)
                         {
-                            MaxEntityList loMappedList = this.MapListRequest(loEntity, loRequest);
-                            MaxEntity loMappedEntity = this.MapRequest(loEntity, loRequest);
-                            if (Request.Method == HttpMethod.Post)
-                            {
-                                loR = this.ProcessPost(loRequest, loEntity, loMappedEntity, loMappedList, loR);
-                            }
-                            else if (Request.Method == HttpMethod.Put)
-                            {
-                                loR = this.ProcessPut(loRequest, loEntity, loMappedEntity, loMappedList, loR);
-                            }
-                            else if (Request.Method == HttpMethod.Delete)
-                            {
-                                loR = this.ProcessDelete(loRequest, loMappedEntity, loMappedList, loR);
-                            }
+                            loR = this.ProcessPut(loRequest, loEntity, loMappedEntity, loMappedList, loR);
+                        }
+                        else if (Request.Method == HttpMethod.Delete)
+                        {
+                            loR = this.ProcessDelete(loRequest, loMappedEntity, loMappedList, loR);
+                        }
 
-                            if (null != loMappedEntity && !string.IsNullOrEmpty(loMappedEntity.DataKey) && Request.Method != HttpMethod.Delete)
+                        if (null != loMappedEntity && !string.IsNullOrEmpty(loMappedEntity.DataKey) && Request.Method != HttpMethod.Delete)
+                        {
+                            MaxIndex loEntityIndex = loMappedEntity.MapIndex(loRequest.ResponsePropertyList);
+                            string[] laKey = loEntityIndex.GetSortedKeyList();
+                            foreach (string lsKey in laKey)
                             {
-                                MaxIndex loEntityIndex = loMappedEntity.MapIndex(loRequest.ResponsePropertyList);
-                                string[] laKey = loEntityIndex.GetSortedKeyList();
-                                foreach (string lsKey in laKey)
-                                {
-                                    object loValue = loEntityIndex[lsKey];
-                                    loR.Item[lsKey] = loValue;
-                                }
+                                object loValue = loEntityIndex[lsKey];
+                                loR.Item[lsKey] = loValue;
                             }
+                        }
 
-                            if (null == lsDataKey || 
-                                (this.Request.Method != HttpMethod.Get && loR.ItemList.Count == 0 && 
-                                ((null != loRequest.ResponseFilterList && loRequest.ResponseFilterList.Length > 0) ||
-                                loRequest.PageLength > 0)))
+                        if (null == lsDataKey ||
+                            (this.Request.Method != HttpMethod.Get && loR.ItemList.Count == 0 &&
+                            ((null != loRequest.ResponseFilterList && loRequest.ResponseFilterList.Length > 0) ||
+                            loRequest.PageLength > 0)))
+                        {
+                            //// Load list
+                            if (!this.HasPermission(loRequest, loEntity, (int)MaxEnumGroup.PermissionSelect))
                             {
-                                //// Load list
-                                if (!this.HasPermission(loRequest, loEntity, (int)MaxEnumGroup.PermissionSelect))
-                                {
-                                    loR.Message.Error = "User does not have permission for this list of items.";
-                                    loR.Status = HttpStatusCode.Forbidden;
-                                }
-                                else
-                                {
-                                    MaxApiResponseViewModel loLoadListResponse = this.ProcessLoadList(loRequest, loEntity);
-                                    loR.Page = loLoadListResponse.Page;
-                                    loR.ItemList = loLoadListResponse.ItemList;
-                                }
+                                loR.Message.Error = "User does not have permission for this list of items.";
+                                loR.Status = HttpStatusCode.Forbidden;
                             }
-                            else if (loR.ItemList.Count == 0)
+                            else
                             {
-                                loR.ItemList = null;
+                                MaxApiResponseViewModel loLoadListResponse = this.ProcessLoadList(loRequest, loEntity);
+                                loR.Page = loLoadListResponse.Page;
+                                loR.ItemList = loLoadListResponse.ItemList;
                             }
+                        }
+                        else if (loR.ItemList.Count == 0)
+                        {
+                            loR.ItemList = null;
                         }
                     }
                 }

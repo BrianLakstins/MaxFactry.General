@@ -334,8 +334,10 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         }
                     }
 
+                    //// Updating a token creates a new token or a new token is created if there is not a current one
                     if (Request.Method == HttpMethod.Put || null == loCurrentEntity)
                     {
+                        //// Make sure there is always a current token
                         string lsToken = MaxUserAuthTokenEntity.GenerateToken(false);
                         loCurrentEntity = MaxUserAuthTokenEntity.AddToken(lsToken, lsTokenType, loExpiration, loRequest.User.ProviderUserKey.ToString(), Guid.Empty, Guid.Empty);
                         loR.Item.Add(loResponseItem.AccessToken, loCurrentEntity.GetClientToken(lsToken));
