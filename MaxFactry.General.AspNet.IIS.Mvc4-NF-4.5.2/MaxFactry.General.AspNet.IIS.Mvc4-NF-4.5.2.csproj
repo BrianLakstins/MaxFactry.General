@@ -259,6 +259,7 @@
     <Content Include="ReadMe.md" />
     <Content Include="packages.nuget.config" />
     <None Include="packages.config" />
+    <EmbeddedResource Include="Views\MaxSecurity\OAuth2OIDCLogin.cshtml" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

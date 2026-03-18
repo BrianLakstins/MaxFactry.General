@@ -453,6 +453,12 @@
     </Content>
     <Content Include="Views\Web.config" />
     <Content Include="packages.nuget.config" />
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxSecurity\OAuth2OIDCLogin.cshtml">
+      <Link>Views\MaxSecurity\OAuth2OIDCLogin.cshtml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxSecurity\OAuth2OIDC.cshtml">
+      <Link>Views\MaxSecurity\OAuth2OIDC.cshtml</Link>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

@@ -54,6 +54,7 @@
 // <change date="11/4/2025" author="Brian A. Lakstins" description="Swap POST and PUT">
 // <change date="11/18/2025" author="Brian A. Lakstins" description="Update fingerprint for post">
 // <change date="11/20/2025" author="Brian A. Lakstins" description="Updating Put and Post checks for update and insert">
+// <change date="3/18/2026" author="Brian A. Lakstins" description="Consolidate login code.  Add logging in based on Authentication header.">
 // </changelog>
 #endregion
 
@@ -482,15 +483,16 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                 MembershipUser loUserCheck = Membership.GetUser(lsUserCheck);
                                 if (lbIsValid)
                                 {
-                                    loUser = loUserCheck;
-                                    MaxFactry.General.AspNet.IIS.MaxAppLibrary.SignIn(lsUserCheck);
+                                    MaxSecurityLoginViewModel loLoginModel = new MaxSecurityLoginViewModel();
                                     Guid loUserId = MaxConvertLibrary.ConvertToGuid(typeof(object), loUserCheck.ProviderUserKey);
-                                    MaxUserEntity loMaxUser = MaxUserEntity.Create();
-                                    if (loMaxUser.LoadByIdCache(loUserId))
+                                    string lsUserNameLoggedIn = loLoginModel.LoginUser(loUserId, "Login-Api");
+                                    if (!string.IsNullOrEmpty(lsUserNameLoggedIn))
                                     {
-                                        loMaxUser.SetAttribute("_LastIISSignIn", DateTime.UtcNow);
-                                        loMaxUser.SetAttribute("_AuthType", "Login-Api");
-                                        loMaxUser.Update();
+                                        loUser = Membership.GetUser(lsUserNameLoggedIn);                                        
+                                    }
+                                    else
+                                    {
+                                        loR.Message.Error = "User login failed.";
                                     }
                                 }
                                 else
@@ -529,6 +531,25 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         else
                         {
                             loR.Message.Error = "Username or email is required.";
+                        }
+                    }
+                    else if (this.Request.Method == HttpMethod.Get && null != this.Request.Headers.Authorization)
+                    {
+                        string lsIdToken = this.Request.Headers.Authorization.Parameter;
+                        if (!string.IsNullOrEmpty(lsIdToken))
+                        {
+                            MaxSecurityLoginViewModel loModel = new MaxSecurityLoginViewModel();
+                            if (loModel.IsValidIdToken(lsIdToken) && loModel.ValidateTokenSignature(lsIdToken))
+                            {
+                                IDictionary<string, object> loIdToken = loModel.ParseToken(lsIdToken);
+                                string lsEmail = loModel.GetEmail(loIdToken);
+                                string lsUserName = loModel.GetUserName(loIdToken);
+                                string lsUserNameLoggedIn = loModel.LoginUser(lsUserName, lsEmail, "OAuth2 Token");
+                                if (!string.IsNullOrEmpty(lsUserNameLoggedIn))
+                                {
+                                    loUser = Membership.GetUser(lsUserNameLoggedIn);
+                                }
+                            }
                         }
                     }
 
