@@ -31,6 +31,7 @@
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class. Use parent methods instead of repository.">
 // <change date="6/19/2024" author="Brian A. Lakstins" description="Add user related logging.  Add remote url property.">
 // <change date="11/14/2024" author="Brian A. Lakstins" description="Track last used date for the token">
+// <change date="3/18/2026" author="Brian A. Lakstins" description="Prevent exception when token does not match expected format">
 // </changelog>
 #endregion
 
@@ -271,24 +272,31 @@ namespace MaxFactry.General.BusinessLayer
         public static MaxUserAuthTokenEntity GetByToken(string lsClientToken)
         {
             MaxUserAuthTokenEntity loR = MaxUserAuthTokenEntity.Create();
-            while (lsClientToken.Length % 4 != 0)
+            try
             {
-                lsClientToken += "=";
-            }
-
-            byte[] laClientToken = Convert.FromBase64String(lsClientToken);
-            string lsTokenText = System.Text.Encoding.UTF8.GetString(laClientToken);
-            if (lsTokenText.Contains("|"))
-            {
-                string[] laTokenText = lsTokenText.Split(new char[] { '|' });
-                Guid loTokenId = MaxConvertLibrary.ConvertShortStringToGuid(typeof(object), laTokenText[0]);
-                string lsTokenHash = GetTokenHash(laTokenText[1]);
-                if (loR.LoadByIdCache(loTokenId) && loR.TokenHash == lsTokenHash)
+                while (lsClientToken.Length % 4 != 0)
                 {
-                    loR.LastUsedDate = DateTime.UtcNow;
-                    loR.Update();
-                    return loR;
+                    lsClientToken += "=";
                 }
+
+                byte[] laClientToken = Convert.FromBase64String(lsClientToken);
+                string lsTokenText = System.Text.Encoding.UTF8.GetString(laClientToken);
+                if (lsTokenText.Contains("|"))
+                {
+                    string[] laTokenText = lsTokenText.Split(new char[] { '|' });
+                    Guid loTokenId = MaxConvertLibrary.ConvertShortStringToGuid(typeof(object), laTokenText[0]);
+                    string lsTokenHash = GetTokenHash(laTokenText[1]);
+                    if (loR.LoadByIdCache(loTokenId) && loR.TokenHash == lsTokenHash)
+                    {
+                        loR.LastUsedDate = DateTime.UtcNow;
+                        loR.Update();
+                        return loR;
+                    }
+                }
+            }
+            catch
+            {
+                //// If there is an error, just return null for not found or invalid token
             }
 
             return null;
