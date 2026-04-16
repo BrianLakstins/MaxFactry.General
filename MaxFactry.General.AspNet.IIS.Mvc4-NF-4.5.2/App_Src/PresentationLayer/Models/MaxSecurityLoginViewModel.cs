@@ -30,6 +30,7 @@
 // <change date="6/3/2014" author="Brian A. Lakstins" description="Initial Release">
 // <change date="6/19/2014" author="Brian A. Lakstins" description="Move code from controller.">
 // <change date="3/18/2026" author="Brian A. Lakstins" description="Consolidate login code.  Add handling of JWT.">
+// <change date="4/16/2026" author="Brian A. Lakstins" description="Add checking of JWT.">
 // </changelog>
 #endregion
 
@@ -43,6 +44,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 	using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using System.Text.RegularExpressions;
     using System.Web;
     using System.Web.Security;
 
@@ -138,22 +140,30 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         {
             bool lbR = false;
             try
-            { 
-                IDictionary<string, object> loIdToken = this.ParseToken(lsIdToken);
-                string lsTenantId = loIdToken["tid"] as string;
-                object loTenantList = MaxConfigurationLibrary.GetValue(MaxEnumGroup.ScopeApplication, "OAuth2OIDCMicrosoftTenantList");
-                if (null != loTenantList)
+            {
+                Regex loJWTRegex = new Regex(@"^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$");
+                if (loJWTRegex.IsMatch(lsIdToken))
                 {
-                    string lsTenantList = MaxConvertLibrary.ConvertToString(typeof(object), loTenantList).ToLower();
-                    if (lsTenantList.Contains(lsTenantId))
+                    IDictionary<string, object> loIdToken = this.ParseToken(lsIdToken);
+                    string lsTenantId = loIdToken["tid"] as string;
+                    object loTenantList = MaxConfigurationLibrary.GetValue(MaxEnumGroup.ScopeApplication, "OAuth2OIDCMicrosoftTenantList");
+                    if (null != loTenantList)
                     {
-                        lbR = true;
+                        string lsTenantList = MaxConvertLibrary.ConvertToString(typeof(object), loTenantList).ToLower();
+                        if (lsTenantList.Contains(lsTenantId))
+                        {
+                            lbR = true;
+                        }
                     }
+                }
+                else
+                {
+                    MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "IsValidIdToken", MaxEnumGroup.LogStatic, "Token does not match JWT format {lsIdToken}", lsIdToken));
                 }
             }
             catch (Exception loE)
             {
-                MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "IsValidIdToken", MaxEnumGroup.LogError, "Error validating token", loE));
+                MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "IsValidIdToken", MaxEnumGroup.LogError, "Error validating token {lsIdToken}", loE, lsIdToken));
             }
 
             return lbR;
