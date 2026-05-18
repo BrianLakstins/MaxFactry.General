@@ -32,6 +32,7 @@
 // <change date="3/30/2024" author="Brian A. Lakstins" description="Update for change to dependent class. Use parent methods instead of repository.">
 // <change date="6/19/2024" author="Brian A. Lakstins" description="Add user related logging types.">
 // <change date="7/18/2025" author="Brian A. Lakstins" description="Add filtering for a page and log entry type.">
+// <change date="5/18/2026" author="Brian A. Lakstins" description="Add log entry type for client auth additions">
 // </changelog>
 #endregion
 
@@ -113,6 +114,11 @@ namespace MaxFactry.General.BusinessLayer
         /// Value for adding an auth for a user
         /// </summary>
         public const int LogEntryTypeUserAuthInsert = 12;
+
+        /// <summary>
+        /// Value for adding an client auth for a user
+        /// </summary>
+        public const int LogEntryTypeUserAuthClientInsert = 13;
 
         /// <summary>
         /// Initializes a new instance of the MaxUserLogEntity class
