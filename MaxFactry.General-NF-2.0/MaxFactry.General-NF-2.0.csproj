@@ -50,6 +50,7 @@
     <Compile Include="BusinessLayer\Entity\MaxRoleEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxRoleRelationPermissionEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxRoleRelationUserEntity.cs" />
+    <Compile Include="BusinessLayer\Entity\MaxAuthClientEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxUserAuthTokenEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxUserAuthGrantEntity.cs" />
     <Compile Include="BusinessLayer\Entity\MaxUserConfigurationEntity.cs" />
@@ -69,6 +70,7 @@
     <Compile Include="DataLayer\DataModel\MaxRoleDataModel.cs" />
     <Compile Include="DataLayer\DataModel\MaxRoleRelationPermissionDataModel.cs" />
     <Compile Include="DataLayer\DataModel\MaxRoleRelationUserDataModel.cs" />
+    <Compile Include="DataLayer\DataModel\MaxAuthClientDataModel.cs" />
     <Compile Include="DataLayer\DataModel\MaxUserAuthTokenDataModel.cs" />
     <Compile Include="DataLayer\DataModel\MaxUserAuthGrantDataModel.cs" />
     <Compile Include="DataLayer\DataModel\MaxUserConfigurationDataModel.cs" />
@@ -119,7 +121,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MaxFactry.Base">
-      <Version>1.0.26.7</Version>
+      <Version>1.0.26.16</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
