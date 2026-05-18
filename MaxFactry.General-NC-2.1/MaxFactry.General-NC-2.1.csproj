@@ -19,6 +19,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxAuthClientEntity.cs" Link="BusinessLayer\Entity\MaxAuthClientEntity.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxEmailEntity.cs" Link="BusinessLayer\Entity\MaxEmailEntity.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxFileDownloadEntity.cs" Link="BusinessLayer\Entity\MaxFileDownloadEntity.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxFileEntity.cs" Link="BusinessLayer\Entity\MaxFileEntity.cs" />
@@ -38,6 +39,7 @@
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxUSStateEntity.cs" Link="BusinessLayer\Entity\MaxUSStateEntity.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Structure\MaxCSSStyleStructure.cs" Link="BusinessLayer\Structure\MaxCSSStyleStructure.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Structure\MaxHtmlTagStructure.cs" Link="BusinessLayer\Structure\MaxHtmlTagStructure.cs" />
+		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxAuthClientDataModel.cs" Link="DataLayer\Repository\DataModel\MaxAuthClientDataModel.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxEmailDataModel.cs" Link="DataLayer\Repository\DataModel\MaxEmailDataModel.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxFileDataModel.cs" Link="DataLayer\Repository\DataModel\MaxFileDataModel.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxFileDownloadDataModel.cs" Link="DataLayer\Repository\DataModel\MaxFileDownloadDataModel.cs" />

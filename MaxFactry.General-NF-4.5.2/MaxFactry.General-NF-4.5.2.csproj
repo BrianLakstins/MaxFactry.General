@@ -48,6 +48,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxAuthClientEntity.cs">
+      <Link>BusinessLayer\Entity\MaxAuthClientEntity.cs</Link>
+    </Compile>
     <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxEmailEntity.cs">
       <Link>BusinessLayer\Entity\MaxEmailEntity.cs</Link>
     </Compile>
@@ -104,6 +107,9 @@
     </Compile>
     <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Structure\MaxHtmlTagStructure.cs">
       <Link>BusinessLayer\Structure\MaxHtmlTagStructure.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxAuthClientDataModel.cs">
+      <Link>DataLayer\DataModel\MaxAuthClientDataModel.cs</Link>
     </Compile>
     <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxEmailDataModel.cs">
       <Link>DataLayer\DataModel\MaxEmailDataModel.cs</Link>
