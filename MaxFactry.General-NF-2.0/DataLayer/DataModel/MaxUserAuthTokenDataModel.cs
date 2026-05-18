@@ -34,6 +34,7 @@
 // <change date="6/19/2024" author="Brian A. Lakstins" description="Add remote url field.">
 // <change date="11/14/2024" author="Brian A. Lakstins" description="Add last used field.">
 // <change date="6/4/2025" author="Brian A. Lakstins" description="Use constants instead of strings">
+// <change date="5/18/2026" author="Brian A. Lakstins" description="Add naming fields.  Add client Id for when there is one.>
 // </changelog>
 #endregion
 
@@ -99,6 +100,21 @@ namespace MaxFactry.General.DataLayer
         public readonly string LastUsedDate = "LastUsedDate";
 
         /// <summary>
+        /// Name used to refer to this token, such as "Default" or "Mobile App"
+        /// </summary>
+        public readonly string Name = "Name";
+
+        /// <summary>
+        /// Description of this token
+        /// </summary>
+        public readonly string Description = "Description";
+
+        /// <summary>
+        /// Id of client associated with this token
+        /// </summary>
+        public readonly string AuthClientId = "AuthClientId";
+
+        /// <summary>
         /// Initializes a new instance of the MaxUserAuthTokenDataModel class.
         /// </summary>
         public MaxUserAuthTokenDataModel() : base()
@@ -116,6 +132,9 @@ namespace MaxFactry.General.DataLayer
 			this.AddAttribute(this.TokenResult, AttributeIsEncrypted, "true");
             this.AddNullable(this.RemoteUrl, typeof(string));
 			this.AddNullable(this.LastUsedDate, typeof(DateTime));
+            this.AddNullable(this.Name, typeof(string));
+            this.AddNullable(this.Description, typeof(MaxLongString));
+            this.AddNullable(this.AuthClientId, typeof(Guid));
 
             this.RepositoryProviderType = typeof(MaxFactry.General.DataLayer.Provider.MaxGeneralRepositoryDefaultProvider);
             this.RepositoryType = typeof(MaxGeneralRepository);

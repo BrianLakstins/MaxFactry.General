@@ -32,6 +32,7 @@
 // <change date="6/19/2024" author="Brian A. Lakstins" description="Add user related logging.  Add remote url property.">
 // <change date="11/14/2024" author="Brian A. Lakstins" description="Track last used date for the token">
 // <change date="3/18/2026" author="Brian A. Lakstins" description="Prevent exception when token does not match expected format">
+// <change date="5/18/2026" author="Brian A. Lakstins" description="Add naming fields.  Add client Id for when there is one.">
 // </changelog>
 #endregion
 
@@ -239,6 +240,47 @@ namespace MaxFactry.General.BusinessLayer
             get
             {
                 return this.CreatedDate.AddSeconds(this.Expiration);
+            }
+        }
+
+        public string Name
+        {
+            get
+            {
+                return this.GetString(this.DataModel.Name);
+            }
+
+            set
+            {
+                this.Set(this.DataModel.Name, value);
+            }
+        }
+
+        public string Description
+        {
+            get
+            {
+                return this.GetString(this.DataModel.Description);
+            }
+            set
+            {
+                this.Set(this.DataModel.Description, value);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the Client Id
+        /// </summary>
+		public Guid AuthClientId
+        {
+            get
+            {
+                return this.GetGuid(this.DataModel.AuthClientId);
+            }
+
+            set
+            {
+                this.Set(this.DataModel.AuthClientId, value);
             }
         }
 
