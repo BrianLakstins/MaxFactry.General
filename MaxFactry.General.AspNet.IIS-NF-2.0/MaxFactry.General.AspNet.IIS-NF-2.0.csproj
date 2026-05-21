@@ -85,7 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MaxFactry.General.AspNet">
-      <Version>1.0.24.79</Version>
+      <Version>1.0.26.20</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
