@@ -77,6 +77,7 @@
 // <change date="11/20/2025" author="Brian A. Lakstins" description="Updating put and post checks for update and insert">
 // <change date="12/17/2025" author="Brian A. Lakstins" description="Add handling schema requests">
 // <change date="3/10/2026" author="Brian A. Lakstins" description="Update ability to check security single entity by DataKey">
+// <change date="5/21/2026" author="Brian A. Lakstins" description="Add method to get the Id of the current user">
 // </changelog>
 #endregion
 
@@ -283,6 +284,17 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         protected virtual MaxIndex GetPermissionList()
         {
             MaxIndex loR = new MaxIndex();
+            return loR;
+        }
+
+        protected virtual Guid GetUserId(MaxApiRequestViewModel loRequest)
+        {
+            Guid loR = Guid.Empty;
+            if (loRequest.User != null && loRequest.User.ProviderUserKey != null)
+            {
+                loR = MaxConvertLibrary.ConvertToGuid(typeof(object), loRequest.User.ProviderUserKey);
+            }
+
             return loR;
         }
 
@@ -931,8 +943,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                             if (null == loR.ItemList || loR.ItemList.Count == 0)
                             {
                                 loR.Message.Warning = "No data found for request.";
-                                MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "Process", MaxEnumGroup.LogNotice, "Nothing found for entity [{Type}]", loEntity.GetType()));
-                           
+                                MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "Process", MaxEnumGroup.LogNotice, "Nothing found for entity [{Type}]", loEntity.GetType()));                           
                             }
                         }
                     }
