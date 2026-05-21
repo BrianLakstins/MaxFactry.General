@@ -29,6 +29,7 @@
 // <changelog>
 // <change date="6/4/2015" author="Brian A. Lakstins" description="Initial creation">
 // <change date="6/4/2025" author="Brian A. Lakstins" description="Updates for changes to base including removing versioning">
+// <change date="5/21/2026" author="Brian A. Lakstins" description="Fix creation using Id">
 // </changelog>
 #endregion
 
@@ -66,14 +67,13 @@ namespace MaxFactry.General.AspNet.PresentationLayer
         {
         }
 
-        public MaxFileUploadViewModel(string lsId)
+        public MaxFileUploadViewModel(string lsId) : base(lsId)
         {
-            MaxFileUploadEntity loEntity = MaxFileUploadEntity.Create();
-            if (loEntity.LoadByDataKeyCache(lsId))
-            {
-                this.Entity = loEntity;
-                this.Load();
-            }
+        }
+
+        protected override void CreateEntity()
+        {
+            this.Entity = MaxFileUploadEntity.Create();
         }
 
         public string UploadName

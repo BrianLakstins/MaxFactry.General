@@ -28,6 +28,7 @@
 #region Change Log
 // <changelog>
 // <change date="9/10/2020" author="Brian A. Lakstins" description="Initial creation">
+// <change date="5/21/2026" author="Brian A. Lakstins" description="Fix creation using Id">
 // </changelog>
 #endregion
 
@@ -63,15 +64,13 @@ namespace MaxFactry.General.AspNet.PresentationLayer
         {
         }
 
-        public MaxFileUserListUploadViewModel(string lsId)
+        public MaxFileUserListUploadViewModel(string lsId) : base(lsId)
         {
-            MaxFileUserListUploadEntity loEntity = MaxFileUserListUploadEntity.Create();
-            Guid loId = MaxConvertLibrary.ConvertToGuid(this.GetType(), lsId);
-            if (loEntity.LoadByIdCache(loId))
-            {
-                this.Entity = loEntity;
-                this.Load();
-            }
+        }
+
+        protected override void CreateEntity()
+        {
+            this.Entity = MaxFileUserListUploadEntity.Create();
         }
 
         public string Format

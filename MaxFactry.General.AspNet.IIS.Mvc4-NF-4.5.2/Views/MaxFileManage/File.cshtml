@@ -75,7 +75,10 @@
                             <td>@loView.CreatedDate</td>
                             <td>@loView.Name</td>
                             <td>@loView.FileName</td>
-                            <td><a href="@loView.ContentUrl" target="_blank">View</a></td>
+                            <td>
+                                <a href="@loView.ContentUrl" target="_blank">View CDN</a><br />
+                                <a href="/f/@loView.Id/@loView.FileName" target="_blank">View Local</a><br />
+                            </td>
                             <td>
                             [a-maxfile href="@loView.FileName"][/a-maxfile]<br />
                             [img-maxfile src="@loView.FileName"]<br />
