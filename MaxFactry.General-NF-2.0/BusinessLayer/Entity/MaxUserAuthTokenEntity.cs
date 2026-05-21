@@ -38,15 +38,13 @@
 
 namespace MaxFactry.General.BusinessLayer
 {
-    using System;
-    using System.IO;
-    using MaxFactry.Core;
     using MaxFactry.Base.BusinessLayer;
     using MaxFactry.Base.DataLayer;
     using MaxFactry.Base.DataLayer.Library;
-    using MaxFactry.Base.DataLayer.Library.Provider;
+    using MaxFactry.Core;
     using MaxFactry.General.DataLayer;
-    using MaxFactry.General.DataLayer.Provider;
+    using System;
+    using System.IO;
 
     /// <summary>
     /// Entity used to manage information about UserAuthTokens for the MaxSecurityProvider.
@@ -369,6 +367,33 @@ namespace MaxFactry.General.BusinessLayer
             return lsR;
         }
 
+        public static MaxUserAuthTokenEntity GetCurrent(string lsUserKey)
+        {
+            MaxUserAuthTokenEntity loR = null;
+            MaxUserAuthTokenEntity loEntity = MaxUserAuthTokenEntity.Create();
+            MaxEntityList loList = loEntity.LoadAllActiveByUserKeyCache(lsUserKey);
+            if (loList.Count > 0)
+            {
+                for (int lnE = 0; lnE < loList.Count; lnE++)
+                {
+                    loEntity = loList[lnE] as MaxUserAuthTokenEntity;
+                    if (!loEntity.IsExpired)
+                    {
+                        if (null == loR)
+                        {
+                            loR = loEntity;
+                        }
+                        else if (loR.ExpirationDate < loEntity.ExpirationDate)
+                        {
+                            loR = loEntity;
+                        }
+                    }
+                }
+            }
+
+            return loR;
+        }
+
         /// <summary>
         /// Gets a token from a remote system.  Stores it locally to reuse until it's expiration.
         /// </summary>
@@ -428,18 +453,50 @@ namespace MaxFactry.General.BusinessLayer
             return loR;
         }
 
+        protected override string GetDataName(MaxDataModel loDataModel, string lsPropertyName)
+        {
+#if net4_52 || netcoreapp2_1
+            if (lsPropertyName == this.GetPropertyName(() => this.ExpirationDate))
+            {
+                return this.DataModel.Expiration;
+            }
+#else
+            if (lsPropertyName == "ExpirationDate")
+            {
+                return this.DataModel.Expiration;
+            }
+#endif
+
+            return base.GetDataName(loDataModel, lsPropertyName);
+        }
+
         public string GetClientToken(string lsToken)
         {
             string lsR = string.Empty;
             string lsTokenText = MaxConvertLibrary.ConvertGuidToShortString(typeof(object), this.Id) + "|" + lsToken;
             byte[] laR = System.Text.Encoding.UTF8.GetBytes(lsTokenText);
             lsR = Convert.ToBase64String(laR).Replace("=", string.Empty);
+            if (this.AuthClientId != Guid.Empty)
+            {
+                MaxAuthClientEntity loAuthClient = MaxAuthClientEntity.Create();
+                if (loAuthClient.LoadByIdCache(this.AuthClientId))
+                {
+                    byte[] laTokenEncrypted = MaxEncryptionLibrary.Encrypt(typeof(object), laR, "JWK:" + loAuthClient.ClientPublicKey);
+                    lsR = MaxConvertLibrary.Base64UrlEncode(typeof(object), laTokenEncrypted);
+                }
+            }
+
             return lsR;
         }
 
         public MaxEntityList LoadAllActiveByUserKeyCache(string lsUserKey)
         {
             return this.LoadAllActiveByProperty(this.DataModel.UserKey, lsUserKey);
+        }
+
+        public MaxEntityList LoadAllByUserKeyCache(string lsUserKey)
+        {
+            return this.LoadAllByPropertyCache(this.DataModel.UserKey, lsUserKey);
         }
 
         /// <summary>
@@ -491,6 +548,16 @@ namespace MaxFactry.General.BusinessLayer
             return lbR;
         }
 
+        protected override void SetInitial()
+        {
+            base.SetInitial();
+            if (string.IsNullOrEmpty(this.Token))
+            {
+                this.Token = MaxUserAuthTokenEntity.GenerateToken(false);
+                this.TokenHash = MaxUserAuthTokenEntity.GetTokenHash(this.Token);
+            }
+        }
+
         public override bool Insert()
         {
             bool lbR = base.Insert();
@@ -519,6 +586,17 @@ namespace MaxFactry.General.BusinessLayer
             }
 
             return lbR;
+        }
+
+        public override MaxIndex MapIndex(params string[] laPropertyNameList)
+        {
+            MaxIndex loR = base.MapIndex(laPropertyNameList);
+            if (loR.Contains("AccessToken"))
+            {
+                loR.Remove("AccessToken");
+            }
+
+            return loR;
         }
     }
 }

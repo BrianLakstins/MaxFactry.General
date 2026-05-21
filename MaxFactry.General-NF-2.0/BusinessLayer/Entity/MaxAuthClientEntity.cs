@@ -186,7 +186,16 @@ namespace MaxFactry.General.BusinessLayer
         protected override void SetInitial()
         {
             base.SetInitial();
-            this.Set(this.DataModel.Restrictions, "{ \"version\": 1, \"type\": \"unrestricted\"}");
+            this.Restrictions = "{ \"version\": 1, \"type\": \"unrestricted\"}";
+            if (string.IsNullOrEmpty(this.KeyAlgorithm))
+            {
+                this.KeyAlgorithm = "RSA";
+            }
+
+            if (string.IsNullOrEmpty(this.ClientPublicKey))
+            {
+                this.ClientPublicKey = "none entered";
+            }
         }
 
         public override bool Insert()
