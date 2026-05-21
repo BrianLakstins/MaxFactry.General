@@ -55,12 +55,18 @@
 // <change date="11/18/2025" author="Brian A. Lakstins" description="Update fingerprint for post">
 // <change date="11/20/2025" author="Brian A. Lakstins" description="Updating Put and Post checks for update and insert">
 // <change date="3/18/2026" author="Brian A. Lakstins" description="Consolidate login code.  Add logging in based on Authentication header.">
+// <change date="5/21/2026" author="Brian A. Lakstins" description="Standardize User Token management.  Add Client Auth management.">
 // </changelog>
 #endregion
 
 namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 {
 
+    using MaxFactry.Base.BusinessLayer;
+    using MaxFactry.Base.DataLayer.Library;
+    using MaxFactry.Core;
+    using MaxFactry.General.AspNet.PresentationLayer;
+    using MaxFactry.General.BusinessLayer;
     using System;
     using System.Collections.Generic;
     using System.Collections.Specialized;
@@ -70,17 +76,47 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
     using System.Threading.Tasks;
     using System.Web;
     using System.Web.Http;
-    using MaxFactry.Core;
-    using MaxFactry.Base.BusinessLayer;
-    using MaxFactry.General.AspNet.PresentationLayer;
-    using MaxFactry.General.BusinessLayer;
-    using MaxFactry.Base.DataLayer.Library;
     using System.Web.Security;
+    using System.Xml.Linq;
 
     [MaxRequireHttps(Order = 1)]
     [System.Web.Http.AllowAnonymous]
     public class MaxSecurityApiController : MaxBaseApiController
     {
+        protected override bool HasPermission(MaxApiRequestViewModel loRequest, MaxEntity loEntity, int lnPermission)
+        {
+            bool lbR = base.HasPermission(loRequest, loEntity, lnPermission);
+            if (!lbR)
+            {
+                try
+                {
+                    Guid loUserId = this.GetUserId(loRequest);
+                    if (loEntity is MaxUserAuthTokenEntity && Guid.Empty != loUserId)
+                    {
+                        MaxUserAuthTokenEntity loSecurityCheckEntity = MaxUserAuthTokenEntity.Create();
+                        if (!string.IsNullOrEmpty(loEntity.DataKey) && loEntity.DataKey != Guid.Empty.ToString() && loSecurityCheckEntity.LoadByDataKeyCache(loEntity.DataKey))
+                        {
+                            if (loSecurityCheckEntity.UserKey == loUserId.ToString())
+                            {
+                                lbR = true;
+                            }
+                        }
+                        else
+                        {
+                            lbR = true;
+                        }
+                    }
+                }
+                catch (Exception loE)
+                {
+                    MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "HasPermission", MaxEnumGroup.LogError, "Exception checking permission", loE));
+                }
+            }
+
+            return lbR;
+        }
+
+
         [HttpGet]
         [HttpPost]
         [ActionName("index")]
@@ -244,129 +280,8 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         }
 
         /// <summary>
-        /// GET is used to get a list of non expired tokens.  The token value is not sent with the list.
-        /// DELETE is used to get a list of non expired tokens and delete one token.
-        /// POST is used to create a new token
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [HttpPut]
-        [HttpDelete]
-        [HttpOptions]
-        [ActionName("usertoken")]
-        public async Task<HttpResponseMessage> UserToken()
-        {
-            HttpStatusCode loStatus = HttpStatusCode.OK;
-            var loResponseItem = new
-            {
-                DataKey = "DataKey",
-                UserName = "UserName",
-                Email = "Email",
-                Id = "Id",
-                AccessToken = "AccessToken",
-                ExpiresIn = "ExpiresIn",
-                CreatedDate = "CreatedDate",
-                ExpirationDate = "ExpirationDate",
-                LastUsedDate = "LastUsedDate"
-            };
-
-            MaxApiResponseViewModel loR = GetResponse(loResponseItem);
-            if (this.Request.Method != HttpMethod.Options)
-            {
-                loStatus = HttpStatusCode.Unauthorized;
-                var loRequestItem = new
-                {
-                    DataKey = "DataKey",
-                    Id = "Id",
-                    TokenType = "TokenType",
-                    Expiration = "Expiration"
-                };
-
-                MaxApiRequestViewModel loRequest = await this.GetRequest();
-                if (null != loRequest.User)
-                {
-                    loStatus = HttpStatusCode.OK;
-                    MaxUserAuthTokenEntity loEntity = MaxUserAuthTokenEntity.Create();
-                    MaxEntityList loList = loEntity.LoadAllActiveByUserKeyCache(loRequest.User.ProviderUserKey.ToString());
-                    string lsTokenType = "Bearer";
-                    DateTime loExpiration = DateTime.UtcNow.AddYears(1);
-                    if (loRequest.Item.Contains(loRequestItem.TokenType))
-                    {
-                        lsTokenType = loRequest.Item.GetValueString(loRequestItem.TokenType);
-                    }
-
-                    if (loRequest.Item.Contains(loRequestItem.Expiration))
-                    {
-                        loExpiration = MaxConvertLibrary.ConvertToDateTimeUtc(typeof(object), loRequest.Item.GetValueString(loRequestItem.Expiration));
-                    }
-
-                    Guid loId = MaxConvertLibrary.ConvertToGuid(typeof(object), loRequest.Item.GetValueString(loRequestItem.Id));
-                    if (loId != Guid.Empty)
-                    {
-                        loR.Item.Add(loResponseItem.Id, loId);
-                    }
-
-                    MaxUserAuthTokenEntity loCurrentEntity = null;
-                    for (int lnE = 0; lnE < loList.Count; lnE++)
-                    {
-                        loEntity = loList[lnE] as MaxUserAuthTokenEntity;
-                        if (Request.Method == HttpMethod.Delete && loEntity.Id == loId)
-                        {
-                            loEntity.Delete();
-                            loR.Message.Success = "Token deleted.";
-                        }
-                        else if (!loEntity.IsExpired)
-                        {
-                            MaxIndex loItem = new MaxIndex();
-                            loItem.Add(loResponseItem.DataKey, loEntity.DataKey);
-                            loItem.Add(loResponseItem.Id, loEntity.Id);
-                            loItem.Add(loResponseItem.CreatedDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loEntity.CreatedDate));
-                            loItem.Add(loResponseItem.ExpirationDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loEntity.ExpirationDate));
-                            loItem.Add(loResponseItem.LastUsedDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loEntity.LastUsedDate));
-                            loR.ItemList.Add(loItem);
-                            if (null == loCurrentEntity)
-                            {
-                                loCurrentEntity = loEntity;
-                            }
-                            else if (loCurrentEntity.ExpirationDate < loEntity.ExpirationDate)
-                            {
-                                loCurrentEntity = loEntity;
-                            }
-                        }
-                    }
-
-                    //// Updating a token creates a new token or a new token is created if there is not a current one
-                    if (Request.Method == HttpMethod.Put || null == loCurrentEntity)
-                    {
-                        //// Make sure there is always a current token
-                        string lsToken = MaxUserAuthTokenEntity.GenerateToken(false);
-                        loCurrentEntity = MaxUserAuthTokenEntity.AddToken(lsToken, lsTokenType, loExpiration, loRequest.User.ProviderUserKey.ToString(), Guid.Empty, Guid.Empty);
-                        loR.Item.Add(loResponseItem.AccessToken, loCurrentEntity.GetClientToken(lsToken));
-                        loR.Message.Success = "Token created.";
-                        MaxIndex loItem = new MaxIndex();
-                        loItem.Add(loResponseItem.DataKey, loCurrentEntity.DataKey);
-                        loItem.Add(loResponseItem.Id, loCurrentEntity.Id);
-                        loItem.Add(loResponseItem.CreatedDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loCurrentEntity.CreatedDate));
-                        loItem.Add(loResponseItem.ExpirationDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loCurrentEntity.ExpirationDate));
-                        loItem.Add(loResponseItem.LastUsedDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loCurrentEntity.LastUsedDate));
-                        loR.ItemList.Add(loItem);
-                    }
-
-                    loR.Item.Add(loResponseItem.UserName, loRequest.User.UserName);
-                    loR.Item.Add(loResponseItem.Email, loRequest.User.Email);
-                    loR.Item.Add(loResponseItem.Id, loCurrentEntity.Id);
-                    loR.Item.Add(loResponseItem.ExpiresIn, loCurrentEntity.Expiration);
-                    loR.Item.Add(loResponseItem.CreatedDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loCurrentEntity.CreatedDate));
-                    loR.Item.Add(loResponseItem.ExpirationDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loCurrentEntity.ExpirationDate));
-                    loR.Item.Add(loResponseItem.LastUsedDate, MaxConvertLibrary.ConvertToDateTimeFromUtc(typeof(object), loCurrentEntity.LastUsedDate));
-                }
-            }
-
-            return this.GetResponseMessage(loR, loStatus);
-        }
-
-        /// <summary>
-        /// CRUD template for an entity
+        /// User management CRUD operations.  This is used for server to server management of users.  It is not intended to be used by a client application directly.  The login action should be used by client applications to log in and manage the current user.
+        /// Called Users instead of User to not interfere with this.User property of the controller.  The User property is used to get the current user making the request and Users action is used to manage users in general.
         /// </summary>
         /// <returns></returns>
         [HttpPost]
@@ -377,6 +292,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         [ActionName("users")]
         public async Task<HttpResponseMessage> Users()
         {
+            //this.User is a thing that is used to get the current user making the request.  Don't name an action User because it will interfere with that.  Using Users instead.
             MaxEntity loEntity = MaxUserEntity.Create();
             MaxApiResponseViewModel loR = await this.Process(loEntity);
             return this.GetResponseMessage(loR);
@@ -399,6 +315,40 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             return this.GetResponseMessage(loR);
         }
 
+        /// <summary>
+        /// CRUD template for an entity
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [HttpGet]
+        [HttpPut]
+        [HttpDelete]
+        [HttpOptions]
+        [ActionName("usertoken")]
+        public async Task<HttpResponseMessage> UserToken()
+        {
+            MaxEntity loEntity = MaxUserAuthTokenEntity.Create();
+            MaxApiResponseViewModel loR = await this.Process(loEntity);
+            return this.GetResponseMessage(loR);
+        }
+
+        /// <summary>
+        /// CRUD template for an entity
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [HttpGet]
+        [HttpPut]
+        [HttpDelete]
+        [HttpOptions]
+        [ActionName("authclient")]
+        public async Task<HttpResponseMessage> AuthClient()
+        {
+            MaxEntity loEntity = MaxAuthClientEntity.Create();
+            MaxApiResponseViewModel loR = await this.Process(loEntity);
+            return this.GetResponseMessage(loR);
+        }
+       
         /// <summary>
         /// Attempts to log the user into the application
         /// </summary>
@@ -863,6 +813,10 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             {
                 loR = this.ProcessRole(loRequest, loMappedEntity as MaxRoleEntity, loR);
             }
+            else if (loMappedEntity is MaxUserAuthTokenEntity)
+            {
+                loR.Item.Add("AccessToken", (loMappedEntity as MaxUserAuthTokenEntity).GetClientToken((loMappedEntity as MaxUserAuthTokenEntity).Token));
+            }
 
             return loR;
         }
@@ -974,6 +928,71 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         }
                     }
                 }
+            }
+
+            return loR;
+        }
+
+        protected override MaxApiResponseViewModel ProcessLoadList(MaxApiRequestViewModel loRequest, MaxEntity loEntity)
+        {
+            MaxApiResponseViewModel loR = base.ProcessLoadList(loRequest, loEntity);
+            if (loEntity is MaxUserAuthTokenEntity)
+            {
+                loR.ItemList = new List<MaxIndex>();
+                Guid loUserId = this.GetUserId(loRequest);
+                MaxUserAuthTokenEntity loListEntity = MaxUserAuthTokenEntity.Create();
+                MaxEntityList loEntityList = loListEntity.LoadAllByUserKeyCache(loUserId.ToString());
+                for (int lnE = 0; lnE < loEntityList.Count; lnE++)
+                {
+                    loListEntity = loEntityList[lnE] as MaxUserAuthTokenEntity;
+                    if (!loListEntity.IsExpired)
+                    {
+                        MaxIndex loItem = loListEntity.MapIndex(loRequest.ResponsePropertyList);
+                        loR.ItemList.Add(loItem);
+                    }
+                }
+            }
+
+            return loR;
+        }
+
+        protected override MaxEntity MapRequest(MaxEntity loEntity, MaxApiRequestViewModel loRequest)
+        {
+            MaxEntity loR = base.MapRequest(loEntity, loRequest);
+            if (loR is MaxUserAuthTokenEntity)
+            {
+                if (this.Request.Method == HttpMethod.Get && string.IsNullOrEmpty(loR.DataKey))
+                {
+                    Guid loUserId = this.GetUserId(loRequest);
+                    loR = MaxUserAuthTokenEntity.GetCurrent(loUserId.ToString());
+                }
+                else
+                {
+                    ((MaxUserAuthTokenEntity)loR).UserKey = this.GetUserId(loRequest).ToString();
+                }
+            }
+
+            return loR;
+        }
+
+        protected override MaxIndex GetFilter(MaxApiRequestViewModel loRequest, MaxEntity loEntity)
+        {
+            MaxIndex loR = base.GetFilter(loRequest, loEntity);
+            if (loEntity is MaxUserAuthTokenEntity)
+            {
+                Guid loUserId = this.GetUserId(loRequest);
+                MaxIndex loFilterPart = new MaxIndex();
+                if (loR.Count > 0)
+                {
+                    loFilterPart.Add("Condition", "AND");
+                }
+
+                loFilterPart.Add("StartGroup", 1);
+                loFilterPart.Add("Name", "UserKey");
+                loFilterPart.Add("Operator", "=");
+                loFilterPart.Add("Value", loUserId.ToString());
+                loFilterPart.Add("EndGroup", 1);
+                loR.Add(loFilterPart);
             }
 
             return loR;
