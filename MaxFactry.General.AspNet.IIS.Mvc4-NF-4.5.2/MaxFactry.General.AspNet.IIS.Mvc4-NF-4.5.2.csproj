@@ -212,6 +212,8 @@
     <Compile Include="App_Src\PresentationLayer\Controllers\MaxSecurityPartialController.cs" />
     <Compile Include="App_Src\PresentationLayer\Controllers\MaxSystemController.cs" />
     <Compile Include="App_Src\PresentationLayer\Attribute\MaxExceptionFilterAttribute.cs" />
+    <Compile Include="App_Src\PresentationLayer\Handler\MaxReadOnlySessionControllerHandler.cs" />
+    <Compile Include="App_Src\PresentationLayer\Handler\MaxReadOnlySessionRouteHandler.cs" />
     <Compile Include="App_Src\PresentationLayer\Handler\MaxSessionRouteHandler.cs" />
     <Compile Include="App_Src\PresentationLayer\Handler\MaxSessionControllerHandler.cs" />
     <Compile Include="App_Src\PresentationLayer\Handler\MaxFileHandler.cs" />

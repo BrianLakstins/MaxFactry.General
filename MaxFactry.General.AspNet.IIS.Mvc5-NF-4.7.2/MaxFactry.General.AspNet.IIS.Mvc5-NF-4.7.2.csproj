@@ -245,6 +245,12 @@
     <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Handler\MaxFileHandler.cs">
       <Link>App_Src\PresentationLayer\Handler\MaxFileHandler.cs</Link>
     </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Handler\MaxReadOnlySessionControllerHandler.cs">
+      <Link>App_Src\PresentationLayer\Handler\MaxReadOnlySessionControllerHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Handler\MaxReadOnlySessionRouteHandler.cs">
+      <Link>App_Src\PresentationLayer\Handler\MaxReadOnlySessionRouteHandler.cs</Link>
+    </Compile>
     <Compile Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\App_Src\PresentationLayer\Handler\MaxScriptHandler.cs">
       <Link>App_Src\PresentationLayer\Handler\MaxScriptHandler.cs</Link>
     </Compile>
