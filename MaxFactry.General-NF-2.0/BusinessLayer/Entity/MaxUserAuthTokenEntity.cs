@@ -33,6 +33,7 @@
 // <change date="11/14/2024" author="Brian A. Lakstins" description="Track last used date for the token">
 // <change date="3/18/2026" author="Brian A. Lakstins" description="Prevent exception when token does not match expected format">
 // <change date="5/18/2026" author="Brian A. Lakstins" description="Add naming fields.  Add client Id for when there is one.">
+// <change date="6/23/2026" author="Brian A. Lakstins" description="Add AdminUserKey.  Always send IsExpired when mapping to index.>
 // </changelog>
 #endregion
 
@@ -70,7 +71,7 @@ namespace MaxFactry.General.BusinessLayer
         }
 
         /// <summary>
-        /// Gets or sets the key of the user who created this UserAuthToken
+        /// Gets or sets the key of the user related this UserAuthToken
         /// </summary>
 		public string UserKey
         {
@@ -82,6 +83,22 @@ namespace MaxFactry.General.BusinessLayer
             set
             {
                 this.Set(this.DataModel.UserKey, value);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the key of the Admin user who assigned this UserAuthToken
+        /// </summary>
+		public string AdminUserKey
+        {
+            get
+            {
+                return this.GetString(this.DataModel.AdminUserKey);
+            }
+
+            set
+            {
+                this.Set(this.DataModel.AdminUserKey, value);
             }
         }
 
@@ -596,6 +613,7 @@ namespace MaxFactry.General.BusinessLayer
                 loR.Remove("AccessToken");
             }
 
+            loR.Add("IsExpired", this.IsExpired);
             return loR;
         }
     }

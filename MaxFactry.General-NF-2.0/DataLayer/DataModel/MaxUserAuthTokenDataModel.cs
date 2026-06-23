@@ -35,6 +35,7 @@
 // <change date="11/14/2024" author="Brian A. Lakstins" description="Add last used field.">
 // <change date="6/4/2025" author="Brian A. Lakstins" description="Use constants instead of strings">
 // <change date="5/18/2026" author="Brian A. Lakstins" description="Add naming fields.  Add client Id for when there is one.>
+// <change date="6/23/2026" author="Brian A. Lakstins" description="Add AdminUserKey to keep track of the Admin user who assigns this token to another user.>
 // </changelog>
 #endregion
 
@@ -115,6 +116,11 @@ namespace MaxFactry.General.DataLayer
         public readonly string AuthClientId = "AuthClientId";
 
         /// <summary>
+        /// UserKey of Admin who assigned this token
+        /// </summary>
+        public readonly string AdminUserKey = "AdminUserKey";
+
+        /// <summary>
         /// Initializes a new instance of the MaxUserAuthTokenDataModel class.
         /// </summary>
         public MaxUserAuthTokenDataModel() : base()
@@ -135,6 +141,7 @@ namespace MaxFactry.General.DataLayer
             this.AddNullable(this.Name, typeof(string));
             this.AddNullable(this.Description, typeof(MaxLongString));
             this.AddNullable(this.AuthClientId, typeof(Guid));
+            this.AddNullable(this.AdminUserKey, typeof(string));
 
             this.RepositoryProviderType = typeof(MaxFactry.General.DataLayer.Provider.MaxGeneralRepositoryDefaultProvider);
             this.RepositoryType = typeof(MaxGeneralRepository);
