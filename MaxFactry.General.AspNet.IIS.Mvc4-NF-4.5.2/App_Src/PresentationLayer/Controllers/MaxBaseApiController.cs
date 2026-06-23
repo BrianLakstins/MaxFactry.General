@@ -78,6 +78,7 @@
 // <change date="12/17/2025" author="Brian A. Lakstins" description="Add handling schema requests">
 // <change date="3/10/2026" author="Brian A. Lakstins" description="Update ability to check security single entity by DataKey">
 // <change date="5/21/2026" author="Brian A. Lakstins" description="Add method to get the Id of the current user">
+// <change date="6/23/2026" author="Brian A. Lakstins" description="Update filter usage.">
 // </changelog>
 #endregion
 
@@ -1519,40 +1520,24 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         {
                             if (!string.IsNullOrEmpty(lsValue))
                             {
-                                if (loR.Count > 0)
-                                {
-                                    MaxIndex loFilterPartPrevious = loR[loR.Count - 1] as MaxIndex;
-                                    if (!loFilterPartPrevious.Contains("Condition"))
-                                    {
-                                        loFilterPartPrevious.Add("EndGroup", 1);
-                                    }
-                                }
-
                                 if (lsValue.Contains("\t"))
                                 {
                                     string[] laPartValue = lsValue.Split(new char[] { '\t' });
                                     for (int lnPV = 0; lnPV < laPartValue.Length; lnPV++)
                                     {
                                         MaxIndex loFilterPart = new MaxIndex();
-                                        loFilterPart.Add("Name", lsName);
-                                        loFilterPart.Add("Operator", "=");
-                                        loFilterPart.Add("Value", laPartValue[lnPV]);
-                                        loFilterPart.Add("Condition", "OR");
+                                        loFilterPart.Add(MaxEntity.FilterName, lsName);
+                                        loFilterPart.Add(MaxEntity.FilterOperator, MaxEntity.FilterOperatorEqual);
+                                        loFilterPart.Add(MaxEntity.FilterValue, laPartValue[lnPV]);
+                                        loFilterPart.Add(MaxEntity.FilterCondition, MaxEntity.FilterConditionOr);
                                         if (lnPV == 0)
                                         {
-                                            loFilterPart.Add("StartGroup", 1);
+                                            loFilterPart.Add(MaxEntity.FilterStartGroup, 1);
+                                            loFilterPart.Add(MaxEntity.FilterCondition, MaxEntity.FilterConditionAnd);
                                         }
                                         else if (lnPV == laPartValue.Length - 1)
                                         {
-                                            if (lsName == loQuery.Keys[loQuery.Keys.Count - 1])
-                                            {
-                                                loFilterPart.Add("Condition", "");
-                                            }
-                                            else
-                                            {
-                                                loFilterPart.Add("Condition", "AND");
-                                                loFilterPart.Add("EndGroup", 1);
-                                            }
+                                            loFilterPart.Add(MaxEntity.FilterEndGroup, 1);
                                         }
 
                                         loR.Add(loFilterPart);
@@ -1561,26 +1546,19 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                 else
                                 {
                                     MaxIndex loFilterPart = new MaxIndex();
-                                    loFilterPart.Add("StartGroup", 1);
-                                    loFilterPart.Add("Name", lsName);
-                                    loFilterPart.Add("Operator", "=");
-                                    loFilterPart.Add("Value", lsValue);
+                                    loFilterPart.Add(MaxEntity.FilterStartGroup, 1);
+                                    loFilterPart.Add(MaxEntity.FilterName, lsName);
+                                    loFilterPart.Add(MaxEntity.FilterOperator, MaxEntity.FilterOperatorEqual);
+                                    loFilterPart.Add(MaxEntity.FilterValue, lsValue);
+                                    if (loR.Count > 0)
+                                    {
+                                        loFilterPart.Add(MaxEntity.FilterCondition, MaxEntity.FilterConditionAnd);
+                                    }
+
+                                    loFilterPart.Add(MaxEntity.FilterEndGroup, 1);
                                     loR.Add(loFilterPart);
                                 }
                             }
-                        }
-                    }
-
-                    for (int lnFP = 0; lnFP < loR.Count; lnFP++)
-                    {
-                        MaxIndex loFilterPart = loR[lnFP] as MaxIndex;
-                        if (lnFP == loR.Count - 1 && !loFilterPart.Contains("EndGroup"))
-                        {
-                            loFilterPart.Add("EndGroup", 1);
-                        }
-                        else if (!loFilterPart.Contains("Condition"))
-                        {
-                            loFilterPart.Add("Condition", "AND");
                         }
                     }
                 }

@@ -56,6 +56,7 @@
 // <change date="11/20/2025" author="Brian A. Lakstins" description="Updating Put and Post checks for update and insert">
 // <change date="3/18/2026" author="Brian A. Lakstins" description="Consolidate login code.  Add logging in based on Authentication header.">
 // <change date="5/21/2026" author="Brian A. Lakstins" description="Standardize User Token management.  Add Client Auth management.">
+// <change date="6/23/2026" author="Brian A. Lakstins" description="Update filter usage,">
 // </changelog>
 #endregion
 
@@ -938,19 +939,17 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             MaxApiResponseViewModel loR = base.ProcessLoadList(loRequest, loEntity);
             if (loEntity is MaxUserAuthTokenEntity)
             {
-                loR.ItemList = new List<MaxIndex>();
-                Guid loUserId = this.GetUserId(loRequest);
-                MaxUserAuthTokenEntity loListEntity = MaxUserAuthTokenEntity.Create();
-                MaxEntityList loEntityList = loListEntity.LoadAllByUserKeyCache(loUserId.ToString());
-                for (int lnE = 0; lnE < loEntityList.Count; lnE++)
+                List<MaxIndex> loNotExpiredList = new List<MaxIndex>();
+                foreach (MaxIndex loIndex in loR.ItemList)
                 {
-                    loListEntity = loEntityList[lnE] as MaxUserAuthTokenEntity;
-                    if (!loListEntity.IsExpired)
+                    bool lbIsExpired = MaxConvertLibrary.ConvertToBoolean(typeof(object), loIndex["IsExpired"]);
+                    if (!lbIsExpired)
                     {
-                        MaxIndex loItem = loListEntity.MapIndex(loRequest.ResponsePropertyList);
-                        loR.ItemList.Add(loItem);
+                        loNotExpiredList.Add(loIndex);
                     }
                 }
+
+                loR.ItemList = loNotExpiredList;
             }
 
             return loR;
@@ -984,15 +983,29 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 MaxIndex loFilterPart = new MaxIndex();
                 if (loR.Count > 0)
                 {
-                    loFilterPart.Add("Condition", "AND");
+                    loFilterPart.Add(MaxEntity.FilterCondition, MaxEntity.FilterConditionAnd);
                 }
 
-                loFilterPart.Add("StartGroup", 1);
-                loFilterPart.Add("Name", "UserKey");
-                loFilterPart.Add("Operator", "=");
-                loFilterPart.Add("Value", loUserId.ToString());
-                loFilterPart.Add("EndGroup", 1);
+                loFilterPart.Add(MaxEntity.FilterStartGroup, 1);
+                loFilterPart.Add(MaxEntity.FilterName, "UserKey");
+                loFilterPart.Add(MaxEntity.FilterOperator, MaxEntity.FilterOperatorEqual);
+                loFilterPart.Add(MaxEntity.FilterValue, loUserId.ToString());
+                if (!this.HasPermission(loRequest, loEntity, -1))
+                {
+                    loFilterPart.Add(MaxEntity.FilterEndGroup, 1);
+                }
+
                 loR.Add(loFilterPart);
+                if (this.HasPermission(loRequest, loEntity, -1)) //// Admin permission
+                {
+                    loFilterPart = new MaxIndex();
+                    loFilterPart.Add(MaxEntity.FilterCondition, MaxEntity.FilterConditionOr);
+                    loFilterPart.Add(MaxEntity.FilterName, "AdminUserKey");
+                    loFilterPart.Add(MaxEntity.FilterOperator, MaxEntity.FilterOperatorLike);
+                    loFilterPart.Add(MaxEntity.FilterValue, "%-%");
+                    loFilterPart.Add(MaxEntity.FilterEndGroup, 1);
+                    loR.Add(loFilterPart);
+                }
             }
 
             return loR;
