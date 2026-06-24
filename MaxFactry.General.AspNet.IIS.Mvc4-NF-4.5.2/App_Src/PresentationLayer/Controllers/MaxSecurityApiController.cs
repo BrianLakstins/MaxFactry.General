@@ -56,7 +56,8 @@
 // <change date="11/20/2025" author="Brian A. Lakstins" description="Updating Put and Post checks for update and insert">
 // <change date="3/18/2026" author="Brian A. Lakstins" description="Consolidate login code.  Add logging in based on Authentication header.">
 // <change date="5/21/2026" author="Brian A. Lakstins" description="Standardize User Token management.  Add Client Auth management.">
-// <change date="6/23/2026" author="Brian A. Lakstins" description="Update filter usage,">
+// <change date="6/23/2026" author="Brian A. Lakstins" description="Update filter usage.">
+// <change date="6/43/2026" author="Brian A. Lakstins" description="Allow Admins to update user tokens">
 // </changelog>
 #endregion
 
@@ -790,6 +791,18 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
         protected override MaxApiResponseViewModel ProcessPut(MaxApiRequestViewModel loRequest, MaxEntity loOriginalEntity, MaxEntity loMappedEntity, MaxEntityList loMappedEntityList, MaxApiResponseViewModel loResponse)
         {
+            if (loMappedEntity is MaxUserAuthTokenEntity && loOriginalEntity is MaxUserAuthTokenEntity)
+            {
+                //// Don't allow changing AdminUserKey or UserKey after first assignment
+                MaxUserAuthTokenEntity loOriginalUserAuthTokenEntity = loOriginalEntity as MaxUserAuthTokenEntity;
+                MaxUserAuthTokenEntity loMappedUserAuthTokenEntity = loMappedEntity as MaxUserAuthTokenEntity;               
+                if (!string.IsNullOrEmpty(loOriginalUserAuthTokenEntity.AdminUserKey))
+                {
+                    loMappedUserAuthTokenEntity.AdminUserKey = loOriginalUserAuthTokenEntity.AdminUserKey;
+                    loMappedUserAuthTokenEntity.UserKey = loOriginalUserAuthTokenEntity.UserKey;
+                }            
+            }
+
             MaxApiResponseViewModel loR = base.ProcessPut(loRequest, loOriginalEntity, loMappedEntity, loMappedEntityList, loResponse);
             if (loMappedEntity is MaxUserEntity)
             {
@@ -967,7 +980,12 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 }
                 else
                 {
-                    ((MaxUserAuthTokenEntity)loR).UserKey = this.GetUserId(loRequest).ToString();
+                    string lsCurrentUserKey = this.GetUserId(loRequest).ToString();
+                    //// Always set user key when inserted. Allow changing by admin.
+                    if (this.Request.Method == HttpMethod.Post || !this.HasPermission(loRequest, loEntity, -1))
+                    {
+                        ((MaxUserAuthTokenEntity)loR).UserKey = lsCurrentUserKey;
+                    }
                 }
             }
 
