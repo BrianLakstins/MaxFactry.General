@@ -80,6 +80,7 @@
 // <change date="5/21/2026" author="Brian A. Lakstins" description="Add method to get the Id of the current user">
 // <change date="6/23/2026" author="Brian A. Lakstins" description="Update filter usage.">
 // <change date="6/24/2026" author="Brian A. Lakstins" description="Update which properties are included in filters">
+// <change date="7/1/2026" author="Brian A. Lakstins" description="Preventing pulling more than 1000 records when not using a filter.  Add handling of 'desc' for sorting.  Fix no record error message when already a message.">
 // </changelog>
 #endregion
 
@@ -942,7 +943,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         }
                         if ((null == loR.Item || loR.Item.Count == 0) && Request.Method == HttpMethod.Get)
                         {
-                            if (null == loR.ItemList || loR.ItemList.Count == 0)
+                            if (null == loR.ItemList || loR.ItemList.Count == 0 && string.IsNullOrEmpty(loR.Message.Warning) && string.IsNullOrEmpty(loR.Message.Error))
                             {
                                 loR.Message.Warning = "No data found for request.";
                                 MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "Process", MaxEnumGroup.LogNotice, "Nothing found for entity [{Type}]", loEntity.GetType()));                           
@@ -1593,67 +1594,77 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     laPropertyNameList = loRequest.RequestPropertyList;
                 }
 
-                if ((!string.IsNullOrEmpty(loRequest.PropertySort) && loRequest.Page > 0 && loRequest.PageLength > 0) || loFilter.Count > 0)
+                int lnPage = loRequest.Page;
+                int lnPageLength = loRequest.PageLength;
+                string lsSort = loRequest.PropertySort;
+                if (loFilter.Count == 0)
                 {
-                    MaxEntityList loList = loEntityCopy.LoadAllByPageFilter(loRequest.Page, loRequest.PageLength, loRequest.PropertySort, loFilter, laPropertyNameList);
-                    loR.Page.Add(loResponsePage.Total, loList.Total);
-                    List<string> loDataNameList = new List<string>(loEntity.GetData().DataModel.DataNameList);
-                    if (!loDataNameList.Contains(loRequest.PropertySort))
+                    //// Limit to the 1000 newest records when there is no filter to avoid returning too many records
+                    lnPage = 1;
+                    lnPageLength = 1000;
+                    if (string.IsNullOrEmpty(lsSort) && loEntity is MaxBaseEntity)
                     {
-                        //// TODO: Take into account multiple properties separated by commas and "asc" and "desc" suffixes
-                        PropertyInfo loProperty = loEntityCopy.GetType().GetProperty(loRequest.PropertySort);
-                        if (null != loProperty && loList.Total > loRequest.PageLength && (loRequest.Page > 1 || loList.Count > loRequest.PageLength))
-                        {
-                            SortedList<string, MaxEntity> loSortedList = new SortedList<string, MaxEntity>();
-                            for (int lnE = 0; lnE < loList.Count; lnE++)
-                            {
-                                MaxEntity loListEntity = loList[lnE];
-                                string lsValue = MaxConvertLibrary.ConvertToSortString(typeof(object), loProperty.GetValue(loListEntity));
-                                loSortedList.Add(lsValue + '-' + loListEntity.DataKey, loListEntity);
-                            }
+                        lsSort = ((MaxBaseEntity)loEntity).GetPropertyName(() => ((MaxBaseEntity)loEntity).CreatedDate) + " desc";
+                    }
+                }
 
-                            loList = new MaxEntityList(loEntityCopy.GetType());
-                            for (int lnL = 0; lnL < loSortedList.Values.Count; lnL++)
+                MaxEntityList loList = loEntityCopy.LoadAllByPageFilterCache(lnPage, lnPageLength, loRequest.PropertySort, loFilter, laPropertyNameList);
+                loR.Page.Add(loResponsePage.Total, loList.Total);
+                List<string> loDataNameList = new List<string>(loEntity.GetData().DataModel.DataNameList);
+                if (!loDataNameList.Contains(loRequest.PropertySort))
+                {
+                    string lsPropertySort = loRequest.PropertySort;
+                    string[] laPropertySort = lsPropertySort.Split(new char[] { ',' });
+
+                    //// TODO: Take into account multiple properties separated by commas.  For now, just sort by the first property in the list
+                    PropertyInfo loProperty = loEntityCopy.GetType().GetProperty(loRequest.PropertySort);
+                    if (null != loProperty && loList.Total > loRequest.PageLength && (loRequest.Page > 1 || loList.Count > loRequest.PageLength))
+                    {
+                        SortedList<string, MaxEntity> loSortedList = new SortedList<string, MaxEntity>();
+                        bool lbIsAscending = true;
+                        for (int lnE = 0; lnE < loList.Count; lnE++)
+                        {
+                            MaxEntity loListEntity = loList[lnE];
+                            string lsValue = loListEntity.GetDefaultSortString();
+                            if (laPropertySort.Length > 0)
                             {
-                                if (loRequest.PageLength <= 0 || ((loRequest.Page - 1) * loRequest.PageLength <= lnL && lnL < loRequest.Page * loRequest.PageLength))
+                                string[] laProperty = laPropertySort[0].Split(new char[] { ' ' });
+                                if (laProperty.Length > 0)
                                 {
-                                    loList.Add(loSortedList.Values[lnL]);
+                                    string lsPropertyName = laProperty[0];
+                                    PropertyInfo loPropertySort = loListEntity.GetType().GetProperty(lsPropertyName);
+                                    if (null != loPropertySort)
+                                    {
+                                        lsValue = MaxConvertLibrary.ConvertToSortString(typeof(object), loPropertySort.GetValue(loListEntity)) + '-' + loListEntity.DataKey;
+                                        if (laProperty.Length > 1 && lbIsAscending && laProperty[1].ToLowerInvariant() == "desc")
+                                        {
+                                            lbIsAscending = false;
+                                        }
+                                    }
                                 }
                             }
-                        }
-                    }
 
-                    loR.ItemList = new List<MaxIndex>(loEntity.MapIndexList(loList, laPropertyNameList));
-                }
-                else
-                {
-                    MaxEntityList loList = loEntityCopy.LoadAllCache(laPropertyNameList);
-                    loR.Page.Add(loResponsePage.Total, loList.Total);
-                    SortedList<string, MaxEntity> loSortedList = new SortedList<string, MaxEntity>();
-                    for (int lnE = 0; lnE < loList.Count; lnE++)
-                    {
-                        MaxEntity loListEntity = loList[lnE];
-                        if (loListEntity is MaxBaseIdEntity)
+                            loSortedList.Add(lsValue, loListEntity);
+                        }
+
+                        List<MaxEntity> loOrderedList = new List<MaxEntity>(loSortedList.Values);
+                        if (!lbIsAscending)
                         {
-                            if (((MaxBaseIdEntity)loListEntity).IsActive || this.HasPermission(loRequest, loEntity, (int)MaxEnumGroup.PermissionSelectInactive))
+                            loOrderedList.Reverse();
+                        }
+
+                        loList = new MaxEntityList(loEntityCopy.GetType());
+                        for (int lnL = 0; lnL < loOrderedList.Count; lnL++)
+                        {
+                            if (loRequest.PageLength <= 0 || ((loRequest.Page - 1) * loRequest.PageLength <= lnL && lnL < loRequest.Page * loRequest.PageLength))
                             {
-                                loSortedList.Add(loListEntity.GetDefaultSortString(), loListEntity);
+                                loList.Add(loOrderedList[lnL]);
                             }
                         }
-                        else
-                        {
-                            loSortedList.Add(loListEntity.GetDefaultSortString(), loListEntity);
-                        }
                     }
-
-                    loList = new MaxEntityList(loEntityCopy.GetType());
-                    foreach (string lsKey in loSortedList.Keys)
-                    {
-                        loList.Add(loSortedList[lsKey]);
-                    }
-
-                    loR.ItemList = new List<MaxIndex>(loEntity.MapIndexList(loList, laPropertyNameList));
                 }
+
+                loR.ItemList = new List<MaxIndex>(loEntity.MapIndexList(loList, laPropertyNameList));                
             }
 
             return loR;
