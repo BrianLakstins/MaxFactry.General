@@ -33,21 +33,23 @@
 // <change date="6/19/2024" author="Brian A. Lakstins" description="Add user related logging types.">
 // <change date="7/18/2025" author="Brian A. Lakstins" description="Add filtering for a page and log entry type.">
 // <change date="5/18/2026" author="Brian A. Lakstins" description="Add log entry type for client auth additions">
+// <change date="7/7/2026" author="Brian A. Lakstins" description="Add response filter handling for date ranges">
 // </changelog>
 #endregion
 
 namespace MaxFactry.General.BusinessLayer
 {
-	using System;
-	using MaxFactry.Core;
 	using MaxFactry.Base.BusinessLayer;
 	using MaxFactry.Base.DataLayer;
     using MaxFactry.Base.DataLayer.Library;
+	using MaxFactry.Core;
     using MaxFactry.General.DataLayer;
+	using System;
+    using System.Collections.Generic;
 
-	/// <summary>
+    /// <summary>
     /// Entity used to manage log information about users for the MaxSecurityProvider.
-	/// </summary>
+    /// </summary>
 	public class MaxUserLogEntity : MaxBaseEntity
 	{
         /// <summary>
@@ -278,5 +280,39 @@ namespace MaxFactry.General.BusinessLayer
             throw new MaxException("Log entries cannot be deleted.");
                 
         }
-	}
+
+        public override List<string> GetResponseFilterNameList()
+        {
+            List<string> loR = base.GetResponseFilterNameList();
+            loR.Add("StartDate");
+            loR.Add("EndDate");
+            return loR;
+        }
+
+        public override MaxIndex GetPropertyFilter(MaxIndex loResponseFilter)
+        {
+            MaxIndex loR = base.GetPropertyFilter(loResponseFilter);
+            for (int lnR = 0; lnR < loR.Count; lnR++)
+            {
+                MaxIndex loFilterPart = loR[lnR] as MaxIndex;
+                //// Change date filters to use Timestamp as the field
+                if (loFilterPart.GetValueString(MaxEntity.FilterName) == "StartDate")
+                {
+                    loFilterPart.Add(MaxEntity.FilterName, "CreatedDate");
+                    loFilterPart.Add(MaxEntity.FilterOperator, MaxEntity.FilterOperatorGreaterThanOrEqual);
+                    DateTime ldDateUtc = MaxConvertLibrary.ConvertToDateTimeUtc(typeof(object), loFilterPart[MaxEntity.FilterValue]);
+                    loFilterPart.Add(MaxEntity.FilterValue, MaxConvertLibrary.ConvertToDateTimeUtc(typeof(object), ldDateUtc));
+                }
+                else if (loFilterPart.GetValueString(MaxEntity.FilterName) == "EndDate")
+                {
+                    loFilterPart.Add(MaxEntity.FilterName, "CreatedDate");
+                    loFilterPart.Add(MaxEntity.FilterOperator, MaxEntity.FilterOperatorLessThan);
+                    DateTime ldDateUtc = MaxConvertLibrary.ConvertToDateTimeUtc(typeof(object), loFilterPart[MaxEntity.FilterValue]);
+                    loFilterPart.Add(MaxEntity.FilterValue, ldDateUtc);
+                }
+            }
+
+            return loR;
+        }
+    }
 }
