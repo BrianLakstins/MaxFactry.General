@@ -57,7 +57,8 @@
 // <change date="3/18/2026" author="Brian A. Lakstins" description="Consolidate login code.  Add logging in based on Authentication header.">
 // <change date="5/21/2026" author="Brian A. Lakstins" description="Standardize User Token management.  Add Client Auth management.">
 // <change date="6/23/2026" author="Brian A. Lakstins" description="Update filter usage.">
-// <change date="6/43/2026" author="Brian A. Lakstins" description="Allow Admins to update user tokens">
+// <change date="6/23/2026" author="Brian A. Lakstins" description="Allow Admins to update user tokens">
+// <change date="7/7/2026" author="Brian A. Lakstins" description="Update filtering">
 // </changelog>
 #endregion
 
@@ -992,37 +993,22 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             return loR;
         }
 
-        protected override MaxIndex GetFilter(MaxApiRequestViewModel loRequest, MaxEntity loEntity)
+        protected override MaxIndex GetResponseFilter(MaxApiRequestViewModel loRequest, MaxEntity loEntity)
         {
-            MaxIndex loR = base.GetFilter(loRequest, loEntity);
+            MaxIndex loR = base.GetResponseFilter(loRequest, loEntity);
             if (loEntity is MaxUserAuthTokenEntity)
             {
                 Guid loUserId = this.GetUserId(loRequest);
-                MaxIndex loFilterPart = new MaxIndex();
-                if (loR.Count > 0)
-                {
-                    loFilterPart.Add(MaxEntity.FilterCondition, MaxEntity.FilterConditionAnd);
-                }
-
-                loFilterPart.Add(MaxEntity.FilterStartGroup, 1);
-                loFilterPart.Add(MaxEntity.FilterName, "UserKey");
-                loFilterPart.Add(MaxEntity.FilterOperator, MaxEntity.FilterOperatorEqual);
-                loFilterPart.Add(MaxEntity.FilterValue, loUserId.ToString());
-                if (!this.HasPermission(loRequest, loEntity, -1))
-                {
-                    loFilterPart.Add(MaxEntity.FilterEndGroup, 1);
-                }
-
-                loR.Add(loFilterPart);
+                MaxIndex loFilterIndex = new MaxIndex();
+                loFilterIndex.Add("UserKey", loUserId.ToString());
+                loR.Add(loFilterIndex);
                 if (this.HasPermission(loRequest, loEntity, -1)) //// Admin permission
                 {
-                    loFilterPart = new MaxIndex();
-                    loFilterPart.Add(MaxEntity.FilterCondition, MaxEntity.FilterConditionOr);
-                    loFilterPart.Add(MaxEntity.FilterName, "AdminUserKey");
-                    loFilterPart.Add(MaxEntity.FilterOperator, MaxEntity.FilterOperatorLike);
-                    loFilterPart.Add(MaxEntity.FilterValue, "%-%");
-                    loFilterPart.Add(MaxEntity.FilterEndGroup, 1);
-                    loR.Add(loFilterPart);
+                    loFilterIndex = new MaxIndex();
+                    loFilterIndex.Add("AdminUserKey", "'%-%");
+                    loFilterIndex.Add("AdminUserKeyOperator", MaxEntity.FilterOperatorLike);
+                    loFilterIndex.Add("AdminUserKeyCondition", MaxEntity.FilterConditionOr);
+                    loR.Add(loFilterIndex);
                 }
             }
 

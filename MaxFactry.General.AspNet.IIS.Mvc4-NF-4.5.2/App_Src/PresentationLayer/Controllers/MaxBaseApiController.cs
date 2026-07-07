@@ -81,6 +81,7 @@
 // <change date="6/23/2026" author="Brian A. Lakstins" description="Update filter usage.">
 // <change date="6/24/2026" author="Brian A. Lakstins" description="Update which properties are included in filters">
 // <change date="7/1/2026" author="Brian A. Lakstins" description="Preventing pulling more than 1000 records when not using a filter.  Add handling of 'desc' for sorting.  Fix no record error message when already a message.">
+// <change date="7/7/2026" author="Brian A. Lakstins" description="Separate filtering functionality to a Response Filter based on the Request and a Property Filter based on the entity.">
 // </changelog>
 #endregion
 
@@ -1506,66 +1507,24 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             return loR;
         }
 
-        protected virtual MaxIndex GetFilter(MaxApiRequestViewModel loRequest, MaxEntity loEntity)
+        protected virtual MaxIndex GetResponseFilter(MaxApiRequestViewModel loRequest, MaxEntity loEntity)
         {
             MaxIndex loR = new MaxIndex();
-            if (loRequest.ResponseFilterList != null && loRequest.ResponseFilterList.Length > 0)
+            string[] laResponseFilterList = loRequest.ResponseFilterList;
+            if (laResponseFilterList != null && laResponseFilterList.Length > 0)
             {
-                List<string> loResponsePropertyList = new List<string>(loRequest.ResponsePropertyList);
-                for (int lnF = 0; lnF < loRequest.ResponseFilterList.Length; lnF++)
+                for (int lnF = 0; lnF < laResponseFilterList.Length; lnF++)
                 {
-                    string lsFilter = loRequest.ResponseFilterList[lnF];
-                    NameValueCollection loQuery = HttpUtility.ParseQueryString(lsFilter);
-                    foreach (string lsName in loQuery.Keys)
+                    string lsFilter = laResponseFilterList[lnF];
+                    NameValueCollection loFilter = HttpUtility.ParseQueryString(lsFilter);
+                    foreach (string lsName in loFilter.Keys)
                     {
-                        //// Filter properties that don't start with upper case or are not in the reponse list are ignored
-                        if (!string.IsNullOrEmpty(lsName) && (loResponsePropertyList.Contains(lsName) || char.IsUpper(lsName[0])))
+                        string[] laValue = loFilter.GetValues(lsName);
+                        foreach (string lsValue in laValue)
                         {
-                            string[] laValue = loQuery.GetValues(lsName);
-                            foreach (string lsValue in laValue)
-                            {
-                                if (!string.IsNullOrEmpty(lsValue))
-                                {
-                                    if (lsValue.Contains("\t"))
-                                    {
-                                        string[] laPartValue = lsValue.Split(new char[] { '\t' });
-                                        for (int lnPV = 0; lnPV < laPartValue.Length; lnPV++)
-                                        {
-                                            MaxIndex loFilterPart = new MaxIndex();
-                                            loFilterPart.Add(MaxEntity.FilterName, lsName);
-                                            loFilterPart.Add(MaxEntity.FilterOperator, MaxEntity.FilterOperatorEqual);
-                                            loFilterPart.Add(MaxEntity.FilterValue, laPartValue[lnPV]);
-                                            loFilterPart.Add(MaxEntity.FilterCondition, MaxEntity.FilterConditionOr);
-                                            if (lnPV == 0)
-                                            {
-                                                loFilterPart.Add(MaxEntity.FilterStartGroup, 1);
-                                                loFilterPart.Add(MaxEntity.FilterCondition, MaxEntity.FilterConditionAnd);
-                                            }
-                                            else if (lnPV == laPartValue.Length - 1)
-                                            {
-                                                loFilterPart.Add(MaxEntity.FilterEndGroup, 1);
-                                            }
-
-                                            loR.Add(loFilterPart);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        MaxIndex loFilterPart = new MaxIndex();
-                                        loFilterPart.Add(MaxEntity.FilterStartGroup, 1);
-                                        loFilterPart.Add(MaxEntity.FilterName, lsName);
-                                        loFilterPart.Add(MaxEntity.FilterOperator, MaxEntity.FilterOperatorEqual);
-                                        loFilterPart.Add(MaxEntity.FilterValue, lsValue);
-                                        if (loR.Count > 0)
-                                        {
-                                            loFilterPart.Add(MaxEntity.FilterCondition, MaxEntity.FilterConditionAnd);
-                                        }
-
-                                        loFilterPart.Add(MaxEntity.FilterEndGroup, 1);
-                                        loR.Add(loFilterPart);
-                                    }
-                                }
-                            }
+                            MaxIndex loFilterPart = new MaxIndex();
+                            loFilterPart.Add(lsName, lsValue);
+                            loR.Add(loFilterPart);
                         }
                     }
                 }
@@ -1583,7 +1542,9 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 ItemList = "ItemList"
             };
 
-            MaxIndex loFilter = this.GetFilter(loRequest, loEntity);
+            MaxIndex loResponseFilter = this.GetResponseFilter(loRequest, loEntity);
+            MaxIndex loFilter = loEntity.GetPropertyFilter(loResponseFilter);
+            loR.Page.Add("PropertyFilter", loFilter);
             MaxEntity loEntityCopy = loEntity.CreateNew();
             if (null != loEntityCopy)
             {
