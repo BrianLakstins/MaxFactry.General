@@ -82,6 +82,7 @@
 // <change date="6/24/2026" author="Brian A. Lakstins" description="Update which properties are included in filters">
 // <change date="7/1/2026" author="Brian A. Lakstins" description="Preventing pulling more than 1000 records when not using a filter.  Add handling of 'desc' for sorting.  Fix no record error message when already a message.">
 // <change date="7/7/2026" author="Brian A. Lakstins" description="Separate filtering functionality to a Response Filter based on the Request and a Property Filter based on the entity.">
+// <change date="7/8/2026" author="Brian A. Lakstins" description="Update filter handling to use lists of filters as a way to group them and break up search filtering.">
 // </changelog>
 #endregion
 
@@ -1507,10 +1508,9 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             return loR;
         }
 
-        protected virtual MaxIndex GetResponseFilter(MaxApiRequestViewModel loRequest, MaxEntity loEntity)
+        protected virtual MaxIndex GetResponseFilterList(string[] laResponseFilterList, MaxEntity loEntity)
         {
             MaxIndex loR = new MaxIndex();
-            string[] laResponseFilterList = loRequest.ResponseFilterList;
             if (laResponseFilterList != null && laResponseFilterList.Length > 0)
             {
                 for (int lnF = 0; lnF < laResponseFilterList.Length; lnF++)
@@ -1523,13 +1523,51 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         foreach (string lsValue in laValue)
                         {
                             MaxIndex loFilterPart = new MaxIndex();
-                            loFilterPart.Add(lsName, lsValue);
+                            loFilterPart.Add(MaxEntity.FilterName, lsName);
+                            loFilterPart.Add(MaxEntity.FilterValue, lsValue);
                             loR.Add(loFilterPart);
                         }
                     }
                 }
             }
 
+            return loR;
+        }
+
+        protected virtual List<string> GetSearchFilterNameList(MaxEntity loEntity)
+        {
+            return new List<string>(new string[] { "Name", "Description" });
+        }
+
+        protected virtual MaxIndex GetResponseFilterSearch(string lsSearchText, MaxEntity loEntity)
+        {
+            MaxIndex loR = new MaxIndex();
+            if (!string.IsNullOrEmpty(lsSearchText))
+            {
+                List<string> loSearchFilterNameList = this.GetSearchFilterNameList(loEntity);
+                for (int lnD = 0; lnD < loSearchFilterNameList.Count; lnD++)
+                {
+                    MaxIndex loFilterPart = new MaxIndex();
+                    loFilterPart.Add(MaxEntity.FilterName, loSearchFilterNameList[lnD]);
+                    loFilterPart.Add(MaxEntity.FilterValue, "%" + lsSearchText + "%");
+                    loFilterPart.Add(MaxEntity.FilterOperator, MaxEntity.FilterOperatorLike);
+                    if (lnD > 0)
+                    {
+                        loFilterPart.Add(MaxEntity.FilterCondition, MaxEntity.FilterConditionOr);
+                    }
+
+                    loR.Add(loFilterPart);
+                }
+            }
+
+            return loR;
+        }
+
+        protected virtual MaxIndex GetResponseFilter(MaxApiRequestViewModel loRequest, MaxEntity loEntity)
+        {
+            MaxIndex loR = new MaxIndex();
+            loR.Add(this.GetResponseFilterList(loRequest.ResponseFilterList, loEntity));
+            loR.Add(this.GetResponseFilterSearch(loRequest.SearchText, loEntity));
             return loR;
         }
 

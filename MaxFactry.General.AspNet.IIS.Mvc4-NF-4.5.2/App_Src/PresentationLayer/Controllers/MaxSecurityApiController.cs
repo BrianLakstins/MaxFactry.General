@@ -59,6 +59,7 @@
 // <change date="6/23/2026" author="Brian A. Lakstins" description="Update filter usage.">
 // <change date="6/23/2026" author="Brian A. Lakstins" description="Allow Admins to update user tokens">
 // <change date="7/7/2026" author="Brian A. Lakstins" description="Update filtering">
+// <change date="7/8/2026" author="Brian A. Lakstins" description="Filtering adjustments for changes to references">
 // </changelog>
 #endregion
 
@@ -998,18 +999,23 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             MaxIndex loR = base.GetResponseFilter(loRequest, loEntity);
             if (loEntity is MaxUserAuthTokenEntity)
             {
+                MaxIndex loResponseFilterList = new MaxIndex();
                 Guid loUserId = this.GetUserId(loRequest);
-                MaxIndex loFilterIndex = new MaxIndex();
-                loFilterIndex.Add("UserKey", loUserId.ToString());
-                loR.Add(loFilterIndex);
+                MaxIndex loFilterPart = new MaxIndex();
+                loFilterPart.Add(MaxEntity.FilterName, "UserKey");
+                loFilterPart.Add(MaxEntity.FilterValue, loUserId.ToString());
+                loResponseFilterList.Add(loFilterPart);
                 if (this.HasPermission(loRequest, loEntity, -1)) //// Admin permission
                 {
-                    loFilterIndex = new MaxIndex();
-                    loFilterIndex.Add("AdminUserKey", "'%-%");
-                    loFilterIndex.Add("AdminUserKeyOperator", MaxEntity.FilterOperatorLike);
-                    loFilterIndex.Add("AdminUserKeyCondition", MaxEntity.FilterConditionOr);
-                    loR.Add(loFilterIndex);
+                    loFilterPart = new MaxIndex();
+                    loFilterPart.Add(MaxEntity.FilterName, "AdminUserKey");
+                    loFilterPart.Add(MaxEntity.FilterValue, "'%-%");
+                    loFilterPart.Add(MaxEntity.FilterOperator, MaxEntity.FilterOperatorLike);
+                    loFilterPart.Add(MaxEntity.FilterCondition, MaxEntity.FilterConditionOr);
+                    loResponseFilterList.Add(loFilterPart);
                 }
+
+                loR.Add(loResponseFilterList);
             }
 
             return loR;
