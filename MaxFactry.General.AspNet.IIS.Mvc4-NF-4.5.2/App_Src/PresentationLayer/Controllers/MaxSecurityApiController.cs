@@ -1009,7 +1009,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 {
                     loFilterPart = new MaxIndex();
                     loFilterPart.Add(MaxEntity.FilterName, "AdminUserKey");
-                    loFilterPart.Add(MaxEntity.FilterValue, "'%-%");
+                    loFilterPart.Add(MaxEntity.FilterValue, "%-%");
                     loFilterPart.Add(MaxEntity.FilterOperator, MaxEntity.FilterOperatorLike);
                     loFilterPart.Add(MaxEntity.FilterCondition, MaxEntity.FilterConditionOr);
                     loResponseFilterList.Add(loFilterPart);
