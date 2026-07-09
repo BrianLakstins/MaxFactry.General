@@ -83,6 +83,7 @@
 // <change date="7/1/2026" author="Brian A. Lakstins" description="Preventing pulling more than 1000 records when not using a filter.  Add handling of 'desc' for sorting.  Fix no record error message when already a message.">
 // <change date="7/7/2026" author="Brian A. Lakstins" description="Separate filtering functionality to a Response Filter based on the Request and a Property Filter based on the entity.">
 // <change date="7/8/2026" author="Brian A. Lakstins" description="Update filter handling to use lists of filters as a way to group them and break up search filtering.">
+// <change date="7/9/2026" author="Brian A. Lakstins" description="Make sure content is specified for download.">
 // </changelog>
 #endregion
 
@@ -457,6 +458,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 this.Request.Method == HttpMethod.Get && 
                 loReturn.Item.Contains("ContentName") &&
                 loReturn.Item.Contains("MimeType") &&
+                loReturn.Item.Contains("Content") &&
                 loEntity is MaxBaseIdFileEntity &&
                 ((MaxBaseIdFileEntity)loEntity).Id != Guid.Empty &&
                 null != ((MaxBaseIdFileEntity)loEntity).Content)
@@ -1217,7 +1219,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         if (!string.IsNullOrEmpty(lsDataKey))
                         {
                             lbMapProperties = false;
-                            if (loEntityCopy.LoadByDataKeyCache(lsDataKey))
+                            if (loEntityCopy.LoadByDataKeyCache(lsDataKey, loRequest.ResponsePropertyList))
                             {
                                 lbMapProperties = true;
                                 lbValueFound = true;
