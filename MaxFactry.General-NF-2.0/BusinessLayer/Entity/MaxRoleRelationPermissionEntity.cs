@@ -29,6 +29,7 @@
 // <changelog>
 // <change date="6/28/2024" author="Brian A. Lakstins" description="Initial creation">
 // <change date="7/10/2024" author="Brian A. Lakstins" description="Use a string for permission id">
+// <change date="7/14/2026" author="Brian A. Lakstins" description="Get DataName for PermissionId too.">
 // </changelog>
 #endregion
 
@@ -183,7 +184,21 @@ namespace MaxFactry.General.BusinessLayer
             {
                 return this.DataModel.ParentId;
             }
+            else if (lsPropertyName == this.GetPropertyName(() => this.PermissionId))
+            {
+                return this.DataModel.ChildId;
+            }
+#else
+            if (lsPropertyName == "RoleId")
+            {
+                return this.DataModel.ParentId;
+            }
+            else if (lsPropertyName == "PermissionId")
+            {
+                return this.DataModel.ChildId;
+            }
 #endif 
+
             return base.GetDataName(loDataModel, lsPropertyName);
         }
 

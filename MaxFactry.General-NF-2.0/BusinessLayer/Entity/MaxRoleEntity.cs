@@ -38,6 +38,7 @@
 // <change date="7/10/2024" author="Brian A. Lakstins" description="Rename variable to better reflect what it is">
 // <change date="9/16/2024" author="Brian A. Lakstins" description="Making sure Propertlist is not null.">
 // <change date="6/4/2025" author="Brian A. Lakstins" description="Updates to take advantage of changes to base.">
+// <change date="7/14/2026" author="Brian A. Lakstins" description="Add a separator for PermissionId and Permission.">
 // </changelog>
 #endregion
 
@@ -268,7 +269,7 @@ namespace MaxFactry.General.BusinessLayer
                         for (int lnE = 0; lnE < loRelationList.Count; lnE++)
                         {
                             loRelation = loRelationList[lnE] as MaxRoleRelationPermissionEntity;
-                            loPermissionList.Add(loRelation.PermissionId.ToString() + loRelation.Permission.ToString());
+                            loPermissionList.Add(loRelation.PermissionId.ToString() + '|' + loRelation.Permission.ToString());
                         }
 
                         loR.Add("PermissionKeySelectedList", loPermissionList.ToArray());
