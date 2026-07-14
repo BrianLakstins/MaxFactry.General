@@ -258,7 +258,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MaxFactry.Base">
-      <Version>1.0.26.26</Version>
+      <Version>1.0.26.31</Version>
     </PackageReference>
     <PackageReference Include="MaxFactry.Core">
       <Version>1.0.26.19</Version>
