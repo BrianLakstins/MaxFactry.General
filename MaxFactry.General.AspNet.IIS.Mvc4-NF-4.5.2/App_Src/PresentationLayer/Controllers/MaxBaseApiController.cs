@@ -84,6 +84,7 @@
 // <change date="7/7/2026" author="Brian A. Lakstins" description="Separate filtering functionality to a Response Filter based on the Request and a Property Filter based on the entity.">
 // <change date="7/8/2026" author="Brian A. Lakstins" description="Update filter handling to use lists of filters as a way to group them and break up search filtering.">
 // <change date="7/9/2026" author="Brian A. Lakstins" description="Make sure content is specified for download.">
+// <change date="7/14/2026" author="Brian A. Lakstins" description="Check for only supplied permission bit map instead of any bit. Clean up sending PermissionType list.">
 // </changelog>
 #endregion
 
@@ -243,20 +244,19 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     loStatus = HttpStatusCode.OK;
                     try
                     {
-                        int[] laPermssionType = new int[6] {
-                            (int)MaxEnumGroup.PermissionGroup,
+                        int[] laPermissionType = new int[5] {
                             (int)MaxEnumGroup.PermissionSelect,
                             (int)MaxEnumGroup.PermissionInsert,
                             (int)MaxEnumGroup.PermissionUpdate,
                             (int)MaxEnumGroup.PermissionDelete,
                             (int)MaxEnumGroup.PermissionSelectInactive};
 
-                        foreach (int lnPermissionType in laPermssionType)
+                        foreach (int lnPermissionType in laPermissionType)
                         {
-                            string lsName = MaxEnumGroup.GetName(typeof(MaxEnumGroup), lnPermissionType);
+                            string lsName = MaxEnumGroup.GetName(typeof(MaxEnumGroup), lnPermissionType).Substring("Permission".Length);
                             MaxIndex loPermissionType = new MaxIndex();
                             loPermissionType.Add(loResponseItem.Name, lsName);
-                            loPermissionType.Add(loResponseItem.Permission, lnPermissionType);
+                            loPermissionType.Add(loResponseItem.Permission, lnPermissionType - (int)MaxEnumGroup.PermissionGroup);
                             loR.ItemList.Add(loPermissionType);
                         }
 
@@ -332,7 +332,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                     MaxRoleRelationPermissionEntity loRoleRelationPermissionEntity = loRoleRelationPermissionList[lnE] as MaxRoleRelationPermissionEntity;
                                     if (loRoleRelationPermissionEntity.PermissionId == loPermissionId)
                                     {
-                                        if ((loRoleRelationPermissionEntity.Permission & lnPermission) > 0)
+                                        if ((loRoleRelationPermissionEntity.Permission & lnPermission) == lnPermission)
                                         {
                                             lbR = true;
                                         }

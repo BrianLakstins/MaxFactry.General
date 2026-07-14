@@ -60,6 +60,7 @@
 // <change date="6/23/2026" author="Brian A. Lakstins" description="Allow Admins to update user tokens">
 // <change date="7/7/2026" author="Brian A. Lakstins" description="Update filtering">
 // <change date="7/8/2026" author="Brian A. Lakstins" description="Filtering adjustments for changes to references">
+// <change date="7/14/2026" author="Brian A. Lakstins" description="Store just one record per PermissionId instead of one for each Permission">
 // </changelog>
 #endregion
 
@@ -902,16 +903,57 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 string[] laPermissionSelectedList = MaxConvertLibrary.DeserializeObject(loRequest.Item.GetValueString("PermissionKeySelectedList"), typeof(string[])) as string[];
                 if (null != laPermissionSelectedList)
                 {
+                    //// The selected list has PermissionId|PermissionValue and may not have the "|".
+                    //// The PermissionId is the unique identifier of the permission.
+                    //// The PermissionValue is a bitwise value of the permissions assigned to the role.  
+                    //// The client may send the same PermissionId multiple times with different PermissionValues.  The server will combine the values into a single value for each PermissionId.
                     List<string> loPermissionSelectedList = new List<string>(laPermissionSelectedList);
+                    //// Create an index of the permissions that are selected to make it easier to check if a permission is already assigned to the role.
+                    MaxIndex loPermissionIndex = new MaxIndex();
+                    foreach (string lsPermissionKey in loPermissionSelectedList)
+                    {
+                        Guid loPermissionId = MaxConvertLibrary.ConvertToGuid(typeof(object), lsPermissionKey.Substring(0, Guid.Empty.ToString().Length));
+                        string lsPermissionId = loPermissionId.ToString();
+                        long lnPermission = long.MinValue;
+                        if (lsPermissionKey.Contains("|"))
+                        {
+                            string[] laPermissionParts = lsPermissionKey.Split('|');
+                            lnPermission = MaxConvertLibrary.ConvertToLong(typeof(object), laPermissionParts[1]);
+                        }
+                        else
+                        {
+                            lnPermission = MaxConvertLibrary.ConvertToLong(typeof(object), lsPermissionKey.Substring(Guid.Empty.ToString().Length));
+                        }
+
+                        if (lnPermission > long.MinValue)
+                        {
+                            if (loPermissionIndex.Contains(lsPermissionId))
+                            {
+                                loPermissionIndex[lsPermissionId] = (long)loPermissionIndex[lsPermissionId] | lnPermission;
+                            }
+                            else
+                            {
+                                loPermissionIndex.Add(lsPermissionId, lnPermission);
+                            }
+                        }
+                    }
+
                     MaxRoleRelationPermissionEntity loRelation = MaxRoleRelationPermissionEntity.Create();
                     MaxEntityList loRelationList = loRelation.LoadAllByRoleIdCache(loRole.Id);
+                    //// Remove permissions from the index that have not changed.  Remove Permissions from the role that have changed, or are not in the selected list.
                     for (int lnR = 0; lnR < loRelationList.Count; lnR++)
                     {
                         loRelation = loRelationList[lnR] as MaxRoleRelationPermissionEntity;
-                        string lsKey = loRelation.PermissionId.ToString() + loRelation.Permission.ToString();
-                        if (loPermissionSelectedList.Contains(lsKey))
+                        if (loPermissionIndex.Contains(loRelation.PermissionId.ToString()))
                         {
-                            loPermissionSelectedList.Remove(lsKey);
+                            if (loRelation.Permission == (long)loPermissionIndex[loRelation.PermissionId.ToString()])
+                            {
+                                loPermissionIndex.Remove(loRelation.PermissionId.ToString());
+                            }
+                            else
+                            {
+                                loRelation.Delete();
+                            }
                         }
                         else
                         {
@@ -919,25 +961,28 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         }
                     }
 
-                    foreach (string lsPermissionKey in loPermissionSelectedList)
+                    //// Add any new or changed permissions to the role.
+                    string[] laPermissionId = loPermissionIndex.GetSortedKeyList();
+                    foreach (string lsPermissionId in laPermissionId)
                     {
                         loRelation = MaxRoleRelationPermissionEntity.Create();
-                        loRelation.PermissionId = MaxConvertLibrary.ConvertToGuid(typeof(object), lsPermissionKey.Substring(0, Guid.NewGuid().ToString().Length));
-                        loRelation.Permission = MaxConvertLibrary.ConvertToLong(typeof(object), lsPermissionKey.Substring(Guid.NewGuid().ToString().Length));
+                        loRelation.PermissionId = MaxConvertLibrary.ConvertToGuid(typeof(object), lsPermissionId);
+                        loRelation.Permission = MaxConvertLibrary.ConvertToLong(typeof(object), loPermissionIndex[lsPermissionId]) | (long)MaxEnumGroup.PermissionGroup;
                         loRelation.RoleId = loRole.Id;
                         loRelation.Insert();
                     }
 
-                    foreach (string lsRequestProperty in loRequest.RequestPropertyList)
+                    //// Update the list of permissions in the response to reflect the current state of the role.
+                    foreach (string lsResponseProperty in loRequest.ResponsePropertyList)
                     {
-                        if (lsRequestProperty == "PermissionKeySelectedList" || lsRequestProperty == typeof(MaxRoleEntity).ToString() + ".PermissionKeySelectedList")
+                        if (lsResponseProperty == "PermissionKeySelectedList" || lsResponseProperty == typeof(MaxRoleEntity).ToString() + ".PermissionKeySelectedList")
                         {
                             List<string> loPermissionList = new List<string>();
                             loRelationList = loRelation.LoadAllByRoleIdCache(loRole.Id);
                             for (int lnE = 0; lnE < loRelationList.Count; lnE++)
                             {
                                 loRelation = loRelationList[lnE] as MaxRoleRelationPermissionEntity;
-                                loPermissionList.Add(loRelation.PermissionId.ToString() + loRelation.Permission.ToString());
+                                loPermissionList.Add(loRelation.PermissionId.ToString() + '|' + loRelation.Permission);
                             }
 
                             loR.Item.Add("PermissionKeySelectedList", loPermissionList.ToArray());
