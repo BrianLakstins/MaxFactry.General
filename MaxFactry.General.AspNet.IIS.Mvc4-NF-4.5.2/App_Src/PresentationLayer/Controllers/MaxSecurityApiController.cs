@@ -61,6 +61,7 @@
 // <change date="7/7/2026" author="Brian A. Lakstins" description="Update filtering">
 // <change date="7/8/2026" author="Brian A. Lakstins" description="Filtering adjustments for changes to references">
 // <change date="7/14/2026" author="Brian A. Lakstins" description="Store just one record per PermissionId instead of one for each Permission">
+// <change date="9/23/2026" author="Brian A. Lakstins" description="Use token integration in a library">
 // </changelog>
 #endregion
 
@@ -75,6 +76,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
     using System;
     using System.Collections.Generic;
     using System.Collections.Specialized;
+    using System.Diagnostics.Eventing.Reader;
     using System.IO;
     using System.Net;
     using System.Net.Http;
@@ -82,7 +84,6 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
     using System.Web;
     using System.Web.Http;
     using System.Web.Security;
-    using System.Xml.Linq;
 
     [MaxRequireHttps(Order = 1)]
     [System.Web.Http.AllowAnonymous]
@@ -493,12 +494,20 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         string lsIdToken = this.Request.Headers.Authorization.Parameter;
                         if (!string.IsNullOrEmpty(lsIdToken))
                         {
+                            MaxIndex loToken = MaxSecurityUserLibrary.ParseToken(lsIdToken);
                             MaxSecurityLoginViewModel loModel = new MaxSecurityLoginViewModel();
-                            if (loModel.IsValidIdToken(lsIdToken) && loModel.ValidateTokenSignature(lsIdToken))
+                            if (!MaxSecurityUserLibrary.IsValidToken(loToken))
                             {
-                                IDictionary<string, object> loIdToken = loModel.ParseToken(lsIdToken);
-                                string lsEmail = loModel.GetEmail(loIdToken);
-                                string lsUserName = loModel.GetUserName(loIdToken);
+                                throw new MaxException("Invalid Token");
+                            }
+                            else if (!MaxSecurityUserLibrary.ValidateTokenSignature(loToken))
+                            {
+                                throw new MaxException("Invalid Token Signature");
+                            }
+                            else
+                            { 
+                                string lsEmail = MaxSecurityUserLibrary.GetEmail(loToken);
+                                string lsUserName = MaxSecurityUserLibrary.GetUserName(loToken);
                                 string lsUserNameLoggedIn = loModel.LoginUser(lsUserName, lsEmail, "OAuth2 Token");
                                 if (!string.IsNullOrEmpty(lsUserNameLoggedIn))
                                 {

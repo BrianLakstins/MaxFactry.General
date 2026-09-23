@@ -31,21 +31,17 @@
 // <change date="6/19/2014" author="Brian A. Lakstins" description="Move code from controller.">
 // <change date="3/18/2026" author="Brian A. Lakstins" description="Consolidate login code.  Add handling of JWT.">
 // <change date="4/16/2026" author="Brian A. Lakstins" description="Add checking of JWT.">
+// <change date="9/23/2026" author="Brian A. Lakstins" description="Move token integration to a library">
 // </changelog>
 #endregion
 
 namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 {
-    using JWT;
-    using JWT.Serializers;
     using MaxFactry.Base.BusinessLayer;
     using MaxFactry.Core;
     using MaxFactry.General.BusinessLayer;
 	using System;
-    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
-    using System.Text.RegularExpressions;
-    using System.Web;
     using System.Web.Security;
 
     /// <summary>
@@ -94,88 +90,6 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         public bool ValidateUser()
         {
             return Membership.ValidateUser(this.UserName, this.Password);
-        }
-
-        public virtual string GetUserName(IDictionary<string, object> loIdToken)
-        {
-            Guid loObjectId = new Guid(loIdToken["oid"] as string);
-            //// The immutable identifier for an object, in this case, a user account. 
-            ////  This ID uniquely identifies the user across applications - two different applications signing in the same user receives the same value in the oid claim. 
-            ////  Microsoft Graph returns this ID as the id property for a user account. 
-            ////  Because the oid allows multiple apps to correlate users, the profile scope is required to receive this claim. 
-            ////  If a single user exists in multiple tenants, the user contains a different object ID in each tenant - they're considered different accounts, even though the user logs into each account with the same credentials.
-            ////  The oid claim is a GUID and can't be reused.
-            string lsObjectId = MaxConvertLibrary.ConvertGuidToAlphabet64(typeof(object), loObjectId);
-            string lsEmail = this.GetEmail(loIdToken);
-            string lsR = lsEmail.Replace("@", "+OAuth2" + lsObjectId + "@");
-            return lsR;
-        }
-
-        public virtual string GetEmail(IDictionary<string, object> loIdToken)
-        {
-            string lsR = string.Empty;
-            string lsEmail = string.Empty;
-            if (loIdToken.ContainsKey("unique_name"))
-            {
-                lsEmail = loIdToken["unique_name"] as string;
-            }
-            else if (loIdToken.ContainsKey("email"))
-            {
-                lsEmail = loIdToken["email"] as string;
-            }
-            else if (loIdToken.ContainsKey("preferred_username"))
-            {
-                lsEmail = loIdToken["preferred_username"] as string;
-            }
-
-            if (MaxEmailEntity.IsValidEmail(lsEmail))
-            {
-                lsR = lsEmail;
-            }
-
-            return lsR;
-        }
-
-        public virtual bool IsValidIdToken(string lsIdToken)
-        {
-            bool lbR = false;
-            try
-            {
-                Regex loJWTRegex = new Regex(@"^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$");
-                if (loJWTRegex.IsMatch(lsIdToken))
-                {
-                    IDictionary<string, object> loIdToken = this.ParseToken(lsIdToken);
-                    string lsTenantId = loIdToken["tid"] as string;
-                    object loTenantList = MaxConfigurationLibrary.GetValue(MaxEnumGroup.ScopeApplication, "OAuth2OIDCMicrosoftTenantList");
-                    if (null != loTenantList)
-                    {
-                        string lsTenantList = MaxConvertLibrary.ConvertToString(typeof(object), loTenantList).ToLower();
-                        if (lsTenantList.Contains(lsTenantId))
-                        {
-                            lbR = true;
-                        }
-                    }
-                }
-                else
-                {
-                    MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "IsValidIdToken", MaxEnumGroup.LogStatic, "Token does not match JWT format {lsIdToken}", lsIdToken));
-                }
-            }
-            catch (Exception loE)
-            {
-                MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "IsValidIdToken", MaxEnumGroup.LogError, "Error validating token {lsIdToken}", loE, lsIdToken));
-            }
-
-            return lbR;
-        }
-
-        public virtual IDictionary<string, object> ParseToken(string lsIdToken)
-        {
-            IJsonSerializer loSerializer = new JsonNetSerializer();
-            IBase64UrlEncoder loUrlEncoder = new JwtBase64UrlEncoder();
-            IJwtDecoder loDecoder = new JwtDecoder(loSerializer, loUrlEncoder);
-            IDictionary<string, object> loIdToken = loDecoder.DecodeToObject<IDictionary<string, object>>(lsIdToken, string.Empty, false);
-            return loIdToken;
         }
 
         public virtual string LoginUser(string lsUserName, string lsEmail, string lsAuthType)
@@ -251,83 +165,6 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             }
 
             return lsR;
-        }
-
-        public virtual bool ValidateTokenSignature(string lsIdToken)
-        {
-            bool lbR = false;
-            try
-            {
-                //// Get the tenant id from the token to know which keys to use for validation               
-                IDictionary<string, object> loIdToken = this.ParseToken(lsIdToken);
-                string lsTenantId = loIdToken["tid"] as string;
-                if (!string.IsNullOrEmpty(lsTenantId))
-                {
-                    // Fetch Microsoft's public keys
-                    string lsKeysUrl = string.Format("https://login.microsoftonline.com/{0}/discovery/v2.0/keys", lsTenantId);
-                    System.Net.WebClient loClient = new System.Net.WebClient();
-                    string lsKeysJson = loClient.DownloadString(lsKeysUrl);
-
-                    // Parse the keys JSON
-                    IJsonSerializer loSerializer = new JsonNetSerializer();
-                    IDictionary<string, object> loKeysResponse = loSerializer.Deserialize<IDictionary<string, object>>(lsKeysJson);
-
-                    // Get the token header to find the key id (kid)
-                    string[] laTokenParts = lsIdToken.Split('.');
-                    if (laTokenParts.Length != 3)
-                    {
-                        return false;
-                    }
-
-                    IBase64UrlEncoder loUrlEncoder = new JwtBase64UrlEncoder();
-                    string lsHeaderJson = System.Text.Encoding.UTF8.GetString(loUrlEncoder.Decode(laTokenParts[0]));
-                    IDictionary<string, object> loHeader = loSerializer.Deserialize<IDictionary<string, object>>(lsHeaderJson);
-                    string lsKid = loHeader["kid"] as string;
-
-                    // Find the matching key
-                    Newtonsoft.Json.Linq.JArray loKeys = loKeysResponse["keys"] as Newtonsoft.Json.Linq.JArray;
-                    foreach (Newtonsoft.Json.Linq.JObject loKey in loKeys)
-                    {
-                        if (loKey["kid"].ToString() == lsKid)
-                        {
-                            string lsModulus = loKey["n"].ToString();
-                            string lsExponent = loKey["e"].ToString();
-
-                            // Create RSA parameters from the key
-                            System.Security.Cryptography.RSAParameters loRsaParams = new System.Security.Cryptography.RSAParameters
-                            {
-                                Modulus = loUrlEncoder.Decode(lsModulus),
-                                Exponent = loUrlEncoder.Decode(lsExponent)
-                            };
-
-                            // Create RSA provider and verify signature
-                            using (System.Security.Cryptography.RSACryptoServiceProvider loRsa = new System.Security.Cryptography.RSACryptoServiceProvider())
-                            {
-                                loRsa.ImportParameters(loRsaParams);
-
-                                // Get the signature and data to verify
-                                byte[] laSignature = loUrlEncoder.Decode(laTokenParts[2]);
-                                byte[] laDataToVerify = System.Text.Encoding.UTF8.GetBytes(laTokenParts[0] + "." + laTokenParts[1]);
-
-                                // Verify using SHA256
-                                using (System.Security.Cryptography.SHA256 loSha256 = System.Security.Cryptography.SHA256.Create())
-                                {
-                                    byte[] laHash = loSha256.ComputeHash(laDataToVerify);
-                                    lbR = loRsa.VerifyHash(laHash, System.Security.Cryptography.CryptoConfig.MapNameToOID("SHA256"), laSignature);
-                                }
-                            }
-
-                            break;
-                        }
-                    }
-                }
-            }
-            catch (Exception loE)
-            {
-                MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "ValidateTokenSignature", MaxEnumGroup.LogError, "Error validating token signature", loE));
-            }
-
-            return lbR;
         }
 
         public virtual MaxUserAuthGrantEntity CreateUserAuthGrant(string lsState, string lsNonce, string lsClientId, string lsScope, string lsReposeType, string lsReturnUrl, string lsAuthUrl)
