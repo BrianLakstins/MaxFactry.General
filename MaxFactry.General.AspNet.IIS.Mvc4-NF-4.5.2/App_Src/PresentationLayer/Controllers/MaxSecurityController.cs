@@ -44,24 +44,18 @@
 // <change date="7/10/2025" author="Brian A. Lakstins" description="Fix logging of Auth2 Login">
 // <change date="12/11/2025" author="Brian A. Lakstins" description="Add a way to override the return host when running on localhost">
 // <change date="3/18/2026" author="Brian A. Lakstins" description="Consolidate login code.  Add logging in based on Authentication header.">
+// <change date="9/23/2026" author="Brian A. Lakstins" description="Use library for handling tokens">
 // </changelog>
 #endregion
 
 namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using System.Web;
-    using System.Web.Hosting;
     using System.Web.Mvc;
     using System.Web.Routing;
     using System.Web.Security;
-    using JWT;
-    using JWT.Serializers;
     using MaxFactry.Base.BusinessLayer;
-    using MaxFactry.Base.DataLayer.Library;
     using MaxFactry.Core;
     using MaxFactry.General.BusinessLayer;
     using MaxFactry.General.PresentationLayer;
