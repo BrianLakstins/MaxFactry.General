@@ -712,27 +712,71 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 {
                     throw new MaxException("Missing Id Token");
                 }
-                else if (!loModel.IsValidIdToken(lsIdToken))
-                {
-                    throw new MaxException("Invalid Id Token");
-                }
-                else if (!loModel.ValidateTokenSignature(lsIdToken))
-                {
-                    throw new MaxException("Invalid Token Signature");
-                }
                 else
                 {
-                    string lsRedirectUrl = string.Empty;
-                    string lsState = this.Request.Form["state"];
-                    if (!string.IsNullOrEmpty(lsState))
+                    MaxIndex loToken = MaxSecurityUserLibrary.ParseToken(lsIdToken);
+                    if (!MaxSecurityUserLibrary.IsValidToken(loToken))
                     {
-                        if (loModel.LoginUser(lsState, lsIdToken, out lsRedirectUrl))
+                        throw new MaxException("Invalid Id Token");
+                    }
+                    else if (!MaxSecurityUserLibrary.ValidateTokenSignature(loToken))
+                    {
+                        throw new MaxException("Invalid Token Signature");
+                    }
+                    else
+                    {
+                        string lsRedirectUrl = string.Empty;
+                        string lsState = this.Request.Form["state"];
+                        if (string.IsNullOrEmpty(lsState))
                         {
-                            if (!string.IsNullOrEmpty(lsRedirectUrl))
-                            {
-                                return this.Redirect(lsRedirectUrl);
-                            }
+                            throw new MaxException("Missing State");
                         }
+                        else
+                        {
+                            string lsNonce = string.Empty;
+                            if (loToken.Contains("nonce"))
+                            {
+                                lsNonce = loToken["nonce"] as string;
+                            }
+
+                            if (string.IsNullOrEmpty(lsNonce))
+                            {
+                                throw new MaxException("Missing Nonce in token");
+                            }
+                            else
+                            {
+                                //// This is a redirect login that started on this site and then went to Microsoft for login and is now coming back with the id token and state.  Validate the state and nonce and then log the user in and redirect back to the original url.
+                                MaxUserAuthGrantEntity loEntity = MaxUserAuthGrantEntity.Create();
+                                if (loEntity.LoadByState(lsState) && loEntity.IsActive)
+                                {
+                                    loEntity.IsActive = false;
+                                    loEntity.Update();
+                                    //// https://learn.microsoft.com/en-us/azure/active-directory/develop/id-token-claims-reference                            
+                                    if (loEntity.Nonce == lsNonce)
+                                    {
+                                        string lsEmail = MaxSecurityUserLibrary.GetEmail(loToken);
+                                        string lsUserName = MaxSecurityUserLibrary.GetUserName(loToken);
+                                        string lsUserLoggedInName = loModel.LoginUser(lsUserName, lsEmail, "OAuth2 Grant");
+                                        if (!string.IsNullOrEmpty(lsUserLoggedInName))
+                                        {
+                                            loEntity.UserKey = lsUserName + "|" + lsEmail;
+                                            loEntity.Update();
+                                            if (!string.IsNullOrEmpty(loEntity.RedirectUri))
+                                            {
+                                                lsRedirectUrl = loEntity.RedirectUri;
+                                                if (loEntity.RedirectUri.Contains("ReturnUrl="))
+                                                {
+                                                    string[] laRedirectUri = loEntity.RedirectUri.Split(new string[] { "ReturnUrl=" }, StringSplitOptions.None);
+                                                    lsRedirectUrl = laRedirectUri[0] + "ReturnUrl=" + HttpUtility.UrlEncode(laRedirectUri[1]);
+                                                }
+
+                                                return this.Redirect(lsRedirectUrl);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }                            
                     }
                 }
             }

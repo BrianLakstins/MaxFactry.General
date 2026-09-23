@@ -178,65 +178,6 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             return loIdToken;
         }
 
-        public virtual bool LoginUser(string lsState, string lsIdToken, out string lsRedirectUrl)
-        {
-            bool lbR = false;
-            lsRedirectUrl = string.Empty;
-            if (string.IsNullOrEmpty(lsState))
-            {
-                throw new MaxException("Missing State");
-            }
-            else
-            {
-                IDictionary<string, object> loIdToken = this.ParseToken(lsIdToken);
-                string lsNonce = string.Empty;
-                if (loIdToken.ContainsKey("nonce"))
-                {
-                    lsNonce = loIdToken["nonce"] as string;
-                }
-
-                if (!string.IsNullOrEmpty(lsNonce))
-                {
-                    //// This is a redirect login that started on this site and then went to Microsoft for login and is now coming back with the id token and state.  Validate the state and nonce and then log the user in and redirect back to the original url.
-                    MaxUserAuthGrantEntity loEntity = MaxUserAuthGrantEntity.Create();
-                    if (loEntity.LoadByState(lsState) && loEntity.IsActive)
-                    {
-                        loEntity.IsActive = false;
-                        loEntity.Update();
-                        //// https://learn.microsoft.com/en-us/azure/active-directory/develop/id-token-claims-reference                            
-                        if (loEntity.Nonce == lsNonce)
-                        {
-                            string lsEmail = this.GetEmail(loIdToken);
-                            string lsUserName = this.GetUserName(loIdToken);
-                            string lsUserLoggedInName = this.LoginUser(lsUserName, lsEmail, "OAuth2 Grant");
-                            if (!string.IsNullOrEmpty(lsUserLoggedInName))
-                            {
-                                loEntity.UserKey = lsUserName + "|" + lsEmail;
-                                loEntity.Update();
-                                if (!string.IsNullOrEmpty(loEntity.RedirectUri))
-                                {
-                                    lsRedirectUrl = loEntity.RedirectUri;
-                                    if (loEntity.RedirectUri.Contains("ReturnUrl="))
-                                    {
-                                        string[] laRedirectUri = loEntity.RedirectUri.Split(new string[] { "ReturnUrl=" }, StringSplitOptions.None);
-                                        lsRedirectUrl = laRedirectUri[0] + "ReturnUrl=" + HttpUtility.UrlEncode(laRedirectUri[1]);
-                                    }
-
-                                    lbR = true;
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    throw new MaxException("Missing Nonce in token");
-                }
-            }
-
-            return lbR;
-        }
-        
         public virtual string LoginUser(string lsUserName, string lsEmail, string lsAuthType)
         {
             string lsR = string.Empty;
