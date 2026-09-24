@@ -187,22 +187,22 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     }
                     else if (null == this._oUser && !string.IsNullOrEmpty(this.AccessToken))
                     {
-                        MaxIndex loToken = MaxSecurityUserLibrary.ParseToken(this.AccessToken);
+                        MaxIndex loToken = MaxTokenLibrary.ParseToken(this.AccessToken);
                         if (loToken.Count == 0)
                         {
                             throw new MaxException("Token cannot be parsed");
                         }
-                        else if (!MaxSecurityUserLibrary.IsValidToken(loToken))
+                        else if (!MaxTokenLibrary.IsValidToken(loToken))
                         {
                             throw new MaxException("Invalid Token");
                         }
-                        else if (!MaxSecurityUserLibrary.ValidateTokenSignature(loToken))
+                        else if (!MaxTokenLibrary.ValidateTokenSignature(loToken))
                         {
                             throw new MaxException("Invalid Token Signature");
                         }
                         else
                         {
-                            this._oUser = Membership.GetUser(MaxSecurityUserLibrary.GetUserName(loToken));
+                            this._oUser = Membership.GetUser(MaxTokenLibrary.GetUserName(loToken));
                         }
                     }
                 }

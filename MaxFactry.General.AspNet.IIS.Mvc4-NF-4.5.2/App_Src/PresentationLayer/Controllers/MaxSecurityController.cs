@@ -708,16 +708,16 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 }
                 else
                 {
-                    MaxIndex loToken = MaxSecurityUserLibrary.ParseToken(lsIdToken);
+                    MaxIndex loToken = MaxTokenLibrary.ParseToken(lsIdToken);
                     if (loToken.Count == 0)
                     {
                         throw new MaxException("Token cannot be parsed");
                     }
-                    else if (!MaxSecurityUserLibrary.IsValidToken(loToken))
+                    else if (!MaxTokenLibrary.IsValidToken(loToken))
                     {
                         throw new MaxException("Invalid Id Token");
                     }
-                    else if (!MaxSecurityUserLibrary.ValidateTokenSignature(loToken))
+                    else if (!MaxTokenLibrary.ValidateTokenSignature(loToken))
                     {
                         throw new MaxException("Invalid Token Signature");
                     }
@@ -752,8 +752,8 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                     //// https://learn.microsoft.com/en-us/azure/active-directory/develop/id-token-claims-reference                            
                                     if (loEntity.Nonce == lsNonce)
                                     {
-                                        string lsEmail = MaxSecurityUserLibrary.GetEmail(loToken);
-                                        string lsUserName = MaxSecurityUserLibrary.GetUserName(loToken);
+                                        string lsEmail = MaxTokenLibrary.GetEmail(loToken);
+                                        string lsUserName = MaxTokenLibrary.GetUserName(loToken);
                                         string lsUserLoggedInName = loModel.LoginUser(lsUserName, lsEmail, "OAuth2 Grant");
                                         if (!string.IsNullOrEmpty(lsUserLoggedInName))
                                         {

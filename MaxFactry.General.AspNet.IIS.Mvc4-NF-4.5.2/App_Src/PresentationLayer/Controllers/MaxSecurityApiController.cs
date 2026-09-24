@@ -491,23 +491,23 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     }
                     else if (this.Request.Method == HttpMethod.Get && !string.IsNullOrEmpty(loRequest.AccessToken))
                     {
-                        MaxIndex loToken = MaxSecurityUserLibrary.ParseToken(loRequest.AccessToken);
+                        MaxIndex loToken = MaxTokenLibrary.ParseToken(loRequest.AccessToken);
                         if (loToken.Count == 0)
                         {
                             throw new MaxException("Token cannot be parsed");
                         }
-                        else if (!MaxSecurityUserLibrary.IsValidToken(loToken))
+                        else if (!MaxTokenLibrary.IsValidToken(loToken))
                         {
                             throw new MaxException("Invalid Token");
                         }
-                        else if (!MaxSecurityUserLibrary.ValidateTokenSignature(loToken))
+                        else if (!MaxTokenLibrary.ValidateTokenSignature(loToken))
                         {
                             throw new MaxException("Invalid Token Signature");
                         }
                         else
                         {
-                            string lsEmail = MaxSecurityUserLibrary.GetEmail(loToken);
-                            string lsUserName = MaxSecurityUserLibrary.GetUserName(loToken);
+                            string lsEmail = MaxTokenLibrary.GetEmail(loToken);
+                            string lsUserName = MaxTokenLibrary.GetUserName(loToken);
                             MaxSecurityLoginViewModel loModel = new MaxSecurityLoginViewModel();
                             string lsUserNameLoggedIn = loModel.LoginUser(lsUserName, lsEmail, "OAuth2 Token");
                             if (!string.IsNullOrEmpty(lsUserNameLoggedIn))
