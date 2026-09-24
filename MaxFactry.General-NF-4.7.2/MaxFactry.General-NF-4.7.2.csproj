@@ -109,17 +109,15 @@
     <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Structure\MaxHtmlTagStructure.cs">
       <Link>BusinessLayer\Structure\MaxHtmlTagStructure.cs</Link>
     </Compile>
-
-	  <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Library\MaxTokenLibrary.cs">
-		  <Link>BusinessLayer\Library\MaxTokenLibrary.cs</Link>
-	  </Compile>
-	  <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Library\Interface\IMaxTokenLibraryProvider.cs">
-		  <Link>BusinessLayer\Library\Interface\IMaxTokenLibraryProvider.cs</Link>
-	  </Compile>
-	  <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Library\Provider\MaxTokenLibraryDefaultProvider.cs">
-		  <Link>BusinessLayer\Library\Provider\MaxTokenLibraryDefaultProvider.cs</Link>
-	  </Compile>
-        
+    <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Library\MaxTokenLibrary.cs">
+      <Link>BusinessLayer\Library\MaxTokenLibrary.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Library\Interface\IMaxTokenLibraryProvider.cs">
+      <Link>BusinessLayer\Library\Interface\IMaxTokenLibraryProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Library\Provider\MaxTokenLibraryDefaultProvider.cs">
+      <Link>BusinessLayer\Library\Provider\MaxTokenLibraryDefaultProvider.cs</Link>
+    </Compile>
     <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxAuthClientDataModel.cs">
       <Link>DataLayer\DataModel\MaxAuthClientDataModel.cs</Link>
     </Compile>
@@ -270,7 +268,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MaxFactry.Base">
-      <Version>1.0.26.31</Version>
+      <Version>1.0.26.34</Version>
     </PackageReference>
     <PackageReference Include="MaxFactry.Core">
       <Version>1.0.26.19</Version>
