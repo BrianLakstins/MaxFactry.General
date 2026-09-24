@@ -16,8 +16,8 @@
 		<dependencies>
 			<group targetFramework="net452">
 				<dependency id="MaxFactry.Core" version="1.0.26.19" />
-				<dependency id="MaxFactry.Base" version="1.0.26.31" />
-				<dependency id="MaxFactry.General" version="1.0.26.32" />
+				<dependency id="MaxFactry.Base" version="1.0.26.34" />
+				<dependency id="MaxFactry.General" version="1.0.26.35" />
 				<dependency id="MaxFactry.General.AspNet" version="1.0.26.20" />
 				<dependency id="MaxFactry.General.AspNet.IIS" version="1.0.26.20" />
 				<dependency id="Newtonsoft.Json" version="13.0.3" />
