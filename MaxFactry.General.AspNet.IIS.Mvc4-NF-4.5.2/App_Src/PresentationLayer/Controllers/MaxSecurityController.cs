@@ -709,7 +709,11 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                 else
                 {
                     MaxIndex loToken = MaxSecurityUserLibrary.ParseToken(lsIdToken);
-                    if (!MaxSecurityUserLibrary.IsValidToken(loToken))
+                    if (loToken.Count == 0)
+                    {
+                        throw new MaxException("Token cannot be parsed");
+                    }
+                    else if (!MaxSecurityUserLibrary.IsValidToken(loToken))
                     {
                         throw new MaxException("Invalid Id Token");
                     }
@@ -770,7 +774,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                                     }
                                 }
                             }
-                        }                            
+                        }
                     }
                 }
             }

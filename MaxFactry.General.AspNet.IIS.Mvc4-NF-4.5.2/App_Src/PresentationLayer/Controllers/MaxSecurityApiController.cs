@@ -489,32 +489,32 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                             loR.Message.Error = "Username or email is required.";
                         }
                     }
-                    else if (this.Request.Method == HttpMethod.Get && null != this.Request.Headers.Authorization)
+                    else if (this.Request.Method == HttpMethod.Get && !string.IsNullOrEmpty(loRequest.AccessToken))
                     {
-                        string lsIdToken = this.Request.Headers.Authorization.Parameter;
-                        if (!string.IsNullOrEmpty(lsIdToken))
+                        MaxIndex loToken = MaxSecurityUserLibrary.ParseToken(loRequest.AccessToken);
+                        if (loToken.Count == 0)
                         {
-                            MaxIndex loToken = MaxSecurityUserLibrary.ParseToken(lsIdToken);
-                            MaxSecurityLoginViewModel loModel = new MaxSecurityLoginViewModel();
-                            if (!MaxSecurityUserLibrary.IsValidToken(loToken))
-                            {
-                                throw new MaxException("Invalid Token");
-                            }
-                            else if (!MaxSecurityUserLibrary.ValidateTokenSignature(loToken))
-                            {
-                                throw new MaxException("Invalid Token Signature");
-                            }
-                            else
-                            { 
-                                string lsEmail = MaxSecurityUserLibrary.GetEmail(loToken);
-                                string lsUserName = MaxSecurityUserLibrary.GetUserName(loToken);
-                                string lsUserNameLoggedIn = loModel.LoginUser(lsUserName, lsEmail, "OAuth2 Token");
-                                if (!string.IsNullOrEmpty(lsUserNameLoggedIn))
-                                {
-                                    loUser = Membership.GetUser(lsUserNameLoggedIn);
-                                }
-                            }
+                            throw new MaxException("Token cannot be parsed");
                         }
+                        else if (!MaxSecurityUserLibrary.IsValidToken(loToken))
+                        {
+                            throw new MaxException("Invalid Token");
+                        }
+                        else if (!MaxSecurityUserLibrary.ValidateTokenSignature(loToken))
+                        {
+                            throw new MaxException("Invalid Token Signature");
+                        }
+                        else
+                        {
+                            string lsEmail = MaxSecurityUserLibrary.GetEmail(loToken);
+                            string lsUserName = MaxSecurityUserLibrary.GetUserName(loToken);
+                            MaxSecurityLoginViewModel loModel = new MaxSecurityLoginViewModel();
+                            string lsUserNameLoggedIn = loModel.LoginUser(lsUserName, lsEmail, "OAuth2 Token");
+                            if (!string.IsNullOrEmpty(lsUserNameLoggedIn))
+                            {
+                                loUser = Membership.GetUser(lsUserNameLoggedIn);
+                            }
+                        }                        
                     }
 
                     if (null != loUser && !string.IsNullOrEmpty(loUser.UserName))

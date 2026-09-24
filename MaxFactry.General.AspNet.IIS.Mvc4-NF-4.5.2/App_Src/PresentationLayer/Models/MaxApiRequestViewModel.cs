@@ -34,6 +34,7 @@
 // <change date="11/6/2024" author="Brian A. Lakstins" description="Updated token integration">
 // <change date="3/4/2025" author="Brian A. Lakstins" description="Return null data key when no data key is in the request">
 // <change date="11/4/2025" author="Brian A. Lakstins" description="Add page and search text properties">
+// <change date="9/23/2026" author="Brian A. Lakstins" description="Check for access token to get current user">
 // </changelog>
 #endregion
 
@@ -66,6 +67,10 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         public MaxApiRequestViewModel(HttpRequestMessage loRequest)
         {
             _oRequest = loRequest;
+            if (null != this._oRequest.Headers.Authorization && this._oRequest.Headers.Authorization.Scheme == "Bearer")
+            {
+                this.AccessToken = this._oRequest.Headers.Authorization.Parameter;
+            }
         }
 
         public string GetDataKey(int lnNum)
@@ -155,15 +160,9 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
             get
             {
                 MaxUserAuthTokenEntity loR = null;
-                string lsClientToken = this.AccessToken;
-                if (null != this._oRequest.Headers.Authorization && this._oRequest.Headers.Authorization.Scheme == "Bearer")
+                if (!string.IsNullOrEmpty(this.AccessToken))
                 {
-                    lsClientToken = this._oRequest.Headers.Authorization.Parameter;
-                }
-
-                if (!string.IsNullOrEmpty(lsClientToken))
-                {
-                    MaxUserAuthTokenEntity loUserAuthToken = MaxUserAuthTokenEntity.GetByToken(lsClientToken);
+                    MaxUserAuthTokenEntity loUserAuthToken = MaxUserAuthTokenEntity.GetByToken(this.AccessToken);
                     if (null != loUserAuthToken && loUserAuthToken.IsActive && loUserAuthToken.TokenType == "Bearer" && DateTime.UtcNow < loUserAuthToken.CreatedDate.AddSeconds(loUserAuthToken.Expiration))
                     {
                         loR = loUserAuthToken;
@@ -185,6 +184,26 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                     {
                         Guid loUserId = MaxConvertLibrary.ConvertToGuid(typeof(object), this.Token.UserKey);
                         this._oUser = Membership.GetUser(loUserId);
+                    }
+                    else if (null == this._oUser && !string.IsNullOrEmpty(this.AccessToken))
+                    {
+                        MaxIndex loToken = MaxSecurityUserLibrary.ParseToken(this.AccessToken);
+                        if (loToken.Count == 0)
+                        {
+                            throw new MaxException("Token cannot be parsed");
+                        }
+                        else if (!MaxSecurityUserLibrary.IsValidToken(loToken))
+                        {
+                            throw new MaxException("Invalid Token");
+                        }
+                        else if (!MaxSecurityUserLibrary.ValidateTokenSignature(loToken))
+                        {
+                            throw new MaxException("Invalid Token Signature");
+                        }
+                        else
+                        {
+                            this._oUser = Membership.GetUser(MaxSecurityUserLibrary.GetUserName(loToken));
+                        }
                     }
                 }
 
