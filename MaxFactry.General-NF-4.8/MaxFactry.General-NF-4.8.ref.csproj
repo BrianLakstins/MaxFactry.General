@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\Debug.ref\</OutputPath>
     <DefineConstants>DEBUG;TRACE;net2;net4_52;net_4_72;net_4_8</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -108,6 +108,15 @@
     </Compile>
     <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Structure\MaxHtmlTagStructure.cs">
       <Link>BusinessLayer\Structure\MaxHtmlTagStructure.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Library\MaxTokenLibrary.cs">
+      <Link>BusinessLayer\Library\MaxTokenLibrary.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Library\Interface\IMaxTokenLibraryProvider.cs">
+      <Link>BusinessLayer\Library\Interface\IMaxTokenLibraryProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Library\Provider\MaxTokenLibraryDefaultProvider.cs">
+      <Link>BusinessLayer\Library\Provider\MaxTokenLibraryDefaultProvider.cs</Link>
     </Compile>
     <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxAuthClientDataModel.cs">
       <Link>DataLayer\DataModel\MaxAuthClientDataModel.cs</Link>

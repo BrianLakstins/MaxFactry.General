@@ -41,6 +41,11 @@
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Entity\MaxUSStateEntity.cs" Link="BusinessLayer\Entity\MaxUSStateEntity.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Structure\MaxCSSStyleStructure.cs" Link="BusinessLayer\Structure\MaxCSSStyleStructure.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Structure\MaxHtmlTagStructure.cs" Link="BusinessLayer\Structure\MaxHtmlTagStructure.cs" />
+		
+		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Library\MaxTokenLibrary.cs" Link="BusinessLayer\Library\MaxTokenLibrary.cs" />
+		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Library\Interface\IMaxTokenLibraryProvider.cs" Link="BusinessLayer\Library\Interface\IMaxTokenLibraryProvider.cs" />
+		<Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Library\Provider\MaxTokenLibraryDefaultProvider.cs" Link="BusinessLayer\Library\Provider\MaxTokenLibraryDefaultProvider.cs" />
+		
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxAuthClientDataModel.cs" Link="DataLayer\Repository\DataModel\MaxAuthClientDataModel.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxEmailDataModel.cs" Link="DataLayer\Repository\DataModel\MaxEmailDataModel.cs" />
 		<Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxFileDataModel.cs" Link="DataLayer\Repository\DataModel\MaxFileDataModel.cs" />

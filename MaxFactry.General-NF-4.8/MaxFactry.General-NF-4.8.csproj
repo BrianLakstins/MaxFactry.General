@@ -109,6 +109,17 @@
     <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Structure\MaxHtmlTagStructure.cs">
       <Link>BusinessLayer\Structure\MaxHtmlTagStructure.cs</Link>
     </Compile>
+
+	  <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Library\MaxTokenLibrary.cs">
+		  <Link>BusinessLayer\Library\MaxTokenLibrary.cs</Link>
+	  </Compile>
+	  <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Library\Interface\IMaxTokenLibraryProvider.cs">
+		  <Link>BusinessLayer\Library\Interface\IMaxTokenLibraryProvider.cs</Link>
+	  </Compile>
+	  <Compile Include="..\MaxFactry.General-NF-2.0\BusinessLayer\Library\Provider\MaxTokenLibraryDefaultProvider.cs">
+		  <Link>BusinessLayer\Library\Provider\MaxTokenLibraryDefaultProvider.cs</Link>
+	  </Compile>
+
     <Compile Include="..\MaxFactry.General-NF-2.0\DataLayer\DataModel\MaxAuthClientDataModel.cs">
       <Link>DataLayer\DataModel\MaxAuthClientDataModel.cs</Link>
     </Compile>
