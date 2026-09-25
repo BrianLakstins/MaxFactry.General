@@ -85,6 +85,7 @@
 // <change date="7/8/2026" author="Brian A. Lakstins" description="Update filter handling to use lists of filters as a way to group them and break up search filtering.">
 // <change date="7/9/2026" author="Brian A. Lakstins" description="Make sure content is specified for download.">
 // <change date="7/14/2026" author="Brian A. Lakstins" description="Check for only supplied permission bit map instead of any bit. Clean up sending PermissionType list.">
+// <change date="7/25/2026" author="Brian A. Lakstins" description="Only add filter if there are items in the filter.">
 // </changelog>
 #endregion
 
@@ -1568,8 +1569,18 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         protected virtual MaxIndex GetResponseFilter(MaxApiRequestViewModel loRequest, MaxEntity loEntity)
         {
             MaxIndex loR = new MaxIndex();
-            loR.Add(this.GetResponseFilterList(loRequest.ResponseFilterList, loEntity));
-            loR.Add(this.GetResponseFilterSearch(loRequest.SearchText, loEntity));
+            MaxIndex loResponseFilterList = this.GetResponseFilterList(loRequest.ResponseFilterList, loEntity);
+            if (loResponseFilterList.Count > 0)
+            {
+                loR.Add(loResponseFilterList);
+            }
+
+            MaxIndex loResponseFilterSearch = this.GetResponseFilterSearch(loRequest.SearchText, loEntity);
+            if (loResponseFilterSearch.Count > 0)
+            {
+                loR.Add(loResponseFilterSearch);
+            }
+            
             return loR;
         }
 
