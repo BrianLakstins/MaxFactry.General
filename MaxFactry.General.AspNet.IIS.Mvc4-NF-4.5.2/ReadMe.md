@@ -43,4 +43,7 @@ Packages are grouped by dependency
 <package id="Fizzler" version="1.1.0" targetFramework="net452" />
 <package id="HtmlAgilityPack" version="1.11.9" targetFramework="net452" />
 <package id="Fizzler.Systems.HtmlAgilityPack" version="1.1.1" targetFramework="net452" />
+
+Update-Package -Reinstall -ProjectName MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2.ref
+Update-Package -Reinstall -ProjectName MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2
   
