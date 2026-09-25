@@ -52,11 +52,8 @@
     <Reference Include="Fizzler.Systems.HtmlAgilityPack, Version=1.1.21209.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\_nuget\Fizzler.Systems.HtmlAgilityPack.1.1.1\lib\net35\Fizzler.Systems.HtmlAgilityPack.dll</HintPath>
     </Reference>
-    <Reference Include="HtmlAgilityPack, Version=1.11.46.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
-      <HintPath>..\..\_nuget\HtmlAgilityPack.1.11.46\lib\Net45\HtmlAgilityPack.dll</HintPath>
-    </Reference>
-    <Reference Include="JWT, Version=10.0.0.0, Culture=neutral, PublicKeyToken=6f98bca0f40f2ecf, processorArchitecture=MSIL">
-      <HintPath>..\..\_nuget\JWT.10.1.1\lib\net462\JWT.dll</HintPath>
+    <Reference Include="HtmlAgilityPack, Version=1.13.0.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\HtmlAgilityPack.1.13.0\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
     <Reference Include="MaxFactry.Base-NF-4.8, Version=1.0.26.34, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
       <HintPath>..\..\_nuget\MaxFactry.Base.1.0.26.34\lib\net48\MaxFactry.Base-NF-4.8.dll</HintPath>
@@ -84,7 +81,7 @@
       <HintPath>..\..\_nuget\Microsoft.Web.Infrastructure.2.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\_nuget\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\_nuget\Newtonsoft.Json.13.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <HintPath>..\..\_nuget\Owin.1.0\lib\net40\Owin.dll</HintPath>
@@ -500,6 +497,7 @@
     <EmbeddedResource Include="..\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\Views\MaxSecurity\OAuth2OIDCLogin.cshtml">
       <Link>Views\MaxSecurity\OAuth2OIDCLogin.cshtml</Link>
     </EmbeddedResource>
+    <Content Include="README.md" />
     <None Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
