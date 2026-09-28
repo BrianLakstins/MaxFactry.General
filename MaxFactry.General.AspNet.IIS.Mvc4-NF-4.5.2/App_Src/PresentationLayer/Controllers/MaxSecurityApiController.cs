@@ -62,6 +62,7 @@
 // <change date="7/8/2026" author="Brian A. Lakstins" description="Filtering adjustments for changes to references">
 // <change date="7/14/2026" author="Brian A. Lakstins" description="Store just one record per PermissionId instead of one for each Permission">
 // <change date="9/23/2026" author="Brian A. Lakstins" description="Use token integration in a library">
+// <change date="9/28/2026" author="Brian A. Lakstins" description="Make sure the token is not a valide user token">
 // </changelog>
 #endregion
 
@@ -489,7 +490,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                             loR.Message.Error = "Username or email is required.";
                         }
                     }
-                    else if (this.Request.Method == HttpMethod.Get && !string.IsNullOrEmpty(loRequest.AccessToken))
+                    else if (this.Request.Method == HttpMethod.Get && !string.IsNullOrEmpty(loRequest.AccessToken) && null == loRequest.Token)
                     {
                         MaxIndex loToken = MaxTokenLibrary.ParseToken(loRequest.AccessToken);
                         if (loToken.Count == 0)
